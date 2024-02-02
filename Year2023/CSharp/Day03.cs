@@ -62,7 +62,7 @@ namespace AdventOfCode2023.Year2023
 
         public Day03()
         {
-            Input = File.ReadAllText("Year2023/03.txt").Where(c => c != '\n' && c != '\r').ToArray();
+            Input = File.ReadAllText("Input/03.txt").Where(c => c != '\n' && c != '\r').ToArray();
         }
 
         [TestCase]

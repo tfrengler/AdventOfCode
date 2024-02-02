@@ -15,7 +15,7 @@ namespace AdventOfCode2023.Year2023
         public void Part01()
         {
             int FinalValue = 0;
-            string[] Input = File.ReadAllLines("Year2023/02.txt");
+            string[] Input = File.ReadAllLines("Input/02.txt");
             /*
             string[] Input = new[]
             {
@@ -71,7 +71,7 @@ namespace AdventOfCode2023.Year2023
         public void Part02()
         {
             int FinalValue = 0;
-            string[] Input = File.ReadAllLines("Year2023/02.txt");
+            string[] Input = File.ReadAllLines("Input/02.txt");
             /*
             string[] Input = new[]
             {

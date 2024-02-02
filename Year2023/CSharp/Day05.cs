@@ -14,7 +14,7 @@ namespace AdventOfCode2023.Year2023
 
         public Day05()
         {
-            Input = File.ReadAllLines("Year2023/05.txt");
+            Input = File.ReadAllLines("Input/05.txt");
         }
 
         [TestCase]

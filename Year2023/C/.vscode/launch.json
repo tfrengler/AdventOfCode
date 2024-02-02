@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "LLDB - debug",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}\\build\\bin.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Clang - build"
+        }
+    ]
+}

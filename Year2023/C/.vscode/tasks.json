@@ -1,0 +1,42 @@
+{
+    "tasks": [
+        {
+            "label": "Clang - build",
+            "type": "shell",
+            "command": "clang",
+            "args": [
+                "-std=c17",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                "-Wconversion",
+                "-Wshadow",
+                "-Wundef",
+                "-Wunreachable-code",
+                "-Wuninitialized",
+                "-Wold-style-cast",
+                "-Wno-error=unused-variable",
+                "-Wfloat-equal",
+                "-pedantic-errors",
+                "-funsigned-char",
+                "-Wno-unused-function",
+                "-Wno-sign-conversion",
+                "-Wdouble-promotion",
+                "-Wformat=2",
+                "-g3",
+                "-O0",
+                "${file}",
+                "-o",
+                "${workspaceFolder}\\build\\bin.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

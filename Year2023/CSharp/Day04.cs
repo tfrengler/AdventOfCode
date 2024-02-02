@@ -17,7 +17,7 @@ namespace AdventOfCode2023.Year2023
 
         public Day04()
         {
-            Input = File.ReadAllLines("Year2023/04.txt");
+            Input = File.ReadAllLines("Input/04.txt");
             Cards = new Dictionary<int, int>(Input.Length);
         }
 

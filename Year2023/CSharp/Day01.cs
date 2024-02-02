@@ -13,7 +13,7 @@ namespace AdventOfCode2023.Year2023
         [TestCase]
         public void Part01()
         {
-            string[] Input = File.ReadAllLines("Year2023/01.txt");
+            string[] Input = File.ReadAllLines("Input/01.txt");
             string[] Input2 = new[]
             {
                 "1abc2",
@@ -45,7 +45,7 @@ namespace AdventOfCode2023.Year2023
         [TestCase]
         public void Part02()
         {
-            string[] Input = File.ReadAllLines("Year2023/01.txt");
+            string[] Input = File.ReadAllLines("Input/01.txt");
             // string[] Input = new[]
             // {
             //     "two1nine",
