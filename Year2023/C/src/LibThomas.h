@@ -8,21 +8,40 @@
 #include "errno.h"
 #include "string.h"
 
+// NOTE: Only useful for stack allocated arrays. Note that strings will be one extra due to the null terminator!
 #define arrayCount(x) (sizeof(x) / sizeof(*x))
 
-typedef int64_t int64;
-typedef int32_t int32;
-typedef int16_t int16;
-typedef int8_t int8;
-typedef unsigned char byte;
+typedef int64_t i64;
+typedef int32_t i32;
+typedef int16_t i16;
+typedef int8_t i8;
+typedef uint64_t u64;
+typedef uint32_t u32;
+typedef uint16_t u16;
+typedef unsigned char u8;
 
 typedef char** arrayOfStrings;
-typedef char *string;
+typedef char* string;
 
-typedef int64_t* arrayOfInt64;
-typedef int32_t* arrayOfInt32;
-typedef int16_t* arrayOfInt16;
-typedef int8_t *arrayOfInt8;
+typedef struct _i32Array {
+    i32 Size;
+    i32* Value;
+} i32Array;
+
+typedef struct _i64Array {
+    i32 Size;
+    i64* Value;
+} i64Array;
+
+typedef struct _i16Array {
+    i32 Size;
+    i16* Value;
+} i16Array;
+
+typedef struct _i8Array {
+    i32 Size;
+    i8* Value;
+} i8Array;
 
 #define DEBUG() 1
 
@@ -59,11 +78,11 @@ string File_Read(char* fileNameAndPath)
     }
 
     fseek(fileHandle, 0, SEEK_END);
-    int64 FileSize = ftell(fileHandle);
+    i64 FileSize = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
     string FileContents = malloc(FileSize+1);
-    int64 Index = 0;
+    i64 Index = 0;
 
     if (FileContents == NULL) {
         Fatal("Error reading file contents. Cannot allocate memory", 1000);
@@ -71,7 +90,7 @@ string File_Read(char* fileNameAndPath)
     }
 
     while (1) {
-        int32 NextChar = fgetc(fileHandle);
+        i32 NextChar = fgetc(fileHandle);
         if (NextChar == EOF) break;
         FileContents[Index] = (char)NextChar;
         Index++;
