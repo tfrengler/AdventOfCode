@@ -8,7 +8,6 @@
                 "-std=c17",
                 "-Wall",
                 "-Wextra",
-                "-Werror",
                 "-Wconversion",
                 "-Wshadow",
                 "-Wundef",
@@ -25,7 +24,8 @@
                 "-Wformat=2",
                 "-g3",
                 "-O0",
-                "${file}",
+                // "${file}",
+                "${workspaceFolder}\\src\\Day01.c",
                 "-o",
                 "${workspaceFolder}\\build\\bin.exe"
             ],

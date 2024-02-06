@@ -1,0 +1,7 @@
+#DisableFormat: true
+IndentWidth: 4
+---
+Language: C
+# Force pointers to the type for C++.
+DerivePointerAlignment: false
+PointerAlignment: Left

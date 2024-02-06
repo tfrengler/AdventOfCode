@@ -1,38 +1,44 @@
-#include "Types.h"
-#include "stdbool.h"
+#include "LibThomas.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include <strings.h>
 
+typedef struct Point {
+    int32 x;
+    int32 y;
+} Point;
+
 // int argCount, arrayOfStrings args
 int main(void)
 {
-    FILE* InputFileHandle = fopen("Input/01.txt", "r");
+    string InputFile = File_Read("Input/01.txt");
 
-    fseek(InputFileHandle, 0, SEEK_END);
-    int64 FileSize = ftell(InputFileHandle);
-    fseek(InputFileHandle, 0, SEEK_SET);
-
-    char Input[FileSize];
-    int64 Index = 0;
-
-    while (1) {
-        if (feof(InputFileHandle)) break;
-        Input[Index] = (char)fgetc(InputFileHandle);
+    int32 Index = 0;
+    while(1)
+    {
+        if (InputFile[Index] == '\0')
+        {
+            DEBUG_PRINT("Size (manual strlen)? %d\n", Index);
+            break;
+        }
         Index++;
-    }
-    Input[Index] = '\0';
-    Index--;
-
-    string token = strtok(Input, "\n");
-
-    while( token != NULL ) {
-        printf( "-%s\n", token ); //printing each token
-        token = strtok(NULL, "\n");
+        if (Index > 30000) break;
     }
 
-    // FILE *OutputFileHandle = fopen("Debug.txt", "w");
-    // fwrite(Input, 1, Index, OutputFileHandle);
+    FILE *OutputFileHandle1 = fopen("Debug1.txt", "w");
+    fwrite(InputFile, 1, Index, OutputFileHandle1);
+
+    int64 FileSize = strlen(InputFile);
+    FILE *OutputFileHandle2 = fopen("Debug2.txt", "w");
+    fwrite(InputFile, 1, FileSize, OutputFileHandle2);
+
+    fclose(OutputFileHandle1);
+    fclose(OutputFileHandle2);
+
+    int TestArray[6] = { 1,2,3,4,5,6 };
+
+    DEBUG_PRINT("ArrayCount count: %d\n", arrayCount(TestArray));
+    DEBUG_PRINT("Filesize (strlen): %d\n", FileSize);
 
     return EXIT_SUCCESS;
 }
