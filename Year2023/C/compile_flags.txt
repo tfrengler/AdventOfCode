@@ -1,9 +1,8 @@
 -std=c17
 -Wall
 -Wextra
--Werror
 -Wconversion
--Wshadow
+-Wshadow-all
 -Wundef
 -Wunreachable-code
 -Wuninitialized
@@ -11,9 +10,12 @@
 -Wno-error=unused-variable
 -Wfloat-equal
 -pedantic-errors
--funsigned-char
+-Wtype-limits
 -Wno-unused-function
 -Wno-sign-conversion
 -Wdouble-promotion
 -Wformat=2
+-Wformat-pedantic
+-Wfor-loop-analysis
 -g3
+-O0

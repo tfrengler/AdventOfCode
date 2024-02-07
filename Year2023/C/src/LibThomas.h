@@ -52,7 +52,7 @@ typedef struct _i8Array {
 #endif
 
 /**
- * @brief  Panics and terminates the program
+ * @brief  Panics and terminates the program, caused by an unrecoverable error
  * @param  message: The message to print to stdout before terminating
  * @param  code: The code to pass to exit()
  * @retval None
@@ -68,7 +68,7 @@ void Fatal(char* message, int code)
  * @param fileNameAndPath: the name and location of the file, including extension
  * @retval A string with the contents of the file or NULL if an error happened (file cannot be opened or malloc failed)
  */
-string File_Read(char* fileNameAndPath)
+string File_ReadAllText(char* fileNameAndPath)
 {
     FILE *fileHandle = fopen(fileNameAndPath, "r");
 
@@ -97,16 +97,18 @@ string File_Read(char* fileNameAndPath)
     }
 
     FileContents[Index+1] = '\0';
-    DEBUG_PRINT("Filesize (index): %d\n", Index+1);
 
-    string ReturnData = malloc(FileSize + 2);
+    // +1 for the null terminator, and +2 because index started at 0
+    i64 FinalSize = Index + 2;
+    string ReturnData = malloc(FinalSize);
 
     if (ReturnData == NULL) {
         Fatal("Error reading file contents. Cannot allocate memory", 1001);
         return NULL;
     }
 
-    strcpy(ReturnData, FileContents);
+    memcpy(ReturnData, FileContents, FinalSize);
+    // strcpy(ReturnData, FileContents);
     free(FileContents);
     fclose(fileHandle);
 
