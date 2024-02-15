@@ -20,11 +20,13 @@ typedef char* string;
 
 static const u16 STRING_MAX_SIZE = 65535;
 
+/* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the nul-terminator.*/
 typedef struct _String {
     u16 Size; // Size is until but not including the line terminator
     char Content[];
 } String;
 
+/* Represents a wrapper around an fixed length array of String*-instances. Count is the amount of structs in Contents, and Contents is the array (ptr to the start)*/
 typedef struct _StringArray {
     i64 Count;
     String* Contents[];
@@ -58,22 +60,9 @@ typedef struct _i8Array {
 # define DEBUG_PRINT(f, ...) do {} while (0)
 #endif
 
-/**
- * @brief  Panics and terminates the program, caused by an unrecoverable error
- * @param  message: The message to print to stdout before terminating
- * @param  code: The code to pass to exit()
- * @retval None
- */
-void Fatal(char* message, int code);
+void Fatal(char* message);
 
-/**
- * Opens a file, and reads out its text content
- * @param fileNameAndPath: the name and location of the file, including extension
- * @retval A string with the contents of the file or NULL if an error happened (file cannot be opened or malloc failed)
- */
-string File_ReadAllText(char* fileNameAndPath);
-
-String* File_ReadAllText_S(char* fileNameAndPath);
+String* File_ReadAllText(char* fileNameAndPath);
 
 StringArray* File_ReadAllLines(char* fileNameAndPath);
 

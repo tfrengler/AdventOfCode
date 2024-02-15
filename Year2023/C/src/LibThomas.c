@@ -3,19 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "errno.h"
 
-void Fatal(char* message, int code)
+/**
+ * @brief  Panics and terminates the program with EXIT_FAILURE, caused by an unrecoverable error.
+ * @param  message: The message to print to perror.
+ * @retval None
+ */
+void Fatal(char* message)
 {
+    if (errno == 0) errno = EBADMSG;
     perror(message);
-
-    exit(code);
+    exit(EXIT_FAILURE);
 }
 
 /**
- * @brief  Creates an instance of String. Content is memcopied so make sure to free() content if heap allocated!
- * @param  content: A reference to the string (char-array) that represents the string (including the nul-terminator)
- * @param  size: The size of the string MINUS the nul-terminator
- * @retval A pointer to the newly created String wrapped around the C-string
+ * @brief  Creates an instance of String around a char*. The original string is copied so it is safe to free it afterwards.
+ * @param  content: A reference to the string (char-array) that represents the string (including the nul-terminator).
+ * @param  size: The size of the string MINUS the nul-terminator.
+ * @retval A pointer to the newly created String wrapped around the C-string.
  */
 String* String_Make(char* content, u16 size)
 {
@@ -27,7 +33,7 @@ String* String_Make(char* content, u16 size)
 
     String* ReturnData = malloc(sizeof(struct _String) + sizeof(char[size+1]));
 #if DEBUG()
-    if (ReturnData == NULL) Fatal("Failed to malloc memory for String*", 1000);
+    if (ReturnData == NULL) Fatal("Failed to malloc memory for String*");
 #endif
     ReturnData->Size = size;
     memcpy(ReturnData->Content, content, size+1);
@@ -35,61 +41,31 @@ String* String_Make(char* content, u16 size)
     return ReturnData;
 }
 
-string File_ReadAllText(char* fileNameAndPath)
+/**
+ * @brief  Creates an empty string.
+ * @retval An instance of String where Size = 0 and Content = nullptr.
+ */
+String* String_Empty(void)
 {
-    FILE *fileHandle = fopen(fileNameAndPath, "r");
-
-    if (fileHandle == NULL) {
-        puts("Error reading file contents. File or directory not found");
-        return NULL;
-    }
-
-    fseek(fileHandle, 0, SEEK_END);
-    i64 FileSize = ftell(fileHandle);
-    fseek(fileHandle, 0, SEEK_SET);
-
-    string FileContents = malloc(FileSize+1);
-    i64 Index = 0;
-
+    String* ReturnData = malloc(sizeof(struct _String));
 #if DEBUG()
-    if (FileContents == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1000);
-    }
+    if (ReturnData == NULL) Fatal("Failed to malloc memory for String*");
 #endif
-
-    while (1) {
-        i32 NextChar = fgetc(fileHandle);
-        if (NextChar == EOF) break;
-        FileContents[Index] = (char)NextChar;
-        Index++;
-    }
-
-    FileContents[Index+1] = '\0';
-
-    // +1 for the null terminator, and +2 because index started at 0
-    i64 FinalSize = Index + 2;
-    string ReturnData = malloc(FinalSize);
-
-#if DEBUG()
-    if (ReturnData == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1001);
-        return NULL;
-    }
-#endif
-
-    memcpy(ReturnData, FileContents, FinalSize);
-    free(FileContents);
-    fclose(fileHandle);
-
+    ReturnData->Size = 0;
     return ReturnData;
 }
 
-String* File_ReadAllText_S(char* fileNameAndPath)
+/**
+ * @brief  Opens a text file, reads all the content, closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
+ * @param  fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
+ * @retval A String-instance representing the contents of the file.
+ */
+String* File_ReadAllText(char* fileNameAndPath)
 {
     FILE *fileHandle = fopen(fileNameAndPath, "r");
 
     if (fileHandle == NULL) {
-        puts("Error reading file contents. File or directory not found");
+        puts("Unable to read all text from file");
         return NULL;
     }
 
@@ -102,40 +78,56 @@ String* File_ReadAllText_S(char* fileNameAndPath)
 
 #if DEBUG()
     if (FileContents == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1001);
+        Fatal("Error reading file contents. Cannot allocate memory");
     }
 #endif
 
     while (1) {
         i32 NextChar = fgetc(fileHandle);
         if (NextChar == EOF) break;
+
+        if ((NextChar & ~127) > 0)
+        {
+            char ErrorMessage[100];
+            sprintf(ErrorMessage, "Index, %n, Char: %n", Index, NextChar);
+            Fatal(strcat("Error reading all text from file as character was not a valid ASCI char: ", ErrorMessage));
+        }
+
         FileContents[Index] = (char)NextChar;
         Index++;
 
-        if ((Index-2) > STRING_MAX_SIZE)
+        if (Index > STRING_MAX_SIZE)
         {
-            Fatal("Text file content larger than max size string", 1000);
+            Fatal("Text file content larger than max size string");
         }
     }
 
-    FileContents[Index+1] = '\0';
-
-    // +1 for the null terminator, and +2 because index started at 0
-    u16 FinalSizeWithTerminator = (u16)Index + 2;
 #if DEBUG()
-    assert(FinalSizeWithTerminator <= STRING_MAX_SIZE);
+    int CloseStatus = fclose(fileHandle);
+    if (CloseStatus == EOF) Fatal("Error closing file after reading");
+#else
+    fclose(fileHandle)
 #endif
 
-    FileContents = realloc(FileContents, FinalSizeWithTerminator);
-
-#if DEBUG()
-    if (FileContents == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1001);
-        return NULL;
+    if (Index == 0)
+    {
+        return String_Empty();
     }
-#endif
 
-    fclose(fileHandle);
+    FileContents[Index] = '\0';
+    u16 FinalSizeWithTerminator = (u16)Index + 1;
+
+    if (FinalSizeWithTerminator > FileSize)
+    {
+        FileContents = realloc(FileContents, FinalSizeWithTerminator);
+#if DEBUG()
+        if (FileContents == NULL) {
+            Fatal("Error reading text file contents. Cannot allocate memory");
+            return NULL;
+        }
+#endif
+    }
+
     String* ReturnData = String_Make(FileContents, FinalSizeWithTerminator-1);
     free(FileContents);
 
@@ -144,7 +136,7 @@ String* File_ReadAllText_S(char* fileNameAndPath)
 
 StringArray* File_ReadAllLines(char* fileNameAndPath)
 {
-    String* StringData = File_ReadAllText_S(fileNameAndPath);
+    String* StringData = File_ReadAllText(fileNameAndPath);
     if (StringData == NULL) return NULL;
 
     if (StringData->Size == 0)
@@ -157,7 +149,7 @@ StringArray* File_ReadAllLines(char* fileNameAndPath)
     i32 LineCount = 1;
     for(i32 Index = 0; Index < StringData->Size; Index++)
     {
-        if (StringData->Content[Index] == '\n')
+        if (StringData->Content[Index] == '\n' || StringData->Content[Index] == EOF)
         {
             LineCount++;
         }
@@ -165,7 +157,7 @@ StringArray* File_ReadAllLines(char* fileNameAndPath)
 
     StringArray* ReturnData = malloc(sizeof(String) + sizeof(String*[LineCount]));
 #if DEBUG()
-    if (ReturnData == NULL) Fatal("Failed to allocate memory for StringArray return data in File_ReadAllLines", 666);
+    if (ReturnData == NULL) Fatal("Failed to allocate memory for StringArray return data in File_ReadAllLines");
 #endif
 
     ReturnData->Count = LineCount;
@@ -173,35 +165,48 @@ StringArray* File_ReadAllLines(char* fileNameAndPath)
     i32 StringStartIndex = 0;
     i32 StringLength = 0;
 
-    /*for(i32 IndexOuter = 0; IndexOuter <= LineCount; IndexOuter++)
+    // StringStartIndex = 0
+    // Index   = 01234567
+    // Content = ABCDEFG\n
+    // ~~~~~~^6
+    // From index 0 read 6 bytes
+    for(i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++)
     {
         for(i32 IndexInner = StringStartIndex; IndexInner <= StringData->Size; IndexInner++)
         {
-            if (StringData->Content[IndexInner] == '\n')
+            if (StringLength > STRING_MAX_SIZE)
+            {
+                Fatal("Text file content larger than max size string");
+            }
+
+            char CurrentChar = StringData->Content[IndexInner];
+            if (CurrentChar == '\n' || CurrentChar == '\0')
             {
                 break;
             }
+
             StringLength++;
         }
 
-        String* Current = malloc(sizeof(struct _String));
-        Current->Size = StringLength;
-        //Current->Content = test;
-        ReturnData->Contents[0] = Current;
+        if (StringLength == 0)
+        {
+            StringStartIndex++;
+            StringLength = 0;
+            continue;
+        }
 
-        int debug = 42;
-        break;
-        *String* Current = malloc(sizeof(String));
-        CheckMalloc(Current);
+        char LocalString[StringLength+1];
+        memcpy(LocalString, &StringData->Content[StringStartIndex], StringLength);
+        LocalString[StringLength] = '\0';
 
-        Current->Size = StringEndIndex - StringStartIndex;
-        Current->Content = malloc(Current->Size + 1);
-        CheckMalloc(Current->Content);
+        String* CurrentContentData = String_Make(LocalString, (u16)StringLength);
+        ReturnData->Contents[IndexOuter] = CurrentContentData;
 
-        ReturnData->Contents[IndexOuter] = *Current;
-    }*/
+        StringStartIndex = StringStartIndex + StringLength + 1;
+        StringLength = 0;
+    }
 
-    return NULL;
+    return ReturnData;
 }
 
 
