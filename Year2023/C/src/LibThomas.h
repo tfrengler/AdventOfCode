@@ -1,12 +1,7 @@
-#ifndef _TYPES_H_
-#define _TYPES_H_
+#ifndef LIB_THOMAS_H
+#define LIB_THOMAS_H
 
-#include <assert.h>
-#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include "errno.h"
-#include "string.h"
 
 // NOTE: Only useful for stack allocated arrays. Note that strings will be one extra due to the null terminator!
 #define arrayCount(x) (sizeof(x) / sizeof(*x))
@@ -23,23 +18,35 @@ typedef unsigned char u8;
 typedef char** arrayOfStrings;
 typedef char* string;
 
+static const u16 STRING_MAX_SIZE = 65535;
+
+typedef struct _String {
+    u16 Size; // Size is until but not including the line terminator
+    char Content[];
+} String;
+
+typedef struct _StringArray {
+    i64 Count;
+    String* Contents[];
+} StringArray;
+
 typedef struct _i32Array {
-    i32 Size;
+    i64 Size;
     i32* Value;
 } i32Array;
 
 typedef struct _i64Array {
-    i32 Size;
+    i64 Size;
     i64* Value;
 } i64Array;
 
 typedef struct _i16Array {
-    i32 Size;
+    i64 Size;
     i16* Value;
 } i16Array;
 
 typedef struct _i8Array {
-    i32 Size;
+    i64 Size;
     i8* Value;
 } i8Array;
 
@@ -57,62 +64,19 @@ typedef struct _i8Array {
  * @param  code: The code to pass to exit()
  * @retval None
  */
-void Fatal(char* message, int code)
-{
-    perror(message);
-    exit(code);
-}
+void Fatal(char* message, int code);
 
 /**
  * Opens a file, and reads out its text content
  * @param fileNameAndPath: the name and location of the file, including extension
  * @retval A string with the contents of the file or NULL if an error happened (file cannot be opened or malloc failed)
  */
-string File_ReadAllText(char* fileNameAndPath)
-{
-    FILE *fileHandle = fopen(fileNameAndPath, "r");
+string File_ReadAllText(char* fileNameAndPath);
 
-    if (fileHandle == NULL) {
-        Fatal("Error reading file contents. File or directory not found", errno);
-        return NULL;
-    }
+String* File_ReadAllText_S(char* fileNameAndPath);
 
-    fseek(fileHandle, 0, SEEK_END);
-    i64 FileSize = ftell(fileHandle);
-    fseek(fileHandle, 0, SEEK_SET);
+StringArray* File_ReadAllLines(char* fileNameAndPath);
 
-    string FileContents = malloc(FileSize+1);
-    i64 Index = 0;
-
-    if (FileContents == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1000);
-        return NULL;
-    }
-
-    while (1) {
-        i32 NextChar = fgetc(fileHandle);
-        if (NextChar == EOF) break;
-        FileContents[Index] = (char)NextChar;
-        Index++;
-    }
-
-    FileContents[Index+1] = '\0';
-
-    // +1 for the null terminator, and +2 because index started at 0
-    i64 FinalSize = Index + 2;
-    string ReturnData = malloc(FinalSize);
-
-    if (ReturnData == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory", 1001);
-        return NULL;
-    }
-
-    memcpy(ReturnData, FileContents, FinalSize);
-    // strcpy(ReturnData, FileContents);
-    free(FileContents);
-    fclose(fileHandle);
-
-    return ReturnData;
-}
+String* String_Make(char* content, u16 size);
 
 #endif

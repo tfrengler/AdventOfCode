@@ -2,28 +2,13 @@
 #include "stdlib.h"
 #include <strings.h>
 
-typedef struct _StringTest {
-    char* Value;
-} StringTest;
-
 int main(void)
 {
-    // string InputFile = File_Read("Input/01.txt");
+    String* Input = File_ReadAllText_S("src/Debug.txt");
 
-    StringTest test;
-    test.Value = "test";
-    
-    printf("main: %p\n", &test.Value);
+    //File_ReadAllLines("Input/01.txt");
 
     return EXIT_SUCCESS;
 }
 
-void func1(StringTest input)
-{
-    printf("func1: %p\n", input.Value);
-}
 
-void func2(StringTest* input)
-{
-    printf("func1: %p\n", &input->Value);
-}

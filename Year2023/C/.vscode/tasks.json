@@ -27,6 +27,7 @@
                 "-g3",
                 "-O0",
                 // "${file}",
+                "${workspaceFolder}\\src\\LibThomas.c",
                 "${workspaceFolder}\\src\\Day01.c",
                 "-o",
                 "${workspaceFolder}\\build\\bin.exe"
