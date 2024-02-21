@@ -10,7 +10,7 @@ int main(void)
     i32 PartOneAnswer = 0;
 
     char Buffer[3];
-    memset(&Buffer, -1, 2);
+    memset(&Buffer, 0, 2);
     Buffer[2] = '\0';
     int BufferIndex = 0;
 
@@ -28,10 +28,10 @@ int main(void)
             }
         }
 
+        if (Buffer[1] == 0) Buffer[1] = Buffer[0];
         i32 CalibrationNumber = atoi(Buffer);
-        //printf("CalibrationNumber: %i\n", CalibrationNumber);
 
-        memset(&Buffer, -1, 2);
+        memset(&Buffer, 0, 2);
         BufferIndex = 0;
 
         PartOneAnswer += CalibrationNumber;
