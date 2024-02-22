@@ -7,7 +7,7 @@
 int main(void)
 {
     StringArray* Input = File_ReadAllLines("Input/01.txt");
-    i32 PartOneAnswer = 0;
+    i32 PartAnswer = 0;
 
     char Buffer[3];
     memset(&Buffer, 0, 2);
@@ -34,12 +34,12 @@ int main(void)
         memset(&Buffer, 0, 2);
         BufferIndex = 0;
 
-        PartOneAnswer += CalibrationNumber;
+        PartAnswer += CalibrationNumber;
         //if (LineIndex == 10) break;
     }
 
-    printf("Part one answer: %i\n", PartOneAnswer);
-    assert(PartOneAnswer == 55621);
+    printf("Part answer: %i\n", PartAnswer);
+    assert(PartAnswer == 55621);
 
     return EXIT_SUCCESS;
 }
