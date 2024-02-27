@@ -20,10 +20,10 @@ typedef char* string;
 
 static const u16 STRING_MAX_SIZE = 65535;
 
-/* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the nul-terminator.*/
+/* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the null-terminator.*/
 typedef struct _String {
     u16 Size; // Size is until but not including the line terminator
-    char Content[];
+    char* Content;
 } String;
 
 /* Represents a wrapper around an fixed length array of String*-instances. Count is the amount of structs in Contents, and Contents is the array (ptr to the start)*/
@@ -62,10 +62,11 @@ typedef struct _i8Array {
 
 void Fatal(char* message);
 
-String* File_ReadAllText(char* fileNameAndPath);
+String* File_ReadAllText(const char* fileNameAndPath);
+StringArray* File_ReadAllLines(const char* fileNameAndPath);
 
-StringArray* File_ReadAllLines(char* fileNameAndPath);
-
-String* String_Make(char* content, u16 size);
+String* String_Make(const char* content, u16 size);
+String* String_Empty(void);
+u8 String_StartsWith(const String* input, const String* pattern);
 
 #endif

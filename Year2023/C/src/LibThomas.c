@@ -1,5 +1,6 @@
 #include "LibThomas.h"
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,12 +19,66 @@ void Fatal(char* message)
 }
 
 /**
- * @brief  Creates an instance of String around a char*. The original string is copied so it is safe to free it afterwards.
- * @param  content: A reference to the string (char-array) that represents the string (including the nul-terminator).
- * @param  size: The size of the string MINUS the nul-terminator.
+ * @brief  Checks whether a given input string starts with a given string pattern. Case-sensitive.
+ * @param  input: The input string to check
+ * @param  pattern: The pattern to check for.
+ * @retval 1 if input starts with pattern, 0 otherwise.
+ */
+u8 String_StartsWith(const String* input, const String* pattern)
+{
+#if DEBUG()
+    if (input == NULL || pattern == NULL) Fatal("String_StartsWith: argument 'input' or 'pattern' is NULL");
+#endif
+
+    if (pattern->Size > input->Size) return 0;
+
+    for(i32 Index = 0; Index < pattern->Size; Index++)
+    {
+        if (input->Content[Index] != pattern->Content[Index])
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+u8 String_Compare(const String* original, const String* compare, u8 caseInsensitive)
+{
+#if DEBUG()
+    if (original == NULL || compare == NULL) Fatal("String_Compare: argument 'original' or 'compare' is NULL");
+#endif
+
+    if (original->Size == 0 || compare->Size == 0) return 0;
+    if (compare->Size != original->Size) return 0;
+
+    for(i32 Index = 0; Index < original->Size; Index++)
+    {
+        char CurrentOriginalChar = original->Content[Index];
+        char CurrentCompareChar = compare->Content[Index];
+        
+        if (caseInsensitive)
+        {
+            CurrentOriginalChar = (char)tolower(CurrentOriginalChar);
+            CurrentCompareChar = (char)tolower(CurrentCompareChar);
+        }
+
+        if (CurrentOriginalChar != CurrentCompareChar)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+/**
+ * @brief  Creates a heap-allocated instance of String around a char*. The original string is copied so it is safe to free it afterwards.
+ * @param  content: A reference to the string (char-array) that represents the string (including the null-terminator).
+ * @param  size: The size of the string MINUS the null-terminator. Must be greater than 0.
  * @retval A pointer to the newly created String wrapped around the C-string.
  */
-String* String_Make(char* content, u16 size)
+String* String_Make(const char* content, u16 size)
 {
 #if DEBUG()
     assert(content != NULL);
@@ -31,13 +86,21 @@ String* String_Make(char* content, u16 size)
     assert(content[size] == '\0');
 #endif
 
-    String* ReturnData = malloc(sizeof(struct _String) + sizeof(char[size+1]));
+    String* ReturnData = malloc(sizeof(struct _String));
+
 #if DEBUG()
     if (ReturnData == NULL) Fatal("Failed to malloc memory for String*");
 #endif
-    ReturnData->Size = size;
+
+    ReturnData->Content = malloc(size+1);
+
+#if DEBUG()
+    if (ReturnData->Content == NULL) Fatal("Failed to malloc memory for String->Content");
+#endif
+
     memcpy(ReturnData->Content, content, size+1);
 
+    ReturnData->Size = size;
     return ReturnData;
 }
 
@@ -60,7 +123,7 @@ String* String_Empty(void)
  * @param  fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
  * @retval A String-instance representing the contents of the file.
  */
-String* File_ReadAllText(char* fileNameAndPath)
+String* File_ReadAllText(const char* fileNameAndPath)
 {
     FILE *fileHandle = fopen(fileNameAndPath, "r");
 
@@ -104,7 +167,7 @@ String* File_ReadAllText(char* fileNameAndPath)
 
 #if DEBUG()
     int CloseStatus = fclose(fileHandle);
-    if (CloseStatus == EOF) Fatal("Error closing file after reading");
+    if (CloseStatus == -1) Fatal("Error closing file after reading");
 #else
     fclose(fileHandle)
 #endif
@@ -134,7 +197,7 @@ String* File_ReadAllText(char* fileNameAndPath)
     return ReturnData;
 }
 
-StringArray* File_ReadAllLines(char* fileNameAndPath)
+StringArray* File_ReadAllLines(const char* fileNameAndPath)
 {
     String* StringData = File_ReadAllText(fileNameAndPath);
     if (StringData == NULL) return NULL;
@@ -208,5 +271,3 @@ StringArray* File_ReadAllLines(char* fileNameAndPath)
 
     return ReturnData;
 }
-
-

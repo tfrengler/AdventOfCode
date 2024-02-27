@@ -26,9 +26,9 @@
                 "-Wfor-loop-analysis",
                 "-g3",
                 "-O0",
-                // "${file}",
+                "${file}",
+                // "${workspaceFolder}\\src\\Day01Part2.c",
                 "${workspaceFolder}\\src\\LibThomas.c",
-                "${workspaceFolder}\\src\\Day01Part2.c",
                 "-o",
                 "${workspaceFolder}\\build\\bin.exe"
             ],
