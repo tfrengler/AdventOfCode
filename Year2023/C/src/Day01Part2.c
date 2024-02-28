@@ -13,7 +13,7 @@ typedef struct _PatternTestResult
 
 PatternTestResult* TestPattern(const String* input, const String* pattern, char returnOnSuccess)
 {
-    u8 Result = String_StartsWith(input, pattern);
+    u8 Result = String_StartsWith(input, pattern, 0);
     if (!Result) return NULL;
 
     PatternTestResult* ReturnData = malloc(sizeof(PatternTestResult));

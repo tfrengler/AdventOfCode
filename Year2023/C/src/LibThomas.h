@@ -64,9 +64,13 @@ void Fatal(char* message);
 
 String* File_ReadAllText(const char* fileNameAndPath);
 StringArray* File_ReadAllLines(const char* fileNameAndPath);
+void String_Free(String* input);
+void StringArray_Free(StringArray* input);
 
 String* String_Make(const char* content, u16 size);
 String* String_Empty(void);
-u8 String_StartsWith(const String* input, const String* pattern);
+u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive);
+u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive);
+u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitive);
 
 #endif
