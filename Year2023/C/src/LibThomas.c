@@ -382,6 +382,7 @@ StringArray* File_ReadAllLines(const char* fileNameAndPath)
         StringLength = 0;
     }
 
+    String_Free(StringData);
     return ReturnData;
 }
 
