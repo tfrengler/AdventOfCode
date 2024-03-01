@@ -1,12 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AdventOfCode2023.Year2023
 {
@@ -15,9 +15,6 @@ namespace AdventOfCode2023.Year2023
     public class Day05
     {
         readonly string[] Input;
-
-        Regex DigitRegex = new Regex(@"(\d+)");
-
         long[] Seeds;
 
         ValueTuple<long, long, long>[] SeedToSoilMap;
@@ -70,29 +67,14 @@ namespace AdventOfCode2023.Year2023
                 "60 56 37",
                 "56 93 4"
             };*/
-        }
 
-        static long CalculateDestinationIndex(in List<ValueTuple<long, long, long>> map, long input)
-        {
-            long ReturnData = 0;
-
-            foreach (var (dest, source, range) in map)
-            {
-                if (input >= source && input < (source + range))
-                {
-                    ReturnData = (dest - source) + input;
-                    break;
-                }
-                else
-                {
-                    ReturnData = input;
-                }
-            }
-            return ReturnData;
+            ParseSeeds();
+            ParseMaps();
         }
 
         void ParseSeeds()
         {
+            Regex DigitRegex = new Regex(@"(\d+)");
             var DigitMatches = DigitRegex.Matches(Input[0]);
             Seeds = DigitMatches.Select(x => x.Groups[0].Value).Select(x => Convert.ToInt64(x)).ToArray();
         }
@@ -165,16 +147,14 @@ namespace AdventOfCode2023.Year2023
             };
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         long CalculateLocation(long input)
         {
             long ReturnData = input;
             for (int ChainIndex = 0; ChainIndex < MapsInOrder.Length; ChainIndex++)
             {
-                var CurrentMap = MapsInOrder[ChainIndex];
+                ValueTuple<long,long,long>[] CurrentMap = MapsInOrder[ChainIndex];
                 for (int MapIndex = 0; MapIndex < CurrentMap.Length; MapIndex++)
                 {
-
                     (long Dest, long Source, long Range) = CurrentMap[MapIndex];
 
                     if (ReturnData >= Source && ReturnData < (Source + Range))
@@ -191,15 +171,6 @@ namespace AdventOfCode2023.Year2023
         [TestCase]
         public void Part01()
         {
-            ParseSeeds();
-            ParseMaps();
-
-            /*
-            Debug.Assert(Seeds.Length == 4);
-            Debug.Assert(SeedToSoilMap.Count == 2, string.Join(Environment.NewLine, SeedToSoilMap));
-            Debug.Assert(SeedToSoilMap[0] == ValueTuple.Create(50,98,2));
-            Debug.Assert(SeedToSoilMap[1] == ValueTuple.Create(52,50,48));*/
-
             /* seeds: 79 14 55 13
 
             seed-to-soil map:
@@ -215,9 +186,6 @@ namespace AdventOfCode2023.Year2023
 
             Expected soil results: 81, 14, 57, 13
             */
-
-            //Span<long> Locations = ParseAndCalculateLocations(Seeds);
-            //long FinalValue = Locations.ToArray().Min();
 
             long Location;
             long FinalValue = long.MaxValue;
@@ -235,11 +203,10 @@ namespace AdventOfCode2023.Year2023
         [TestCase]
         public void Part02()
         {
-            ParseSeeds();
-            ParseMaps();
-
             Trace.Assert(Seeds.Length % 2 == 0);
 
+            // Should be 10 so safe to allocate on stack.
+            // Would could lay this out in a flat array of longs but grouping by tuples give us more safety and it is still cache-friendly.
             Span<ValueTuple<long, long>> SeedsAndRanges = stackalloc ValueTuple<long, long>[Seeds.Length / 2];
             long FinalValue = long.MaxValue;
             long Location;
@@ -271,8 +238,129 @@ namespace AdventOfCode2023.Year2023
                 //if (SeedIndex == 1) break;
                 SeedIndex++;
             }
-
+             
             // 896125601 for seed range 0
+            // 2.1 min in Release mode
+            Console.WriteLine(FinalValue);
+            Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
+        }
+
+        [TestCase]
+        public void Part02_Variation01()
+        {
+            Trace.Assert(Seeds.Length % 2 == 0);
+
+            // Should be 10 so safe to allocate on stack.
+            // Would could lay this out in a flat array of longs but grouping by tuples give us more safety and it is still cache-friendly.
+            List<ValueTuple<long, long>> SeedsAndRanges = new List<ValueTuple<long, long>>(Seeds.Length / 2);
+            long FinalValue = long.MaxValue;
+
+            int SeedRangeIndex = 0;
+            for (int Index = 0; Index < Seeds.Length; Index += 2, SeedRangeIndex++)
+            {
+                long SeedStart = Seeds[Index];
+                long SeedRange = Seeds[Index + 1];
+
+                SeedsAndRanges.Add(ValueTuple.Create(SeedStart, SeedRange));
+            }
+
+            var Locations = new ConcurrentBag<long>();
+            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 8 };
+            var Timer = Stopwatch.StartNew();
+
+            Parallel.ForEach(SeedsAndRanges, Options, (x, _, _) =>
+            {
+                long MinValue = long.MaxValue;
+                (long SeedStart, long SeedRange) = x;
+
+                long SeedMaxExclusive = SeedStart + SeedRange;
+                for (long CurrentSeed = SeedStart; CurrentSeed < SeedMaxExclusive; CurrentSeed++)
+                {
+                    long Location = CalculateLocation(CurrentSeed);
+                    MinValue = Location < MinValue ? Location : MinValue;
+                }
+
+                Locations.Add(MinValue);
+            });
+
+            Console.WriteLine("Seed to location calculation time: " + Timer.Elapsed);
+            FinalValue = Locations.Min();
+            // 896125601 for seed range 0
+            // 1.4 min in Release mode
+            Console.WriteLine(FinalValue);
+            Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
+        }
+
+        [TestCase]
+        public void Part02_Variation02()
+        {
+            Trace.Assert(Seeds.Length % 2 == 0);
+            const long RangeSplit = 10_000_000L;
+
+            // Should be 10 so safe to allocate on stack.
+            // Would could lay this out in a flat array of longs but grouping by tuples give us more safety and it is still cache-friendly.
+            List<ValueTuple<long, long>> SeedsAndRanges = new List<ValueTuple<long, long>>();
+            long FinalValue = long.MaxValue;
+
+            int SeedRangeIndex = 0;
+            for (int Index = 0; Index < Seeds.Length; Index += 2, SeedRangeIndex++)
+            {
+                long SeedStart = Seeds[Index];
+                long SeedRange = Seeds[Index + 1];
+
+                if (SeedRange < RangeSplit)
+                {
+                    SeedsAndRanges.Add(ValueTuple.Create(SeedStart, SeedRange));
+                    continue;
+                }
+
+                long Ranges = SeedRange / RangeSplit;
+                long Overflow = SeedRange % RangeSplit;
+                long CurrentRangeStart = SeedStart;
+
+                while (Ranges > 0)
+                {
+                    long CurrentRange;
+
+                    if (Ranges == 1 && Overflow > 0)
+                    {
+                        CurrentRange = RangeSplit + Overflow;
+                    }
+                    else
+                    {
+                        CurrentRange = RangeSplit;
+                    }
+
+                    SeedsAndRanges.Add(ValueTuple.Create(CurrentRangeStart, CurrentRange));
+                    CurrentRangeStart = CurrentRangeStart + RangeSplit + 1;
+                    Ranges--;
+                }
+            }
+
+            var Locations = new ConcurrentBag<long>();
+            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 8 };
+            var Timer = Stopwatch.StartNew();
+
+            Parallel.ForEach(SeedsAndRanges, Options, (x, _, _) =>
+            {
+                long MinValue = long.MaxValue;
+                (long SeedStart, long SeedRange) = x;
+
+                long SeedMaxExclusive = SeedStart + SeedRange;
+                for (long CurrentSeed = SeedStart; CurrentSeed < SeedMaxExclusive; CurrentSeed++)
+                {
+                    long Location = CalculateLocation(CurrentSeed);
+                    MinValue = Location < MinValue ? Location : MinValue;
+                }
+
+                Locations.Add(MinValue);
+            });
+
+            Console.WriteLine("Seed to location calculation time: " + Timer.Elapsed);
+            FinalValue = Locations.Min();
+            // 896125601 for seed range 0
+            // 29 seconds in Release mode
+
             Console.WriteLine(FinalValue);
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
         }
