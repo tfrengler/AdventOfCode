@@ -37,25 +37,16 @@ namespace AdventOfCode2023.Year2023
 
         public readonly struct PartNumber
         {
-            public PartNumber(int value, int position, int row, char symbol, int symbolPosition)
+            public PartNumber(int value, char symbol, int symbolPosition)
             {
                 Value = value;
-                Position = position;
-                Row = row;
                 Symbol = symbol;
                 SymbolPosition = symbolPosition;
             }
 
-            public int Value { get; }
-            public int Position { get; }
-            public int Row { get; }
-            public char Symbol { get; }
-            public int SymbolPosition { get; }
-
-            public override string ToString()
-            {
-                return $"Value: {Value} | Position = x:{Position}, r:{Row} | Symbol: {Symbol} ({SymbolPosition})";
-            }
+            public readonly int Value;
+            public readonly char Symbol;
+            public readonly int SymbolPosition;
         }
 
         readonly char[] Input;
@@ -69,7 +60,7 @@ namespace AdventOfCode2023.Year2023
         public void Part01()
         {
             var Result = Part01_Result();
-            Console.WriteLine(Result);
+            Console.WriteLine(Result.Item1);
             Trace.Assert(Result.Item1 == 538046, "Expected solution to be 538046 but it was " + Result);
         }
 
@@ -108,7 +99,7 @@ namespace AdventOfCode2023.Year2023
                 {
                     int Number = int.Parse(NumberBuffer);
                     FinalValue += Number;
-                    Schematic.Add(new PartNumber(Number, NumberStartIndex, NumberStartIndex / ColumnWidth, result.Value, result.Position));
+                    Schematic.Add(new PartNumber(Number, result.Value, result.Position));
                 }
 
                 NumberBuffer[0] = char.MinValue;
@@ -118,6 +109,7 @@ namespace AdventOfCode2023.Year2023
                 NumberStartIndex = 0;
             }
 
+            Console.WriteLine("Schematic parts: " + Schematic.Count);
             return ValueTuple.Create(FinalValue, Schematic);
         }
 
