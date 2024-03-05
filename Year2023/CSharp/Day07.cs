@@ -36,29 +36,15 @@ namespace AdventOfCode2023.Year2023
             HighCard = 1
         }
 
-        readonly Dictionary<char, byte> CardValues = new()
-        {
-            { 'A', 13 },
-            { 'K', 12 },
-            { 'Q', 11 },
-            { 'J', 10 },
-            { 'T', 9 },
-            { '9', 8 },
-            { '8', 7 },
-            { '7', 6 },
-            { '6', 5 },
-            { '5', 4 },
-            { '4', 3 },
-            { '3', 2 },
-            { '2', 1 }
-        };
+        Dictionary<char, byte> CardValues;
 
-        Hand[] Hands;
+        readonly Hand[] Hands;
 
         public Day07()
         {
             Input = File.ReadAllLines("Input/07.txt");
 
+            // Part 1 test data
             /*Input = new string[]
             {
                 "2345A 1",      // 00 High card
@@ -83,12 +69,30 @@ namespace AdventOfCode2023.Year2023
             };*/
 
             // Part 1 = 6592 for test input
+
+            Hands = new Hand[Input.Length];
         }
 
         [TestCase]
         public void Part01()
         {
-            Hands = new Hand[Input.Length];
+            CardValues = new()
+            {
+                { 'A', 13 },
+                { 'K', 12 },
+                { 'Q', 11 },
+                { 'J', 10 },
+                { 'T', 9 },
+                { '9', 8 },
+                { '8', 7 },
+                { '7', 6 },
+                { '6', 5 },
+                { '5', 4 },
+                { '4', 3 },
+                { '3', 2 },
+                { '2', 1 }
+            };
+
             int HandInsertIndex = 0;
 
             Span<byte> CardBuffer = stackalloc byte[13];
@@ -197,13 +201,10 @@ namespace AdventOfCode2023.Year2023
             List<Hand> HandsOrdered = Hands.ToList();
             HandsOrdered.Sort((x, y) =>
             {
-                if (x.Type != y.Type)
-                {
-                    byte xValue = (byte)x.Type;
-                    byte yValue = (byte)y.Type;
-                    if (xValue < yValue) return -1;
-                    if (xValue > yValue) return 1;
-                }
+                byte xTypeValue = (byte)x.Type;
+                byte yTypeValue = (byte)y.Type;
+                if (xTypeValue < yTypeValue) return -1;
+                if (xTypeValue > yTypeValue) return 1;
 
                 for (int Index = 0; Index < x.CardValues.Length; Index++)
                 {
@@ -254,7 +255,24 @@ namespace AdventOfCode2023.Year2023
         [TestCase]
         public void Part02()
         {
-            throw new NotImplementedException();
+            CardValues = new()
+            {
+                { 'A', 12 },
+                { 'K', 11 },
+                { 'Q', 10 },
+                { 'T', 9 },
+                { '9', 8 },
+                { '8', 7 },
+                { '7', 6 },
+                { '6', 5 },
+                { '5', 4 },
+                { '4', 3 },
+                { '3', 2 },
+                { '2', 1 },
+                { 'J', 0 }
+            };
+
+            throw new NotImplementedException("Not finished");
         }
     }
 }
