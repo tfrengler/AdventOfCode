@@ -16,7 +16,7 @@ PatternTestResult* TestPattern(const String* input, const String* pattern, char 
     u8 Result = String_StartsWith(input, pattern, 0);
     if (!Result) return NULL;
 
-    PatternTestResult* ReturnData = malloc(sizeof(PatternTestResult));
+    PatternTestResult* ReturnData = malloc(sizeof(*ReturnData));
     #if DEBUG()
         if (ReturnData == NULL) Fatal("Failed to malloc memory for PatternTestResult*");
     #endif
@@ -30,61 +30,78 @@ PatternTestResult* TestPattern(const String* input, const String* pattern, char 
 PatternTestResult* Test1(const String* input)
 {
     String* Pattern = String_Make("one", 3);
-    return TestPattern(input, Pattern, '1');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '1');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test2(const String* input)
 {
     String* Pattern = String_Make("two", 3);
-    return TestPattern(input, Pattern, '2');
+    PatternTestResult* ReturnData =  TestPattern(input, Pattern, '2');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test3(const String* input)
 {
     String* Pattern = String_Make("three", 5);
-    return TestPattern(input, Pattern, '3');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '3');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test4(const String* input)
 {
     String* Pattern = String_Make("four", 4);
-    return TestPattern(input, Pattern, '4');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '4');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test5(const String* input)
 {
     String* Pattern = String_Make("five", 4);
-    return TestPattern(input, Pattern, '5');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '5');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test6(const String* input)
 {
     String* Pattern = String_Make("six", 3);
-    return TestPattern(input, Pattern, '6');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '6');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test7(const String* input)
 {
     String* Pattern = String_Make("seven", 5);
-    return TestPattern(input, Pattern, '7');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '7');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test8(const String* input)
 {
     String* Pattern = String_Make("eight", 5);
-    return TestPattern(input, Pattern, '8');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '8');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 PatternTestResult* Test9(const String* input)
 {
     String* Pattern = String_Make("nine", 4);
-    return TestPattern(input, Pattern, '9');
+    PatternTestResult* ReturnData = TestPattern(input, Pattern, '9');
+    String_Free(Pattern);
+    return ReturnData;
 }
 
 int main(void)
 {
     StringArray* Input = File_ReadAllLines("Input/01.txt");
-    // StringArray* DebugInput = File_ReadAllLines("C:/Temp/Debug.txt");
     i32 PartAnswer = 0;
 
     PatternTestResult* (*PatternTesters[9])(const String* input);
@@ -134,26 +151,20 @@ int main(void)
                     NumberAsStringBuffer[BufferIndex] = TestResult->Value;
                     StringIndex += (TestResult->PatternSize - 2); // Min 2 because the last letter could be the start of a new number, tricksy...
                     if (BufferIndex == 0) BufferIndex = 1;
+                    free(TestResult);
                     break;
                 }
+                free(TestResult);
             }
         }
 
         if (NumberAsStringBuffer[1] == 0) NumberAsStringBuffer[1] = NumberAsStringBuffer[0];
         i32 CalibrationNumber = atoi(NumberAsStringBuffer);
 
-        // i32 DebugCompare = atoi(DebugInput->Contents[LineIndex]->Content);
-        // if (CalibrationNumber != DebugCompare)
-        // {
-        //     printf("%d is not equal to %d, on line %d", CalibrationNumber, DebugCompare, LineIndex);
-        //     exit(EXIT_FAILURE);
-        // }
-
         memset(&NumberAsStringBuffer, 0, sizeof NumberAsStringBuffer);
         BufferIndex = 0;
 
         PartAnswer += CalibrationNumber;
-        //if (LineIndex == 0) break;
     }
 
     printf("Part answer: %i\n", PartAnswer);
@@ -161,5 +172,3 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
-

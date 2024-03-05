@@ -27,7 +27,10 @@ namespace AdventOfCode2023.Year2023
 
         ValueTuple<long, long, long>[][] MapsInOrder;
 
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Day05()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             Input = File.ReadAllLines("Input/05.txt");
 
@@ -200,7 +203,7 @@ namespace AdventOfCode2023.Year2023
             Trace.Assert(FinalValue == 389056265, $"Expected final score to be 389056265 but it was {FinalValue}");
         }
 
-        [TestCase]
+        [TestCase(Ignore = "It's slow, and can take up to 8 minutes in debug mode")]
         public void Part02()
         {
             Trace.Assert(Seeds.Length % 2 == 0);
@@ -265,7 +268,7 @@ namespace AdventOfCode2023.Year2023
             }
 
             var Locations = new ConcurrentBag<long>();
-            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 8 };
+            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 16 };
             var Timer = Stopwatch.StartNew();
 
             Parallel.ForEach(SeedsAndRanges, Options, (x, _, _) =>
@@ -338,7 +341,7 @@ namespace AdventOfCode2023.Year2023
             }
 
             var Locations = new ConcurrentBag<long>();
-            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 8 };
+            var Options = new ParallelOptions() { MaxDegreeOfParallelism = 16 };
             var Timer = Stopwatch.StartNew();
 
             Parallel.ForEach(SeedsAndRanges, Options, (x, _, _) =>
@@ -363,6 +366,14 @@ namespace AdventOfCode2023.Year2023
 
             Console.WriteLine(FinalValue);
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
+        }
+
+        //[TestCase]
+        public void Part02_Variation03()
+        {
+            // This would involve testing for ranges and splitting those if the input range falls outside outside the maps to test
+            // and then test those extra ranges (meaning some form of recursive approach).
+            // This would likely give a result in a matter of ms instead of seconds.
         }
     }
 }

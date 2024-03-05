@@ -90,7 +90,7 @@ u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitiv
     {
         char CurrentInputChar = input->Content[InputIndex];
         char CurrentPatternChar = pattern->Content[PatternIndex];
-        
+
         if (caseInsensitive)
         {
             CurrentInputChar = (char)tolower(CurrentInputChar);
@@ -126,7 +126,7 @@ u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensit
     {
         char CurrentInputChar = input->Content[Index];
         char CurrentPatternChar = pattern->Content[Index];
-        
+
         if (caseInsensitive)
         {
             CurrentInputChar = (char)tolower(CurrentInputChar);
@@ -164,7 +164,7 @@ u8 String_Equals(const String* original, const String* compare, u8 caseInsensiti
     {
         char CurrentOriginalChar = original->Content[Index];
         char CurrentCompareChar = compare->Content[Index];
-        
+
         if (caseInsensitive)
         {
             CurrentOriginalChar = (char)tolower(CurrentOriginalChar);
@@ -260,7 +260,7 @@ String* File_ReadAllText(const char* fileNameAndPath)
         if ((NextChar & ~127) > 0)
         {
             char ErrorMessage[100];
-            sprintf(ErrorMessage, "Index, %n, Char: %n", Index, NextChar);
+            sprintf(ErrorMessage, "Index, %i, Char: %i", Index, NextChar);
             Fatal(strcat("Error reading all text from file as character was not a valid ASCI char: ", ErrorMessage));
         }
 
