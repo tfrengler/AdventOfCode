@@ -2,6 +2,7 @@
 #define LIB_THOMAS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // To set up use vscode with the following extensions:
 // clangd (intellisense) and CodeLLDB (for debugging)
@@ -41,11 +42,12 @@ typedef int8_t i8;
 typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint16_t u16;
-typedef unsigned char u8;
+typedef uint8_t u8;
 
 typedef char** arrayOfStrings;
 typedef char* string;
 
+/* The maximum size of a string as used by String-instances. */
 static const u16 STRING_MAX_SIZE = 65535;
 
 /* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the null-terminator.*/
@@ -97,8 +99,9 @@ void StringArray_Free(StringArray* input);
 
 String* String_Make(const char* content, u16 size);
 String* String_Empty(void);
-u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive);
-u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive);
-u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitive);
+bool String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive);
+bool String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive);
+bool String_Contains(const String* input, const String* pattern, u8 caseInsensitive);
+bool String_Equals(const String* original, const String* compare, u8 caseInsensitive);
 
 #endif

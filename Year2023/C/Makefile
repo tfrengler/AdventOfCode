@@ -9,7 +9,7 @@
 # -fsanitize=undefined,address -fsanitize-trap -fno-common
 
 CC					:= clang
-CFLAGS				:= -std=c17 -Wall -Wextra -Werror -Wshadow -Wconversion -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -g3 -Wformat=2 -funsigned-char -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -g3
+CFLAGS				:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -g3 -O0
 SRC_DIR				:= src/
 BUILD_DIR			:= build/
 OBJ_DIR				:= obj/

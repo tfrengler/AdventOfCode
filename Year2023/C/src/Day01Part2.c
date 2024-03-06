@@ -167,6 +167,8 @@ int main(void)
         PartAnswer += CalibrationNumber;
     }
 
+    StringArray_Free(Input);
+
     printf("Part answer: %i\n", PartAnswer);
     assert(PartAnswer == 53592);
 

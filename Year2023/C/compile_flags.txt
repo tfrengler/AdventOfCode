@@ -17,5 +17,9 @@
 -Wformat=2
 -Wformat-pedantic
 -Wfor-loop-analysis
+-fsanitize=undefined
+-fsanitize=address
+-fsanitize-trap
+-fno-common
 -g3
 -O0

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "errno.h"
+#include <stdbool.h>
 
 /**
  * @brief  Panics and terminates the program with EXIT_FAILURE, caused by an unrecoverable error.
@@ -25,14 +26,14 @@ void Fatal(char* message)
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_Contains(const String* input, const String* pattern, u8 caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_Contains: argument 'input' or 'pattern' is NULL");
     assert(caseInsensitive == 0 || caseInsensitive == 1);
 #endif
 
-    if (pattern->Size > input->Size) return 0;
+    if (pattern->Size > input->Size) return false;
 
     i32 PatternIndex = 0;
     i32 PatternIndexMax = pattern->Size - 1;
@@ -40,7 +41,7 @@ u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitiv
 
     for(i32 Index = 0; Index < IndexMax; Index++)
     {
-        if (PatternIndex == 0 && pattern->Size > (input->Size - Index)) return 0;
+        if (PatternIndex == 0 && pattern->Size > (input->Size - Index)) return false;
 
         char InputChar = input->Content[Index];
         char PatternChar = pattern->Content[PatternIndex];
@@ -57,16 +58,16 @@ u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitiv
         }
         else
         {
-            PatternIndex = 0;
+            PatternIndex = false;
         }
 
         if (PatternIndex > PatternIndexMax)
         {
-            return 1;
+            return true;
         }
     }
 
-    return 0;
+    return false;
 }
 
 /**
@@ -76,14 +77,14 @@ u8 String_Contains(const String* input, const String* pattern, u8 caseInsensitiv
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_EndsWith: argument 'input' or 'pattern' is NULL");
     assert(caseInsensitive == 0 || caseInsensitive == 1);
 #endif
 
-    if (pattern->Size > input->Size) return 0;
+    if (pattern->Size > input->Size) return false;
 
     i32 InputIndex = input->Size - 1;
     for(i32 PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--)
@@ -99,11 +100,11 @@ u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitiv
 
         if (CurrentInputChar != CurrentPatternChar)
         {
-            return 0;
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
 /**
@@ -113,14 +114,14 @@ u8 String_EndsWith(const String* input, const String* pattern, u8 caseInsensitiv
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_StartsWith: argument 'input' or 'pattern' is NULL");
     assert(caseInsensitive == 0 || caseInsensitive == 1);
 #endif
 
-    if (pattern->Size > input->Size) return 0;
+    if (pattern->Size > input->Size) return false;
 
     for(i32 Index = 0; Index < pattern->Size; Index++)
     {
@@ -135,11 +136,11 @@ u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensit
 
         if (CurrentInputChar != CurrentPatternChar)
         {
-            return 0;
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
 /**
@@ -149,15 +150,15 @@ u8 String_StartsWith(const String* input, const String* pattern, u8 caseInsensit
 * @param    caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
 * @retval   Returns 1 if both strings are equal, 0 otherwise.
 */
-u8 String_Equals(const String* original, const String* compare, u8 caseInsensitive)
+bool String_Equals(const String* original, const String* compare, u8 caseInsensitive)
 {
 #if DEBUG()
     if (original == NULL || compare == NULL) Fatal("String_Compare: argument 'original' or 'compare' is NULL");
     assert(caseInsensitive == 0 || caseInsensitive == 1);
 #endif
 
-    if (original->Size == 0 || compare->Size == 0) return 0;
-    if (compare->Size != original->Size) return 0;
+    if (original->Size == 0 || compare->Size == 0) return false;
+    if (compare->Size != original->Size) return false;
 
     i32 IndexLimit = original->Size;
     for(i32 Index = 0; Index < IndexLimit; Index++)
@@ -173,11 +174,11 @@ u8 String_Equals(const String* original, const String* compare, u8 caseInsensiti
 
         if (CurrentOriginalChar != CurrentCompareChar)
         {
-            return 0;
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
 /**
@@ -213,7 +214,7 @@ String* String_Make(const char* content, u16 size)
 }
 
 /**
- * @brief  Creates a heao-allocated struct representing an empty string.
+ * @brief  Creates a heap-allocated struct representing an empty string.
  * @retval An instance of String where Size = 0 and Content = nullptr.
  */
 String* String_Empty(void)

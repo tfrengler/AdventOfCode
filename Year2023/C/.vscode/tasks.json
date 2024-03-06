@@ -5,6 +5,7 @@
             "type": "shell",
             "command": "clang",
             "args": [
+                "--%",
                 "-std=c17",
                 "-Wall",
                 "-Wextra",
@@ -24,6 +25,9 @@
                 "-Wformat=2",
                 "-Wformat-pedantic",
                 "-Wfor-loop-analysis",
+                "-fsanitize=undefined,address",
+                "-fsanitize-trap",
+                "-fno-common",
                 "-g3",
                 "-O0",
                 "${file}",
