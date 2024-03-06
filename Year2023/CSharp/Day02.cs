@@ -94,7 +94,7 @@ namespace AdventOfCode2023.Year2023
                 var Reds = new List<int>();
 
                 MatchCollection Matches = ColorRegex.Matches(currentInput);
-                foreach (Match currentMatch in Matches)
+                foreach (Match currentMatch in Matches.Cast<Match>())
                 {
                     int ColorAmount = int.Parse(currentMatch.Groups[1].ToString());
 

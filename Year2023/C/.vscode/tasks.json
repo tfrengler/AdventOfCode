@@ -27,6 +27,7 @@
                 "-Wfor-loop-analysis",
                 "-fsanitize=undefined,address",
                 "-fsanitize-trap",
+                "-fno-omit-frame-pointer",
                 "-fno-common",
                 "-g3",
                 "-O0",
