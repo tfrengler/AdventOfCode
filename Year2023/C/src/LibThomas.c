@@ -424,8 +424,23 @@ void StringArray_Free(StringArray* input)
 * ********************** NUMBER FUNCTIONS ********************
 * ***********************************************************/
 
+/**
+ * @brief   Compares an array of numbers against one another.
+ * @param   array       : Pointer to the start of the array.
+ * @param   arraySize   : The amount of elements in the array.
+ * @param   objectSize  : The size of the objects in the array.
+ * @param   compare     : Pointer to a function that can compare two numbers, returning true when comparing p1 against p2.
+ * @retval  A void pointer that can be cast to an integer type (u8,i8,i16,u16,i32,u32,i64,u64).
+*/
 static const void* ArrayNumberCompare(const void* array, size_t arraySize, size_t objectSize, bool(*compare)(const void* p1, const void* p2))
 {
+#if DEBUG()
+    assert(array != NULL);
+    assert(arraySize > 0);
+    assert(arraySize > 0);
+    assert(compare != NULL);
+#endif
+
     const u8* ByteArray = array;
     const void* ReturnData;
 
@@ -451,6 +466,9 @@ static const void* ArrayNumberCompare(const void* array, size_t arraySize, size_
 
 static bool i32_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(i32*)number1Pointer > *(i32*)number2Pointer;
 }
 
@@ -462,6 +480,9 @@ i32 i32Array_Max(const i32Array* input)
 
 static bool u32_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(u32*)number1Pointer > *(u32*)number2Pointer;
 }
 
@@ -473,6 +494,9 @@ u32 u32Array_Max(const u32Array* input)
 
 static bool i64_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(i64*)number1Pointer > *(i64*)number2Pointer;
 }
 
@@ -484,6 +508,9 @@ i64 i64Array_Max(const i64Array* input)
 
 static bool u64_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(u64*)number1Pointer > *(u64*)number2Pointer;
 }
 
@@ -495,6 +522,9 @@ u64 u64Array_Max(const u64Array* input)
 
 static bool i16_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(i16*)number1Pointer > *(i16*)number2Pointer;
 }
 
@@ -506,6 +536,9 @@ i16 i16Array_Max(const i16Array* input)
 
 static bool u16_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(u16*)number1Pointer > *(u16*)number2Pointer;
 }
 
@@ -517,6 +550,9 @@ u16 u16Array_Max(const u16Array* input)
 
 static bool i8_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(i8*)number1Pointer > *(i8*)number2Pointer;
 }
 
@@ -528,6 +564,9 @@ i8 i8Array_Max(const i8Array* input)
 
 static bool u8_Max(const void* number1Pointer, const void* number2Pointer)
 {
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
     return *(u8*)number1Pointer > *(u8*)number2Pointer;
 }
 
