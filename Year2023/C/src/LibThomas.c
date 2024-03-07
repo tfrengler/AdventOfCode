@@ -12,7 +12,7 @@
  * @param  message: The message to print to perror.
  * @retval None
  */
-void Fatal(char* message)
+void Fatal(const char* message)
 {
     if (errno == 0) errno = EBADMSG;
     perror(message);
@@ -26,11 +26,11 @@ void Fatal(char* message)
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-bool String_Contains(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_Contains(const String* input, const String* pattern, bool caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_Contains: argument 'input' or 'pattern' is NULL");
-    assert(caseInsensitive == 0 || caseInsensitive == 1);
+    assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
     if (pattern->Size > input->Size) return false;
@@ -77,11 +77,11 @@ bool String_Contains(const String* input, const String* pattern, u8 caseInsensit
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-bool String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_EndsWith(const String* input, const String* pattern, bool caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_EndsWith: argument 'input' or 'pattern' is NULL");
-    assert(caseInsensitive == 0 || caseInsensitive == 1);
+    assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
     if (pattern->Size > input->Size) return false;
@@ -114,11 +114,11 @@ bool String_EndsWith(const String* input, const String* pattern, u8 caseInsensit
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval 1 if input starts with pattern, 0 otherwise.
  */
-bool String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive)
+bool String_StartsWith(const String* input, const String* pattern, bool caseInsensitive)
 {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_StartsWith: argument 'input' or 'pattern' is NULL");
-    assert(caseInsensitive == 0 || caseInsensitive == 1);
+    assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
     if (pattern->Size > input->Size) return false;
@@ -150,11 +150,11 @@ bool String_StartsWith(const String* input, const String* pattern, u8 caseInsens
 * @param    caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
 * @retval   Returns 1 if both strings are equal, 0 otherwise.
 */
-bool String_Equals(const String* original, const String* compare, u8 caseInsensitive)
+bool String_Equals(const String* original, const String* compare, bool caseInsensitive)
 {
 #if DEBUG()
     if (original == NULL || compare == NULL) Fatal("String_Compare: argument 'original' or 'compare' is NULL");
-    assert(caseInsensitive == 0 || caseInsensitive == 1);
+    assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
     if (original->Size == 0 || compare->Size == 0) return false;
@@ -221,7 +221,7 @@ String* String_Empty(void)
 {
     String* ReturnData = malloc(sizeof(struct _String));
 #if DEBUG()
-    if (ReturnData == NULL) Fatal("Failed to malloc memory for String*");
+    assert(ReturnData != NULL);
 #endif
     ReturnData->Size = 0;
     return ReturnData;
@@ -249,9 +249,7 @@ String* File_ReadAllText(const char* fileNameAndPath)
     i32 Index = 0;
 
 #if DEBUG()
-    if (FileContents == NULL) {
-        Fatal("Error reading file contents. Cannot allocate memory");
-    }
+    assert(FileContents != NULL);
 #endif
 
     while (1) {
@@ -334,7 +332,7 @@ StringArray* File_ReadAllLines(const char* fileNameAndPath)
 
     StringArray* ReturnData = malloc(sizeof *ReturnData + sizeof(String*[LineCount]));
 #if DEBUG()
-    if (ReturnData == NULL) Fatal("Failed to allocate memory for StringArray return data in File_ReadAllLines");
+    assert(ReturnData != NULL);
 #endif
 
     ReturnData->Count = LineCount;
@@ -395,7 +393,7 @@ StringArray* File_ReadAllLines(const char* fileNameAndPath)
 void String_Free(String* input)
 {
 #if DEBUG()
-    if (input == NULL) Fatal("String_Free: argument 'input' is NULL");
+    assert(input != NULL);
 #endif
 
     free(input->Content);
@@ -410,7 +408,7 @@ void String_Free(String* input)
 void StringArray_Free(StringArray* input)
 {
 #if DEBUG()
-    if (input == NULL) Fatal("StringArray_Free: argument 'input' is NULL");
+    assert(input != NULL);
 #endif
 
     for(i32 Index = 0; Index < input->Count; Index++)
@@ -420,4 +418,121 @@ void StringArray_Free(StringArray* input)
     }
 
     free(input);
+}
+
+/* ***********************************************************
+* ********************** NUMBER FUNCTIONS ********************
+* ***********************************************************/
+
+static const void* ArrayNumberCompare(const void* array, size_t arraySize, size_t objectSize, bool(*compare)(const void* p1, const void* p2))
+{
+    const u8* ByteArray = array;
+    const void* ReturnData;
+
+    if (compare(&ByteArray[0], &ByteArray[objectSize]))
+    {
+        ReturnData = &ByteArray[0];
+    }
+    else
+    {
+        ReturnData = &ByteArray[objectSize];
+    }
+
+    for(size_t Index = 2; Index < arraySize; Index++)
+    {
+        if (compare(&ByteArray[Index*objectSize], ReturnData))
+        {
+            ReturnData = &ByteArray[Index*objectSize];
+        }
+    }
+
+    return ReturnData;
+}
+
+static bool i32_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(i32*)number1Pointer > *(i32*)number2Pointer;
+}
+
+i32 i32Array_Max(const i32Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &i32_Max);
+    return *(i32*)ReturnData;
+}
+
+static bool u32_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(u32*)number1Pointer > *(u32*)number2Pointer;
+}
+
+u32 u32Array_Max(const u32Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u32_Max);
+    return *(u32*)ReturnData;
+}
+
+static bool i64_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(i64*)number1Pointer > *(i64*)number2Pointer;
+}
+
+i64 i64Array_Max(const i64Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &i64_Max);
+    return *(i64*)ReturnData;
+}
+
+static bool u64_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(u64*)number1Pointer > *(u64*)number2Pointer;
+}
+
+u64 u64Array_Max(const u64Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u64_Max);
+    return *(u64*)ReturnData;
+}
+
+static bool i16_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(i16*)number1Pointer > *(i16*)number2Pointer;
+}
+
+i16 i16Array_Max(const i16Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &i16_Max);
+    return *(i16*)ReturnData;
+}
+
+static bool u16_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(u16*)number1Pointer > *(u16*)number2Pointer;
+}
+
+u16 u16Array_Max(const u16Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u16_Max);
+    return *(u16*)ReturnData;
+}
+
+static bool i8_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(i8*)number1Pointer > *(i8*)number2Pointer;
+}
+
+i8 i8Array_Max(const i8Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &i8_Max);
+    return *(i8*)ReturnData;
+}
+
+static bool u8_Max(const void* number1Pointer, const void* number2Pointer)
+{
+    return *(u8*)number1Pointer > *(u8*)number2Pointer;
+}
+
+u8 u8Array_Max(const u8Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u8_Max);
+    return *(u8*)ReturnData;
 }

@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define DEBUG() 1
+
 // To set up use vscode with the following extensions:
 // clangd (intellisense) and CodeLLDB (for debugging)
 // For toolchain use MSYS2 with the following package(s): pacman -S mingw-w64-clang-x86_64-toolchain
@@ -82,7 +84,25 @@ typedef struct _i8Array {
     i8* Value;
 } i8Array;
 
-#define DEBUG() 1
+typedef struct _u32Array {
+    i64 Size;
+    u32* Value;
+} u32Array;
+
+typedef struct _u64Array {
+    i64 Size;
+    u64* Value;
+} u64Array;
+
+typedef struct _u16Array {
+    i64 Size;
+    u16* Value;
+} u16Array;
+
+typedef struct _u8Array {
+    i64 Size;
+    u8* Value;
+} u8Array;
 
 #if DEBUG()
 # define DEBUG_PRINT(f_, ...) printf((f_), __VA_ARGS__)
@@ -90,18 +110,28 @@ typedef struct _i8Array {
 # define DEBUG_PRINT(f, ...) do {} while (0)
 #endif
 
-void Fatal(char* message);
+void Fatal(const char* message);
 
 String* File_ReadAllText(const char* fileNameAndPath);
 StringArray* File_ReadAllLines(const char* fileNameAndPath);
+
 void String_Free(String* input);
 void StringArray_Free(StringArray* input);
 
 String* String_Make(const char* content, u16 size);
 String* String_Empty(void);
-bool String_StartsWith(const String* input, const String* pattern, u8 caseInsensitive);
-bool String_EndsWith(const String* input, const String* pattern, u8 caseInsensitive);
-bool String_Contains(const String* input, const String* pattern, u8 caseInsensitive);
-bool String_Equals(const String* original, const String* compare, u8 caseInsensitive);
+bool String_StartsWith(const String* input, const String* pattern, bool caseInsensitive);
+bool String_EndsWith(const String* input, const String* pattern, bool caseInsensitive);
+bool String_Contains(const String* input, const String* pattern, bool caseInsensitive);
+bool String_Equals(const String* original, const String* compare, bool caseInsensitive);
+
+i32 i32Array_Max(const i32Array* input);
+i64 i64Array_Max(const i64Array* input);
+i16 i16Array_Max(const i16Array* input);
+i8 i8Array_Max(const i8Array* input);
+u64 u64Array_Max(const u64Array* input);
+u32 u32Array_Max(const u32Array* input);
+u16 u16Array_Max(const u16Array* input);
+u8 u8Array_Max(const u8Array* input);
 
 #endif
