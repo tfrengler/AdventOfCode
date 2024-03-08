@@ -35,7 +35,7 @@
                 // "${workspaceFolder}\\src\\Day01Part2.c",
                 "${workspaceFolder}\\src\\LibThomas.c",
                 "-o",
-                "${workspaceFolder}\\build\\bin.exe"
+                "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

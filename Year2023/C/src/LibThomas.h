@@ -112,18 +112,20 @@ typedef struct _u8Array {
 
 void Fatal(const char* message);
 
-String* File_ReadAllText(const char* fileNameAndPath);
 StringArray* File_ReadAllLines(const char* fileNameAndPath);
-
-void String_Free(String* input);
+StringArray* String_Split(const String* inputString, char delimiter);
 void StringArray_Free(StringArray* input);
 
+
+void String_Free(String* input);
+String* File_ReadAllText(const char* fileNameAndPath);
 String* String_Make(const char* content, u16 size);
 String* String_Empty(void);
 bool String_StartsWith(const String* input, const String* pattern, bool caseInsensitive);
 bool String_EndsWith(const String* input, const String* pattern, bool caseInsensitive);
 bool String_Contains(const String* input, const String* pattern, bool caseInsensitive);
 bool String_Equals(const String* original, const String* compare, bool caseInsensitive);
+String* String_Trim(String* input);
 
 i32 i32Array_Max(const i32Array* input);
 i64 i64Array_Max(const i64Array* input);

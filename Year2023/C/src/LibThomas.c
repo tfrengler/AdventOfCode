@@ -19,12 +19,16 @@ void Fatal(const char* message)
     exit(EXIT_FAILURE);
 }
 
+/* ***********************************************************
+* ********************** STRING FUNCTIONS ********************
+* ***********************************************************/
+
 /**
  * @brief  Checks whether a given input string contains a given string pattern. Case-sensitive.
  * @param  input: The input string to check
  * @param  pattern: The pattern you want to check if input contains.
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
- * @retval 1 if input starts with pattern, 0 otherwise.
+ * @retval True if input contains pattern, false otherwise.
  */
 bool String_Contains(const String* input, const String* pattern, bool caseInsensitive)
 {
@@ -75,7 +79,7 @@ bool String_Contains(const String* input, const String* pattern, bool caseInsens
  * @param  input: The input string to check
  * @param  pattern: The pattern you want to check if input ends with.
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
- * @retval 1 if input starts with pattern, 0 otherwise.
+ * @retval True if input ends with pattern, false otherwise.
  */
 bool String_EndsWith(const String* input, const String* pattern, bool caseInsensitive)
 {
@@ -112,12 +116,13 @@ bool String_EndsWith(const String* input, const String* pattern, bool caseInsens
  * @param  input: The input string to check
  * @param  pattern: The pattern you want to check if input starts with.
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
- * @retval 1 if input starts with pattern, 0 otherwise.
+ * @retval True if input starts with pattern, false otherwise.
  */
 bool String_StartsWith(const String* input, const String* pattern, bool caseInsensitive)
 {
 #if DEBUG()
-    if (input == NULL || pattern == NULL) Fatal("String_StartsWith: argument 'input' or 'pattern' is NULL");
+    assert(input != NULL);
+    assert(pattern != NULL);
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -153,7 +158,8 @@ bool String_StartsWith(const String* input, const String* pattern, bool caseInse
 bool String_Equals(const String* original, const String* compare, bool caseInsensitive)
 {
 #if DEBUG()
-    if (original == NULL || compare == NULL) Fatal("String_Compare: argument 'original' or 'compare' is NULL");
+    assert(original != NULL);
+    assert(compare != NULL);
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -198,13 +204,13 @@ String* String_Make(const char* content, u16 size)
     String* ReturnData = malloc(sizeof(struct _String));
 
 #if DEBUG()
-    if (ReturnData == NULL) Fatal("Failed to malloc memory for String*");
+    assert(ReturnData != NULL);
 #endif
 
     ReturnData->Content = malloc(size+1);
 
 #if DEBUG()
-    if (ReturnData->Content == NULL) Fatal("Failed to malloc memory for String->Content");
+    assert(ReturnData->Content != NULL);
 #endif
 
     memcpy(ReturnData->Content, content, size+1);
@@ -228,7 +234,143 @@ String* String_Empty(void)
 }
 
 /**
- * @brief  Opens a text file, reads all the content, parses it into lines (based on \n), closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
+ * @brief  Trims a string and returns a copy with leading and trailing whitespace removed.
+ * @param  input: The string to trim of whitespace.
+ * @retval Pointer to a copy of input with whitespace trimmed, or if the string is empty (size == 0) the original instance is returned instead.
+ */
+String* String_Trim(String* input)
+{
+#if DEBUG()
+    assert(input != NULL);
+#endif
+
+    if (input->Size == 0)
+    {
+        return input;
+    }
+
+    u16 SubStringStart = 0;
+    u16 SubStringEnd = input->Size-1;
+
+    char NextChar = input->Content[0];
+    while( isspace(NextChar) )
+    {
+        SubStringStart++;
+        if (SubStringStart > SubStringEnd)
+        {
+            return String_Empty();
+        }
+        NextChar = input->Content[SubStringStart];
+    }
+
+    NextChar = input->Content[SubStringEnd];
+    while( isspace(NextChar) )
+    {
+        SubStringEnd--;
+        NextChar = input->Content[SubStringEnd];
+    }
+
+    u16 StringSize = (SubStringEnd - SubStringStart) + 1;
+    char LocalSubStringCopy[StringSize+1];
+
+    memcpy(LocalSubStringCopy, &input->Content[SubStringStart], StringSize);
+    LocalSubStringCopy[StringSize] = '\0';
+
+    String* ReturnData = String_Make(LocalSubStringCopy, StringSize);
+    return ReturnData;
+}
+
+/**
+ * @brief  Parses a string and splits it into an array of strings based on a delimiter.
+ * @param   inputString: The string to split into other strings.
+ * @param   delimiter: The character to split the string on. Is omitted from the strings after the split, though included if the last character in the string is the delimiter. Not allowed to be a null-character.
+ * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If no delimiters were found you get a string array with a copy of the original string as the only content.
+*/
+StringArray* String_Split(const String* inputString, char delimiter)
+{
+#if DEBUG()
+    assert(inputString != NULL);
+    assert(delimiter != '\0');
+#endif
+
+    if (inputString->Size == 0)
+    {
+        return NULL;
+    }
+
+    i32 LineCount = 1;
+    i32 SearchEndIndex = inputString->Size-1;
+
+    for(i32 Index = 1; Index < SearchEndIndex; Index++)
+    {
+        if (inputString->Content[Index] == delimiter)
+        {
+            LineCount++;
+        }
+    }
+
+    StringArray* ReturnData = malloc(sizeof *ReturnData + sizeof(String*[LineCount]));
+#if DEBUG()
+    assert(ReturnData != NULL);
+#endif
+
+    ReturnData->Count = LineCount;
+
+    if (LineCount == 1)
+    {
+        ReturnData->Contents[0] = String_Make(inputString->Content, inputString->Size);
+        return ReturnData;
+    }
+
+    i32 StringStartIndex = 0;
+    u16 StringLength = 0;
+
+    if (inputString->Content[0] == delimiter)
+    {
+        StringStartIndex++;
+    }
+
+    for(i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++)
+    {
+        for(i32 IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++)
+        {
+            if (StringLength > STRING_MAX_SIZE)
+            {
+                Fatal("Text file content larger than max size string");
+            }
+
+            char CurrentChar = inputString->Content[IndexInner];
+            if (CurrentChar == delimiter || CurrentChar == '\0')
+            {
+                break;
+            }
+
+            StringLength++;
+        }
+
+        if (StringLength == 0)
+        {
+            StringStartIndex++;
+            StringLength = 0;
+            continue;
+        }
+
+        char LocalString[StringLength+1];
+        memcpy(LocalString, &inputString->Content[StringStartIndex], StringLength);
+        LocalString[StringLength] = '\0';
+
+        String* CurrentContentData = String_Make(LocalString, StringLength);
+        ReturnData->Contents[IndexOuter] = CurrentContentData;
+
+        StringStartIndex = StringStartIndex + StringLength + 1;
+        StringLength = 0;
+    }
+
+    return ReturnData;
+}
+
+/**
+ * @brief  Opens a text file, reads all the content, closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
  * @param  fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
  * @retval A String-instance representing the contents of the file.
  */
@@ -305,7 +447,7 @@ String* File_ReadAllText(const char* fileNameAndPath)
 }
 
 /**
- * @brief   Opens a text file, reads all the content, closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
+ * @brief  Opens a text file, reads all the content, parses it into lines (based on \n), closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
  * @param   fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
  * @retval  A StringArray representing all the lines of text in the text-file.
 */
@@ -314,74 +456,9 @@ StringArray* File_ReadAllLines(const char* fileNameAndPath)
     String* StringData = File_ReadAllText(fileNameAndPath);
     if (StringData == NULL) return NULL;
 
-    if (StringData->Size == 0)
-    {
-        StringArray* ReturnData = malloc(sizeof *ReturnData);
-        ReturnData->Count = 0;
-        return ReturnData;
-    }
-
-    i32 LineCount = 1;
-    for(i32 Index = 0; Index < StringData->Size; Index++)
-    {
-        if (StringData->Content[Index] == '\n' || StringData->Content[Index] == EOF)
-        {
-            LineCount++;
-        }
-    }
-
-    StringArray* ReturnData = malloc(sizeof *ReturnData + sizeof(String*[LineCount]));
-#if DEBUG()
-    assert(ReturnData != NULL);
-#endif
-
-    ReturnData->Count = LineCount;
-
-    i32 StringStartIndex = 0;
-    i32 StringLength = 0;
-
-    // StringStartIndex = 0
-    // Index   = 01234567
-    // Content = ABCDEFG\n
-    // ~~~~~~^6
-    // From index 0 read 6 bytes
-    for(i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++)
-    {
-        for(i32 IndexInner = StringStartIndex; IndexInner <= StringData->Size; IndexInner++)
-        {
-            if (StringLength > STRING_MAX_SIZE)
-            {
-                Fatal("Text file content larger than max size string");
-            }
-
-            char CurrentChar = StringData->Content[IndexInner];
-            if (CurrentChar == '\n' || CurrentChar == '\0')
-            {
-                break;
-            }
-
-            StringLength++;
-        }
-
-        if (StringLength == 0)
-        {
-            StringStartIndex++;
-            StringLength = 0;
-            continue;
-        }
-
-        char LocalString[StringLength+1];
-        memcpy(LocalString, &StringData->Content[StringStartIndex], StringLength);
-        LocalString[StringLength] = '\0';
-
-        String* CurrentContentData = String_Make(LocalString, (u16)StringLength);
-        ReturnData->Contents[IndexOuter] = CurrentContentData;
-
-        StringStartIndex = StringStartIndex + StringLength + 1;
-        StringLength = 0;
-    }
-
+    StringArray* ReturnData = String_Split(StringData, '\n');
     String_Free(StringData);
+
     return ReturnData;
 }
 
@@ -437,7 +514,7 @@ static const void* ArrayNumberCompare(const void* array, size_t arraySize, size_
 #if DEBUG()
     assert(array != NULL);
     assert(arraySize > 0);
-    assert(arraySize > 0);
+    assert(objectSize > 0);
     assert(compare != NULL);
 #endif
 
