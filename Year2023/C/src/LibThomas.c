@@ -283,8 +283,8 @@ String* String_Trim(String* input)
 /**
  * @brief  Parses a string and splits it into an array of strings based on a delimiter.
  * @param   inputString: The string to split into other strings.
- * @param   delimiter: The character to split the string on. Is omitted from the strings after the split, though included if the last character in the string is the delimiter. Not allowed to be a null-character.
- * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If no delimiters were found you get a string array with a copy of the original string as the only content.
+ * @param   delimiter: The character to split the string on which is omitted from the strings after the split. Not allowed to be a null-character.
+ * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If input->Size is 0 then NULL is returned.
 */
 StringArray* String_Split(const String* inputString, char delimiter)
 {
@@ -473,7 +473,7 @@ void String_Free(String* input)
     assert(input != NULL);
 #endif
 
-    free(input->Content);
+    if (input->Content != NULL) free(input->Content);
     free(input);
 }
 
@@ -491,6 +491,9 @@ void StringArray_Free(StringArray* input)
     for(i32 Index = 0; Index < input->Count; Index++)
     {
         String* Current = input->Contents[Index];
+#if DEBUG()
+        assert(Current != NULL);
+#endif
         String_Free(Current);
     }
 
