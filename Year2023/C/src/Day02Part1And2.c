@@ -8,6 +8,7 @@
 int main(void)
 {
     StringArray *InputParts = File_ReadAllLines("Input/02.txt");
+    if (InputParts == NULL) return EXIT_FAILURE;
 
     i32 FinalAnswerPart1 = 0;
     i32 FinalAnswerPart2 = 0;
@@ -62,6 +63,8 @@ int main(void)
         if (Red <= 12 && Green <= 13 && Blue <= 14) FinalAnswerPart1 += GameIndex;
         FinalAnswerPart2 += (Red * Green * Blue);
     }
+
+    StringArray_Free(InputParts);
 
     printf("Answer (part 1): %i\n", FinalAnswerPart1);
     printf("Answer (part 2): %i\n", FinalAnswerPart2);

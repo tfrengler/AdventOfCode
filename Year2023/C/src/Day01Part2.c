@@ -102,6 +102,7 @@ PatternTestResult* Test9(const String* input)
 int main(void)
 {
     StringArray* Input = File_ReadAllLines("Input/01.txt");
+    if (Input == NULL) return EXIT_FAILURE;
     i32 PartAnswer = 0;
 
     PatternTestResult* (*PatternTesters[9])(const String* input);

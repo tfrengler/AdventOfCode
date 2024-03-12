@@ -387,7 +387,7 @@ String* File_ReadAllText(const char* fileNameAndPath)
     i64 FileSize = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    string FileContents = malloc(FileSize+1);
+    char *FileContents = malloc(FileSize+1);
     i32 Index = 0;
 
 #if DEBUG()

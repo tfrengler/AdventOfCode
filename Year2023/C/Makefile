@@ -1,38 +1,26 @@
-#BUILD := debug
-#
-#cflags.debug := flags here...
-#cflags.release := flags here...
-#CFLAGS := ${cxxflags.${BUILD}}
+
+
+cflags.debug 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -fsanitize=undefined -fsanitize=address -fsanitize-trap -fno-omit-frame-pointer -fno-common -g3 -O0
+cflags.release 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -O2
 # call make like this: make BUILD=release
 
-# These flags require the AddressSanitizer-module
-# -fsanitize=undefined,address -fsanitize-trap -fno-common
-
+BUILD 				:= release
 CC					:= clang
-CFLAGS				:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -g3 -O0
+CFLAGS				:= ${cflags.${BUILD}}
 SRC_DIR				:= src/
 BUILD_DIR			:= build/
 OBJ_DIR				:= obj/
-OUTFILE				:= bin
 SOURCE_FILES 		:= $(wildcard $(SRC_DIR)*.c)
 OBJECT_FILES		:= $(SOURCE_FILES:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
 
-#1: Generate main target which depend on the object files...
-all: $(OBJECT_FILES)
-	$(CC) -o $(BUILD_DIR)$(OUTFILE) $^
+all: Day1Part1 Day1Part2 Day2Part1And2
 
-#2: Generate the object files which depend on the source files...
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) -o $@ -c $<
+Day1Part1:
+	$(CC) $(CFLAGS) $(SRC_DIR)LibThomas.c $(SRC_DIR)Day01Part1.c -o $(BUILD_DIR)Day01Part1.exe
 
-#3: Include the dependency files (which are in the format: X.o: X.c X.h, but without a recipe...)
--include $(DEPENDENCY_FILES)
+Day1Part2:
+	$(CC) $(CFLAGS) $(SRC_DIR)LibThomas.c $(SRC_DIR)Day01Part2.c -o $(BUILD_DIR)Day01Part2.exe
 
-#4: Generate dependency files to ensure that changes to header-files causes object files to be rebuilt
-$(OBJ_DIR)%.d: $(SRC_DIR)%.c
-	@$(CC) $< -MM -MT $(@:.d=.o) >$@
-
-.PHONY: clean
-clean:
-	rm -f $(OBJ_DIR)*.*
+Day2Part1And2:
+	$(CC) $(CFLAGS) $(SRC_DIR)LibThomas.c $(SRC_DIR)Day02Part1And2.c -o $(BUILD_DIR)Day02Part1And2.exe

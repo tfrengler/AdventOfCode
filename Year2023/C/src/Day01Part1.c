@@ -1,12 +1,13 @@
 #include "LibThomas.h"
 #include "stdlib.h"
 #include <assert.h>
-#include <strings.h>
+#include <string.h>
 #include "stdio.h"
 
 int main(void)
 {
     StringArray* Input = File_ReadAllLines("Input/01.txt");
+    if (Input == NULL) return EXIT_FAILURE;
     i32 PartAnswer = 0;
 
     char Buffer[3];

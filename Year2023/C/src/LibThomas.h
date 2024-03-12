@@ -4,12 +4,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Enables extra checks, such as NULL checks after each malloc, asserts on function parameters etc.
 #define DEBUG() 1
 
 // To set up use vscode with the following extensions:
 // clangd (intellisense) and CodeLLDB (for debugging)
 // For toolchain use MSYS2 with the following package(s): pacman -S mingw-w64-clang-x86_64-toolchain
-// Use the following compiler flags for debugging. For release-like mode omit -g3 and use -O3
+// Use the following compiler flags for debugging. For release-like mode omit -g3, fsanitize-flags and use -O3
 /*
     -std=c17
     -Wall
@@ -30,6 +31,11 @@
     -Wformat=2
     -Wformat-pedantic
     -Wfor-loop-analysis
+    -fsanitize=undefined
+    -fsanitize=address
+    -fsanitize-trap
+    -fno-omit-frame-pointer
+    -fno-common
     -g3
     -O0
 */
@@ -45,9 +51,6 @@ typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
-
-typedef char** arrayOfStrings;
-typedef char* string;
 
 /* The maximum size of a string as used by String-instances. */
 static const u16 STRING_MAX_SIZE = 65535;
