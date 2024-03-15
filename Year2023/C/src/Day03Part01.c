@@ -7,7 +7,7 @@
 
 typedef struct _Gear
 {
-    i32 SymbolPosition;
+    u64 SymbolPosition;
     i32 Number;
 } Gear;
 
@@ -37,7 +37,10 @@ int main(void)
 
     i32 Part1Answer = 0;
     i32 Part2Answer = 0;
-    Gear Gears[361*2] = {0};
+
+    const i32 GearAllocCount = 700;
+    Gear **Gears = calloc(GearAllocCount, sizeof(**Gears));
+    i32 GearIndex = 0;
 
     for(i32 LineIndex = 0; LineIndex < InputParts->Count; LineIndex++)
     {
@@ -108,6 +111,17 @@ int main(void)
                     if (SymbolFound)
                     {
                         Part1Answer += Number;
+
+                        if (PotentialSymbol == '*')
+                        {
+                            Gear *CurrentGear = malloc(sizeof(*CurrentGear));
+                            CurrentGear->SymbolPosition = (u64)&LineToCheck->Content[SymbolCheckIndex];
+                            CurrentGear->Number = Number;
+
+                            Gears[GearIndex] = CurrentGear;
+                            GearIndex++;
+                        }
+
                         break;
                     }
                     SymbolCheckIndex++;
@@ -120,8 +134,39 @@ int main(void)
         }
     }
 
-    printf("Part 1 answer: %i", Part1Answer);
+    printf("Part 1 answer: %i\n", Part1Answer);
     assert(Part1Answer == 538046);
+
+    for(i32 OuterGearIndex = 0; OuterGearIndex < GearAllocCount; OuterGearIndex++)
+    {
+        Gear *CurrentGear = Gears[OuterGearIndex];
+        if (CurrentGear == NULL) break;
+        i32 Occurences = 1;
+
+        Gear *PreviousCompareGear = NULL;
+        for(i32 InnerGearIndex = 0; InnerGearIndex < GearAllocCount; InnerGearIndex++)
+        {
+            if (InnerGearIndex == OuterGearIndex) continue;
+            Gear *CurrentCompareGear = Gears[InnerGearIndex];
+            if (CurrentCompareGear == NULL) break;
+
+            if (CurrentGear->SymbolPosition == CurrentCompareGear->SymbolPosition)
+            {
+                Occurences++;
+                if (Occurences > 2) break;
+                PreviousCompareGear = Gears[InnerGearIndex];
+            }
+        }
+
+        if (Occurences == 2)
+        {
+            Part2Answer += CurrentGear->Number * PreviousCompareGear->Number;
+        }
+    }
+
+    Part2Answer = Part2Answer / 2;
+    printf("Part 2 answer: %i", Part2Answer);
+    assert(Part2Answer == 81709807);
 
     return EXIT_SUCCESS;
 }
