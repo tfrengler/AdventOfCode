@@ -36,11 +36,18 @@ int main(void)
     assert(InputParts->Count == 140);
 
     i32 Part1Answer = 0;
+    i32 Part2Answer = 0;
+    Gear Gears[361*2] = {0};
 
     for(i32 LineIndex = 0; LineIndex < InputParts->Count; LineIndex++)
     {
         String *CurrentLine = InputParts->Contents[LineIndex];
         char* CurrentString = CurrentLine->Content;
+
+        String* LinesToCheck[3] = {0};
+        if (LineIndex > 0) LinesToCheck[0] = InputParts->Contents[LineIndex - 1];
+        LinesToCheck[1] = CurrentLine;
+        if (LineIndex < InputParts->Count - 1) LinesToCheck[2] = InputParts->Contents[LineIndex + 1];
 
         for(i32 StringIndex = 0; StringIndex < CurrentLine->Size;)
         {
@@ -56,10 +63,7 @@ int main(void)
             i32 Number = atoi(NumberBuffer);
             i32 DigitsToCheck = 0;
             i32 NumberStartPosition = StringIndex;
-            i32 SymbolCheckIndex = NumberStartPosition == 0 ? NumberStartPosition : NumberStartPosition -1;
             i32 SymbolPositionsLeftToCheck = 0;
-            char PotentialSymbol = 0;
-            bool SymbolFound = false;
 
             if (Number < 10)
             {
@@ -77,25 +81,32 @@ int main(void)
                 StringIndex += 4;
             }
 
-            // To account for numbers against the edges
-            if (NumberStartPosition == 0 || CurrentLine->Size - DigitsToCheck < 4)
+            // To account for numbers against the edges. In that case check one less digit (column)
+            if (NumberStartPosition == 0 || (CurrentLine->Size - DigitsToCheck) < DigitsToCheck)
             {
                 DigitsToCheck--;
             }
 
-            // Check N if we are not on the first line
-            if (LineIndex > 0)
+            i32 LinesToCheckIndex = 0;
+            while(LinesToCheckIndex < 3)
             {
-                String *PreviousLine = InputParts->Contents[LineIndex - 1];
+                String* LineToCheck = LinesToCheck[LinesToCheckIndex];
+                if (LineToCheck == NULL)
+                {
+                    LinesToCheckIndex++;
+                    continue;
+                }
+
+                bool SymbolFound = false;
                 SymbolPositionsLeftToCheck = DigitsToCheck;
+                i32 SymbolCheckIndex = NumberStartPosition == 0 ? NumberStartPosition : NumberStartPosition -1;
 
                 while(SymbolPositionsLeftToCheck > 0)
                 {
-                    PotentialSymbol = PreviousLine->Content[SymbolCheckIndex];
+                    char PotentialSymbol = LineToCheck->Content[SymbolCheckIndex];
                     SymbolFound = IsSymbol(PotentialSymbol);
                     if (SymbolFound)
                     {
-                        //printf("Symbol is N, at %i: %c (%i)\n", SymbolCheckIndex, PotentialSymbol, Number);
                         Part1Answer += Number;
                         break;
                     }
@@ -103,53 +114,8 @@ int main(void)
                     SymbolPositionsLeftToCheck--;
                 }
 
-                if (SymbolFound) continue;;
-            }
-
-            // Check S if we are not on the last line
-            if (LineIndex < InputParts->Count - 1)
-            {
-                String *NextLine = InputParts->Contents[LineIndex + 1];
-                SymbolPositionsLeftToCheck = DigitsToCheck;
-                SymbolCheckIndex = NumberStartPosition == 0 ? NumberStartPosition : NumberStartPosition -1;
-
-                while(SymbolPositionsLeftToCheck > 0)
-                {
-                    PotentialSymbol = NextLine->Content[SymbolCheckIndex];
-                    if (IsSymbol(PotentialSymbol))
-                    {
-                        //printf("Symbol is S, at %i: %c (%i)\n", SymbolCheckIndex, PotentialSymbol, Number);
-                        Part1Answer += Number;
-                        break;
-                    }
-                    SymbolCheckIndex++;
-                    SymbolPositionsLeftToCheck--;
-                }
-
-                if (SymbolFound) continue;;
-            }
-
-            // Check W if we are not at the edge
-            if (NumberStartPosition > 0)
-            {
-                PotentialSymbol = CurrentLine->Content[NumberStartPosition - 1];
-                if (IsSymbol(PotentialSymbol))
-                {
-                    //printf("Symbol is at W: %c (%i)\n", PotentialSymbol, Number);
-                    Part1Answer += Number;
-                    continue;
-                }
-            }
-            // Check E if we are not at the edge
-            if (NumberStartPosition < CurrentLine->Size)
-            {
-                PotentialSymbol = CurrentLine->Content[NumberStartPosition - 2 + DigitsToCheck];
-                if (IsSymbol(PotentialSymbol))
-                {
-                    //printf("Symbol is at E: %c (%i)\n", PotentialSymbol, Number);
-                    Part1Answer += Number;
-                    continue;
-                }
+                if (SymbolFound) break;
+                LinesToCheckIndex++;
             }
         }
     }
