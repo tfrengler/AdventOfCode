@@ -5,7 +5,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace AdventOfCode2023.Year2023
+namespace AdventOfCode.Year2023
 {
     [TestFixture]
     public class Day01

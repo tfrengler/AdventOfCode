@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace AdventOfCode2023.Year2023
+namespace AdventOfCode.Year2023
 {
     [NonParallelizable]
     [TestFixture]

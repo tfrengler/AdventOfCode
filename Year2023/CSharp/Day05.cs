@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AdventOfCode2023.Year2023
+namespace AdventOfCode.Year2023
 {
     [TestFixture]
     [NonParallelizable]

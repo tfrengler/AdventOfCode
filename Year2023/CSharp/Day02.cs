@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AdventOfCode2023.Year2023
+namespace AdventOfCode.Year2023
 {
     [TestFixture]
     public class Day02
