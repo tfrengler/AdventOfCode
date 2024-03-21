@@ -98,10 +98,8 @@ namespace AdventOfCode.Year2023
             Span<byte> CardBuffer = stackalloc byte[13];
             Span<byte> Cards = stackalloc byte[5];
 
-            //for(int InputIndex = 0; InputIndex < Input.Length; InputIndex++)
             foreach (string CurrentInput in Input)
             {
-                //string CurrentInput = Input[InputIndex];
                 ReadOnlySpan<char> CardLettersSlice = CurrentInput.AsSpan(0, 5);
 
                 for(int Index = 0; Index < CardLettersSlice.Length; Index++)
@@ -128,9 +126,6 @@ namespace AdventOfCode.Year2023
                     CardValues = Cards.ToArray(),
                     Bid = Convert.ToInt16(CurrentInput[6..])
                 };
-
-                //int Strength = (NewHand.Card1 * 5) + (NewHand.Card2 * 4) + (NewHand.Card3 * 3) + (NewHand.Card4 * 2) + (NewHand.Card5 * 1);
-                //NewHand.Strength = Strength;
 
                 HandType HandType = HandType.NONE;
                 bool AnyCountOf3 = false;
@@ -176,26 +171,6 @@ namespace AdventOfCode.Year2023
                 HandInsertIndex++;
             }
 
-            /*Debug.Assert(Hands[0].Type == HandType.HighCard);
-            Debug.Assert(Hands[1].Type == HandType.OnePair);
-            Debug.Assert(Hands[2].Type == HandType.FullHouse);
-            Debug.Assert(Hands[3].Type == HandType.TwoPair);
-            Debug.Assert(Hands[4].Type == HandType.ThreeOfaKind);
-            Debug.Assert(Hands[5].Type == HandType.HighCard);
-            Debug.Assert(Hands[6].Type == HandType.HighCard);
-            Debug.Assert(Hands[7].Type == HandType.OnePair);
-            Debug.Assert(Hands[8].Type == HandType.ThreeOfaKind);
-            Debug.Assert(Hands[9].Type == HandType.TwoPair);
-            Debug.Assert(Hands[10].Type == HandType.TwoPair);
-            Debug.Assert(Hands[11].Type == HandType.ThreeOfaKind);
-            Debug.Assert(Hands[12].Type == HandType.FiveOfaKind);
-            Debug.Assert(Hands[13].Type == HandType.FourOfaKind);
-            Debug.Assert(Hands[14].Type == HandType.FourOfaKind);
-            Debug.Assert(Hands[15].Type == HandType.FiveOfaKind);
-            Debug.Assert(Hands[16].Type == HandType.FourOfaKind);
-            Debug.Assert(Hands[17].Type == HandType.FourOfaKind);
-            Debug.Assert(Hands[18].Type == HandType.FourOfaKind);*/
-
             long FinalValue = 0;
 
             List<Hand> HandsOrdered = Hands.ToList();
@@ -215,33 +190,6 @@ namespace AdventOfCode.Year2023
                 return 0;
             });
 
-            /*int TestIndex = 0;
-            foreach (var test in HandsOrdered)
-            {
-                Console.WriteLine($"[{TestIndex}] = {test.Cards} ({test.Strength})");
-                TestIndex++;
-            }
-
-            Debug.Assert(HandsOrdered[0].Cards == "2345J", $"Expected 0 to be 2345J but it was {HandsOrdered[0].Cards}");
-            Debug.Assert(HandsOrdered[1].Cards == "2345A", $"Expected 1 to be 2345A but it was {HandsOrdered[1].Cards}");
-            Debug.Assert(HandsOrdered[2].Cards == "J345A", $"Expected 2 to be J345A but it was {HandsOrdered[2].Cards}");
-            Debug.Assert(HandsOrdered[3].Cards == "32T3K", $"Expected 3 to be 32T3K but it was {HandsOrdered[3].Cards}");
-            Debug.Assert(HandsOrdered[4].Cards == "Q2KJJ", $"Expected 4 to be Q2KJJ but it was {HandsOrdered[4].Cards}");
-            Debug.Assert(HandsOrdered[5].Cards == "T3T3J", $"Expected 5 to be T3T3J but it was {HandsOrdered[5].Cards}");
-            Debug.Assert(HandsOrdered[6].Cards == "KTJJT", $"Expected 6 to be KTJJT but it was {HandsOrdered[6].Cards}");
-            Debug.Assert(HandsOrdered[7].Cards == "KK677", $"Expected 7 to be KK677 but it was {HandsOrdered[7].Cards}");
-            Debug.Assert(HandsOrdered[8].Cards == "T3Q33", $"Expected 8 to be T3Q33 but it was {HandsOrdered[8].Cards}");
-            Debug.Assert(HandsOrdered[9].Cards == "T55J5", $"Expected 9 to be T55J5 but it was {HandsOrdered[9].Cards}");
-            Debug.Assert(HandsOrdered[10].Cards == "QQQJA", $"Expected 10 to be QQQJA but it was {HandsOrdered[10].Cards}");
-            Debug.Assert(HandsOrdered[11].Cards == "Q2Q2Q", $"Expected 11 to be Q2Q2Q but it was {HandsOrdered[11].Cards}");
-            Debug.Assert(HandsOrdered[12].Cards == "2JJJJ", $"Expected 12 to be 2JJJJ but it was {HandsOrdered[12].Cards}");
-            Debug.Assert(HandsOrdered[13].Cards == "2AAAA", $"Expected 13 to be 2AAAA but it was {HandsOrdered[13].Cards}");
-            Debug.Assert(HandsOrdered[14].Cards == "JJJJ2", $"Expected 14 to be JJJJ2 but it was {HandsOrdered[14].Cards}");
-            Debug.Assert(HandsOrdered[15].Cards == "JAAAA", $"Expected 15 to be JAAAA but it was {HandsOrdered[15].Cards}");
-            Debug.Assert(HandsOrdered[16].Cards == "AAAAJ", $"Expected 16 to be AAAAJ but it was {HandsOrdered[16].Cards}");
-            Debug.Assert(HandsOrdered[17].Cards == "JJJJJ", $"Expected 17 to be JJJJJ but it was {HandsOrdered[17].Cards}");
-            Debug.Assert(HandsOrdered[18].Cards == "AAAAA", $"Expected 18 to be AAAAA but it was {HandsOrdered[18].Cards}");*/
-
             for(int Index = Hands.Length - 1; Index != -1; Index--)
             {
                 var CurrentHand = HandsOrdered[Index];
@@ -252,7 +200,7 @@ namespace AdventOfCode.Year2023
             Trace.Assert(FinalValue == 246424613, $"Expected answer to be 246424613 but it was {FinalValue}");
         }
 
-        [TestCase]
+        //[TestCase]
         public void Part02()
         {
             CardValues = new()

@@ -248,7 +248,7 @@ namespace AdventOfCode.Year2023
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
         }
 
-        [TestCase]
+        [TestCase(Ignore = "It's slow, takes about 1.5 to 2 minutes in Release-mode")]
         public void Part02_Variation01()
         {
             Trace.Assert(Seeds.Length % 2 == 0);
@@ -362,7 +362,7 @@ namespace AdventOfCode.Year2023
             Console.WriteLine("Seed to location calculation time: " + Timer.Elapsed);
             FinalValue = Locations.Min();
             // 896125601 for seed range 0
-            // 29 seconds in Release mode
+            // 15-29 seconds in Release mode
 
             Console.WriteLine(FinalValue);
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");

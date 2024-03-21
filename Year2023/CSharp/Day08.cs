@@ -47,86 +47,132 @@ namespace AdventOfCode.Year2023
                 if (NextNode == "ZZZ") break;
 
                 CurrentNodeSet = NodeMap[NextNode];
+
                 InstructionIndex++;
-
-                if (InstructionIndex == Instructions.Length)
-                {
-                    InstructionIndex = 0;
-                }
-
-                if (StepsTaken > int.MaxValue / 2)
-                {
-                    throw new Exception("Endless loop detection");
-                }
+                InstructionIndex = InstructionIndex % Instructions.Length;
             }
 
             Console.WriteLine("Part one answer: " + StepsTaken);
             Trace.Assert(StepsTaken == 15517);
         }
 
+        struct Node
+        {
+            public char Character;
+            public ushort Left;
+            public ushort Right;
+        }
+
         // The dumb, bruteforce approach which still didn't finish after 5 minute runtime...
         //[TestCase]
-        public void Part02x()
+        public void Part02_Bruteforce()
         {
             ReadOnlySpan<char> Instructions = Input[0].AsSpan();
+            var InterimNodeMap = new Dictionary<string, ushort>();
+            Span<Node> NodeMap = stackalloc Node[762];
+
+            for (int Index = 2; Index < Input.Length; Index++)
+            {
+                string CurrentLine = Input[Index];
+                string MapIndex = CurrentLine.Substring(0, 3);
+                InterimNodeMap.Add(MapIndex, (ushort)(Index - 2));
+            }
+
+            for (int Index = 2; Index < Input.Length; Index++)
+            {
+                string CurrentLine = Input[Index];
+                string MapIndex = CurrentLine.Substring(0, 3);
+                string MapValueL = CurrentLine.Substring(7, 3);
+                string MapValueR = CurrentLine.Substring(12, 3);
+
+                NodeMap[Index-2] = new Node()
+                {
+                    Character = MapIndex[2],
+                    Left = InterimNodeMap[MapValueL],
+                    Right = InterimNodeMap[MapValueR]
+                };
+            }
+
+            Debug.Assert(NodeMap[0].Character == 'X');
+            Debug.Assert(NodeMap[0].Left == 266);
+            Debug.Assert(NodeMap[0].Right == 489);
+
+            Debug.Assert(NodeMap[49].Character == 'K');
+            Debug.Assert(NodeMap[49].Left == 62);
+            Debug.Assert(NodeMap[49].Right == 481);
+
+            Debug.Assert(NodeMap[99].Character == 'F');
+            Debug.Assert(NodeMap[99].Left == 394);
+            Debug.Assert(NodeMap[99].Right == 378);
+
+            Debug.Assert(NodeMap[149].Character == 'S');
+            Debug.Assert(NodeMap[149].Left == 569);
+            Debug.Assert(NodeMap[149].Right == 504);
 
             int InstructionIndex = 0;
             long StepsTaken = 0;
-            Tuple<string, string>[] CurrentNodeSet = new[]
+            Span<ushort> CurrentNodeSet = stackalloc ushort[]
             {
-                NodeMap["JVA"],
-                NodeMap["XLA"],
-                NodeMap["DNA"],
-                NodeMap["AAA"],
-                NodeMap["SHA"],
-                NodeMap["DLA"]
+                InterimNodeMap["JVA"],
+                InterimNodeMap["XLA"],
+                InterimNodeMap["DNA"],
+                InterimNodeMap["AAA"],
+                InterimNodeMap["SHA"],
+                InterimNodeMap["DLA"],
             };
-            string[] NextNode = new string[6];
+            Span<ushort> NextNode = new ushort[6];
 
+            var Timer = Stopwatch.StartNew();
             while (true)
             {
                 char NextInstruction = Instructions[InstructionIndex];
-                NextNode[0] = NextInstruction == 'L' ? CurrentNodeSet[0].Item1 : CurrentNodeSet[0].Item2;
-                NextNode[1] = NextInstruction == 'L' ? CurrentNodeSet[1].Item1 : CurrentNodeSet[1].Item2;
-                NextNode[2] = NextInstruction == 'L' ? CurrentNodeSet[2].Item1 : CurrentNodeSet[2].Item2;
-                NextNode[3] = NextInstruction == 'L' ? CurrentNodeSet[3].Item1 : CurrentNodeSet[3].Item2;
-                NextNode[4] = NextInstruction == 'L' ? CurrentNodeSet[4].Item1 : CurrentNodeSet[4].Item2;
-                NextNode[5] = NextInstruction == 'L' ? CurrentNodeSet[5].Item1 : CurrentNodeSet[5].Item2;
+                NextNode[0] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[0]].Left : NodeMap[CurrentNodeSet[0]].Right;
+                NextNode[1] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[1]].Left : NodeMap[CurrentNodeSet[1]].Right;
+                NextNode[2] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[2]].Left : NodeMap[CurrentNodeSet[2]].Right;
+                NextNode[3] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[3]].Left : NodeMap[CurrentNodeSet[3]].Right;
+                NextNode[4] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[4]].Left : NodeMap[CurrentNodeSet[4]].Right;
+                NextNode[5] = NextInstruction == 'L' ? NodeMap[CurrentNodeSet[5]].Left : NodeMap[CurrentNodeSet[5]].Right;
                 StepsTaken++;
 
                 if (
-                        NextNode[0][2] == 'Z' &&
-                        NextNode[1][2] == 'Z' &&
-                        NextNode[2][2] == 'Z' &&
-                        NextNode[3][2] == 'Z' &&
-                        NextNode[4][2] == 'Z' &&
-                        NextNode[5][2] == 'Z'
+                        NodeMap[NextNode[0]].Character == 'Z' &&
+                        NodeMap[NextNode[1]].Character == 'Z' &&
+                        NodeMap[NextNode[2]].Character == 'Z' &&
+                        NodeMap[NextNode[3]].Character == 'Z' &&
+                        NodeMap[NextNode[4]].Character == 'Z' &&
+                        NodeMap[NextNode[5]].Character == 'Z'
                     )
                 {
                     break;
                 }
 
-                CurrentNodeSet[0] = NodeMap[NextNode[0]];
-                CurrentNodeSet[1] = NodeMap[NextNode[1]];
-                CurrentNodeSet[2] = NodeMap[NextNode[2]];
-                CurrentNodeSet[3] = NodeMap[NextNode[3]];
-                CurrentNodeSet[4] = NodeMap[NextNode[4]];
-                CurrentNodeSet[5] = NodeMap[NextNode[5]];
+                CurrentNodeSet[0] = NextNode[0];
+                CurrentNodeSet[1] = NextNode[1];
+                CurrentNodeSet[2] = NextNode[2];
+                CurrentNodeSet[3] = NextNode[3];
+                CurrentNodeSet[4] = NextNode[4];
+                CurrentNodeSet[5] = NextNode[5];
                 InstructionIndex++;
 
-                if (InstructionIndex == Instructions.Length)
-                {
-                    InstructionIndex = 0;
-                }
+                InstructionIndex = InstructionIndex % Instructions.Length;
+
+                //if (StepsTaken == 1_000_000_000)
+                //{
+                //    break;
+                //}
             }
+            //Console.WriteLine($"Time taken: {Timer.Elapsed}");
 
             Console.WriteLine("Part two answer: " + StepsTaken);
-            //Trace.Assert(StepsTaken == 10_668_805_667_831);
+            Trace.Assert(StepsTaken == 14_935_034_899_483);
         }
 
         [TestCase]
         public void Part02()
         {
+            // This answer I had to look up. There was no way with my piss poor math skills that I could ever figure out
+            // that the answer to this was using LCM (and I didn't even know what that was until now). And even then I still
+            // don't understand why LCM is a solution to this.
             ReadOnlySpan<char> Instructions = Input[0].AsSpan();
 
             int InstructionIndex = 0;
@@ -160,12 +206,9 @@ namespace AdventOfCode.Year2023
                     }
 
                     CurrentNodeSet = NodeMap[NextNode];
-                    InstructionIndex++;
 
-                    if (InstructionIndex == Instructions.Length)
-                    {
-                        InstructionIndex = 0;
-                    }
+                    InstructionIndex++;
+                    InstructionIndex = InstructionIndex % Instructions.Length;
                 }
             }
 
