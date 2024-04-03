@@ -4,12 +4,22 @@
 #include <string.h>
 #include "stdio.h"
 
-typedef struct _ScratchCard
+i32Array *AllCards;
+i32 Part02Answer = 0;
+
+void ProcessWinningCards(i32 cardId)
 {
-    i32 Id;
-    i32* WinningCards;
-    i32* Scratchcards;
-} ScratchCard;
+    // To prevent the recursion from overflowing, since it takes index + 1
+    if (cardId >= AllCards->Size) return;
+
+    Part02Answer++;
+    i32 CardsToTake = AllCards->Value[cardId];
+    for (i32 index = cardId + 1; CardsToTake > 0; index++)
+    {
+        ProcessWinningCards(index);
+        CardsToTake--;
+    }
+}
 
 int main(void)
 {
@@ -17,9 +27,9 @@ int main(void)
     if (Input == NULL) return EXIT_FAILURE;
 
     i32 Part01Answer = 0;
-    ScratchCard *AllCards[Input->Count];
     const i32 WinningCardCount = 10;
     const i32 ScratchcardsPlayedCount = 25;
+    AllCards = i32Array_Make(Input->Count, NULL);
 
     /*StringArray* Input = malloc(sizeof *Input + sizeof(String*[6]));
     Input->Count = 6;
@@ -37,7 +47,7 @@ int main(void)
         char CardBuffer[3] = {0};
 
         memcpy(CardIdBuffer, &CurrentString->Content[5], 3);
-        i32 CardId = atoi(CardIdBuffer);
+        //i32 CardId = atoi(CardIdBuffer);
         // printf("Card id: %i\n", CardId);
 
         i32* WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
@@ -59,6 +69,7 @@ int main(void)
         }
 
         i32 Score = 0;
+        i32 HowManyWinningCardHits = 0;
         for(i32 Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++)
         {
             i32 CurrentNumber = Scratchcards[Index1];
@@ -67,21 +78,27 @@ int main(void)
                 if (WinningCards[Index2] == CurrentNumber)
                 {
                     Score = Score == 0 ? 1 : Score * 2;
+                    HowManyWinningCardHits++;
                 }
             }
         }
 
         Part01Answer += Score;
-
-        ScratchCard* NewCard = malloc(sizeof *NewCard);
-        NewCard->Id = CardId;
-        NewCard->WinningCards = WinningCards;
-        NewCard->Scratchcards = Scratchcards;
-        AllCards[LineIndex] = NewCard;
+        AllCards->Value[LineIndex] = HowManyWinningCardHits;
     }
 
-    printf("Part answer: %i\n", Part01Answer);
+    printf("Part 1 answer: %i\n", Part01Answer);
     assert(Part01Answer == 26218);
+
+    for(i32 Index = 0; Index < Input->Count; Index++)
+    {
+        ProcessWinningCards(Index);
+    }
+
+    printf("Part 2 answer: %i\n", Part02Answer);
+    assert(Part02Answer == 9997537);
+
+    i32Array_Free(AllCards);
 
     return EXIT_SUCCESS;
 }

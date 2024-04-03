@@ -655,3 +655,43 @@ u8 u8Array_Max(const u8Array* input)
     const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u8_Max);
     return *(u8*)ReturnData;
 }
+
+/**
+ * @brief   Creates (mallocs) an instance of i32Array around a raw array.
+ * @param   size    : The amount of elements in the array. If less than 1 then NULL is returned.
+ * @param   values  : OPTIONAL. The values copied to the Value-property. If NULL then Value-property is still allocated but initialized to 0.
+ * @retval  An array of i32 elements with the given size.
+*/
+i32Array* i32Array_Make(i64 size, const i32* values)
+{
+    if (size < 1) return NULL;
+    i32Array* ReturnData = malloc(sizeof *ReturnData);
+
+#if DEBUG()
+    assert(ReturnData != NULL);
+#endif
+    
+    ReturnData->Size = size;
+    ReturnData->Value = calloc(sizeof(i32) * size, sizeof(i32));
+
+#if DEBUG()
+    assert(ReturnData->Value != NULL);
+#endif
+
+    if (values != NULL)
+    {
+        memcpy(ReturnData->Value, values, size);
+    }
+
+    return ReturnData;
+}
+
+void i32Array_Free(i32Array* input)
+{
+#if DEBUG()
+    assert(input != NULL);
+#endif
+
+    free(input->Value);
+    free(input);
+}

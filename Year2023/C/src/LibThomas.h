@@ -139,4 +139,7 @@ u32 u32Array_Max(const u32Array* input);
 u16 u16Array_Max(const u16Array* input);
 u8 u8Array_Max(const u8Array* input);
 
+i32Array* i32Array_Make(i64 size, const i32* values);
+void i32Array_Free(i32Array* input);
+
 #endif
