@@ -1,15 +1,17 @@
 #include "LibThomas.h"
 #include "stdlib.h"
 #include <assert.h>
+#include <limits.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 #include "stdio.h"
 
 typedef struct _MapEntry
 {
-    i64 Source;
-    i64 Destination;
-    i64 Range;
+    u64 Source;
+    u64 Destination;
+    u64 Range;
 } MapEntry;
 
 i64* Seeds;
@@ -24,14 +26,25 @@ MapEntry* HumidityToLocationMap;
 
 MapEntry** MapsInOrder;
 
+u64 CalculateLocation(u64 seed);
+
+const i32 MapCount = 7;
+const i32 SeedCount = 20;
+
+i32 MapSizes[7];
+
 int main(void)
 {
-    const i32 MapCount = 7;
-    
-    i32 MapSizes[7] = {10,16,15,45,15,23,11};
+    MapSizes[0] = 10;
+    MapSizes[1] = 16;
+    MapSizes[2] = 15;
+    MapSizes[3] = 45;
+    MapSizes[4] = 15;
+    MapSizes[5] = 23;
+    MapSizes[6] = 11;
 
     i32 MapStartAndEndIndices[14] = {
-        3, 13,
+        3, 12,
         15,30,
         33,47,
         50,94,
@@ -57,11 +70,11 @@ int main(void)
     MapsInOrder[5] = TemperatureToHumidityMap;
     MapsInOrder[6] = HumidityToLocationMap;
 
-    Seeds = malloc(sizeof(u64) * 20);
+    Seeds = malloc(sizeof(u64) * SeedCount);
 
     StringArray* Input = File_ReadAllLines("Input/05.txt");
     if (Input == NULL) return EXIT_FAILURE;
-    i32 PartAnswer = 0;
+    u64 PartAnswer = LONG_LONG_MAX;
 
     String* SeedInput = Input->Contents[0];
     char SeedConversionBuffer[11] = {0};
@@ -81,28 +94,67 @@ int main(void)
         }
     }
 
-    i32 MapIndex = 0;
-    for(i32 Index = 3; Index < 13; Index++)
+    i32 MapStartAndEndIndex = 0;
+    for(i32 Index = 0; Index < MapCount; Index++)
     {
-        String* CurrentMapLine = Input->Contents[Index];
-        StringArray* Parts = String_Split(CurrentMapLine, ' ');
-        assert(Parts->Count == 3);
+        MapEntry* CurrentMap = MapsInOrder[Index];
+        i32 MapStart = MapStartAndEndIndices[MapStartAndEndIndex];
+        i32 MapEnd = MapStartAndEndIndices[MapStartAndEndIndex+1] + 1;
+        i32 MapIndex = 0;
 
-        MapEntry* NewEntry = malloc(sizeof *NewEntry);
-        NewEntry->Source = atoll(Parts->Contents[0]->Content);
-        NewEntry->Destination = atoll(Parts->Contents[1]->Content);
-        NewEntry->Range = atoll(Parts->Contents[2]->Content);
+        for(i32 Index2 = MapStart; Index2 < MapEnd; Index2++)
+        {
+            String* CurrentMapLine = Input->Contents[Index2];
+            StringArray* Parts = String_Split(CurrentMapLine, ' ');
+            assert(Parts->Count == 3);
 
-        SeedToSoilMap[MapIndex] = *NewEntry;
-        MapIndex++;
+            MapEntry* NewEntry = malloc(sizeof *NewEntry);
+            NewEntry->Destination = atoll(Parts->Contents[0]->Content);
+            NewEntry->Source = atoll(Parts->Contents[1]->Content);
+            NewEntry->Range = atoll(Parts->Contents[2]->Content);
 
-        StringArray_Free(Parts);
+            CurrentMap[MapIndex] = *NewEntry;
+            MapIndex++;
+
+            StringArray_Free(Parts);
+        }
+
+        MapStartAndEndIndex += 2;
     }
 
-    printf("Part answer: %i\n", PartAnswer);
-    //assert(PartAnswer == 389056265);
+    u64 Location = 0; 
+
+    for(i32 Index = 0; Index < SeedCount; Index++)
+    {
+        u64 CurrentSeed = Seeds[Index];
+        Location = CalculateLocation(CurrentSeed);
+        PartAnswer = Location < PartAnswer ? Location : PartAnswer;
+    }
+
+    printf("Part answer: %llu\n", PartAnswer);
+    assert(PartAnswer == 389056265);
 
     return EXIT_SUCCESS;
 }
 
+u64 CalculateLocation(u64 seed)
+{
+    u64 ReturnData = seed;
+    for (int ChainIndex = 0; ChainIndex < MapCount; ChainIndex++)
+    {
+        MapEntry* CurrentMap = MapsInOrder[ChainIndex];
 
+        for (i32 MapIndex = 0; MapIndex < MapSizes[ChainIndex]; MapIndex++)
+        {
+            MapEntry CurrentMapEntry = CurrentMap[MapIndex];
+
+            if (ReturnData >= CurrentMapEntry.Source && ReturnData < (CurrentMapEntry.Source + CurrentMapEntry.Range))
+            {
+                ReturnData = (CurrentMapEntry.Destination - CurrentMapEntry.Source) + ReturnData;
+                break;
+            }
+        }
+    }
+
+    return ReturnData;
+}
