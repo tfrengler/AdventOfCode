@@ -600,6 +600,20 @@ u64 u64Array_Max(const u64Array* input)
     return *(u64*)ReturnData;
 }
 
+static bool u64_Min(const void* number1Pointer, const void* number2Pointer)
+{
+#if DEBUG()
+    assert(number1Pointer != NULL);assert(number2Pointer != NULL);
+#endif
+    return *(u64*)number1Pointer < *(u64*)number2Pointer;
+}
+
+u64 u64Array_Min(const u64Array* input)
+{
+    const void* ReturnData = ArrayNumberCompare(input->Value, input->Size, sizeof(input->Value[0]), &u64_Min);
+    return *(u64*)ReturnData;
+}
+
 static bool i16_Max(const void* number1Pointer, const void* number2Pointer)
 {
 #if DEBUG()
@@ -670,7 +684,7 @@ i32Array* i32Array_Make(i64 size, const i32* values)
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
-    
+
     ReturnData->Size = size;
     ReturnData->Value = calloc(sizeof(i32) * size, sizeof(i32));
 

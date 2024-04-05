@@ -119,7 +119,6 @@ StringArray* File_ReadAllLines(const char* fileNameAndPath);
 StringArray* String_Split(const String* inputString, char delimiter);
 void StringArray_Free(StringArray* input);
 
-
 void String_Free(String* input);
 String* File_ReadAllText(const char* fileNameAndPath);
 String* String_Make(const char* content, u16 size);
@@ -135,6 +134,7 @@ i64 i64Array_Max(const i64Array* input);
 i16 i16Array_Max(const i16Array* input);
 i8 i8Array_Max(const i8Array* input);
 u64 u64Array_Max(const u64Array* input);
+u64 u64Array_Min(const u64Array* input);
 u32 u32Array_Max(const u32Array* input);
 u16 u16Array_Max(const u16Array* input);
 u8 u8Array_Max(const u8Array* input);

@@ -29,6 +29,7 @@
                 "-fsanitize-trap",
                 "-fno-omit-frame-pointer",
                 "-fno-common",
+                "-pthread",
                 "-g3",
                 "-O0",
                 "${file}",
