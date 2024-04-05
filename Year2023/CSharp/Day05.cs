@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -368,12 +369,87 @@ namespace AdventOfCode.Year2023
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
         }
 
-        //[TestCase]
+        [TestCase]
         public void Part02_Variation03()
         {
             // This would involve testing for ranges and splitting those if the input range falls outside outside the maps to test
             // and then test those extra ranges (meaning some form of recursive approach).
             // This would likely give a result in a matter of ms instead of seconds.
+
+            Queue<ValueTuple<long,long>> SeedsAndRanges = new();
+
+            for(int Index = 0; Index < Seeds.Length; Index += 2)
+            {
+                SeedsAndRanges.Enqueue(
+                    ValueTuple.Create(
+                        Seeds[Index],
+                        Seeds[Index + 1]
+                    )
+                );
+            }
+
+            ValueTuple<long, long> CurrentSeedAndRange;
+            long FinalValue = long.MaxValue;
+
+            while(SeedsAndRanges.TryDequeue(out CurrentSeedAndRange))
+            {
+                (long SeedStart, long SeedRange) = CurrentSeedAndRange;
+                long SeedEnd = SeedStart + SeedRange;
+
+                for (int ChainIndex = 0; ChainIndex < MapsInOrder.Length; ChainIndex++)
+                {
+                    ValueTuple<long, long, long>[] CurrentMap = MapsInOrder[ChainIndex];
+                    for (int MapIndex = 0; MapIndex < CurrentMap.Length; MapIndex++)
+                    {
+                        (long DestStart, long SourceStart, long Range) = CurrentMap[MapIndex];
+                        long SourceEnd = SourceStart + Range;
+
+                        if (SeedStart >= SourceStart && SeedEnd <= SourceEnd)
+                        {
+                            SeedStart = (DestStart - SourceStart) + SeedStart;
+                            continue;
+                        }
+
+                        if (SeedStart < SourceStart && SeedEnd <= SourceEnd)
+                        {
+                            var OutsideRange = ValueTuple.Create(SeedStart, SeedRange - SourceStart);
+                            var InsideRange = ValueTuple.Create(SourceStart, SeedRange - (SeedRange - SourceStart));
+                            SeedsAndRanges.Enqueue(OutsideRange);
+                            SeedsAndRanges.Enqueue(InsideRange);
+
+                            break;
+                        }
+
+                        if (SeedStart >= SourceStart && SeedEnd > SourceEnd)
+                        {
+                            var OutsideRange = ValueTuple.Create(SourceEnd, (SeedStart + SeedRange) - SourceEnd);
+                            var InsideRange = ValueTuple.Create(SeedStart, SeedRange - (SeedEnd - SourceEnd));
+                            SeedsAndRanges.Enqueue(OutsideRange);
+                            SeedsAndRanges.Enqueue(InsideRange);
+
+                            break;
+                        }
+
+                        if (SeedStart < SourceStart && SeedEnd > SourceEnd)
+                        {
+                            var OutsideRangeStart = ValueTuple.Create(SeedStart, SeedRange - SourceStart);
+                            var OutsideRangeEnd = ValueTuple.Create(SourceEnd, (SeedStart + SeedRange) - SourceEnd);
+                            var InsideRange = ValueTuple.Create(SourceStart, SourceEnd - SourceStart);
+                            
+                            SeedsAndRanges.Enqueue(OutsideRangeStart);
+                            SeedsAndRanges.Enqueue(OutsideRangeEnd);
+                            SeedsAndRanges.Enqueue(InsideRange);
+
+                            break;
+                        }
+                    }
+                }
+
+                FinalValue = SeedStart < FinalValue ? SeedStart : FinalValue;
+            }
+
+            Console.WriteLine(FinalValue);
+            Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
         }
     }
 }
