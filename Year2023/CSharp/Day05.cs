@@ -33,9 +33,9 @@ namespace AdventOfCode.Year2023
         public Day05()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
-            Input = File.ReadAllLines("Input/05.txt");
+            //Input = File.ReadAllLines("Input/05.txt");
 
-            /*Input = new[]
+            Input = new[]
             {
                 "seeds: 79 14 55 13",
                 "",
@@ -70,7 +70,7 @@ namespace AdventOfCode.Year2023
                 "humidity-to-location map:",
                 "60 56 37",
                 "56 93 4"
-            };*/
+            };
 
             ParseSeeds();
             ParseMaps();
@@ -369,6 +369,18 @@ namespace AdventOfCode.Year2023
             Trace.Assert(FinalValue == 137516820, $"Expected final score to be 137516820 but it was {FinalValue}");
         }
 
+        public readonly struct SeedRange
+        {
+            public readonly long StartInclusive;
+            public readonly long EndInclusive;
+
+            public SeedRange(long start, long end)
+            {
+                StartInclusive = start;
+                EndInclusive = end;
+            }
+        }
+
         [TestCase]
         public void Part02_Variation03()
         {
@@ -376,76 +388,85 @@ namespace AdventOfCode.Year2023
             // and then test those extra ranges (meaning some form of recursive approach).
             // This would likely give a result in a matter of ms instead of seconds.
 
-            Queue<ValueTuple<long,long>> SeedsAndRanges = new();
+            Queue<SeedRange> SeedsAndRanges = new();
 
             for(int Index = 0; Index < Seeds.Length; Index += 2)
             {
-                SeedsAndRanges.Enqueue(
-                    ValueTuple.Create(
-                        Seeds[Index],
-                        Seeds[Index + 1]
-                    )
-                );
+                long Start = Seeds[Index];
+                long End = Start + Seeds[Index + 1] - 1;
+
+                SeedsAndRanges.Enqueue(new SeedRange(Start, End));
             }
 
-            ValueTuple<long, long> CurrentSeedAndRange;
             long FinalValue = long.MaxValue;
+            var Timer = Stopwatch.StartNew();
 
-            while(SeedsAndRanges.TryDequeue(out CurrentSeedAndRange))
+            while(SeedsAndRanges.TryDequeue(out SeedRange CurrentSeedRange))
             {
-                (long SeedStart, long SeedRange) = CurrentSeedAndRange;
-                long SeedEnd = SeedStart + SeedRange;
+                if (Timer.Elapsed > TimeSpan.FromSeconds(2.0d))
+                {
+                    Console.WriteLine($"Taking too long... {SeedsAndRanges.Count}");
+                    return;
+                }
+
+                long SeedStartInclusive = CurrentSeedRange.StartInclusive;
+                long SeedEndInclusive = CurrentSeedRange.EndInclusive;
 
                 for (int ChainIndex = 0; ChainIndex < MapsInOrder.Length; ChainIndex++)
                 {
                     ValueTuple<long, long, long>[] CurrentMap = MapsInOrder[ChainIndex];
                     for (int MapIndex = 0; MapIndex < CurrentMap.Length; MapIndex++)
                     {
-                        (long DestStart, long SourceStart, long Range) = CurrentMap[MapIndex];
-                        long SourceEnd = SourceStart + Range;
+                        (long DestStart, long SourceStartInclusive, long Range) = CurrentMap[MapIndex];
+                        long SourceEndInclusive = SourceStartInclusive + Range;
 
-                        if (SeedStart >= SourceStart && SeedEnd <= SourceEnd)
+                        if (SeedStartInclusive >= SourceStartInclusive && SeedEndInclusive <= SourceEndInclusive)
                         {
-                            SeedStart = (DestStart - SourceStart) + SeedStart;
+                            SeedStartInclusive = (DestStart - SourceStartInclusive) + SeedStartInclusive;
                             continue;
                         }
-
-                        if (SeedStart < SourceStart && SeedEnd <= SourceEnd)
+                        // Sticking out at the beginning
+                        if (SeedStartInclusive < SourceStartInclusive && SeedEndInclusive <= SourceEndInclusive)
                         {
-                            var OutsideRange = ValueTuple.Create(SeedStart, SeedRange - SourceStart);
-                            var InsideRange = ValueTuple.Create(SourceStart, SeedRange - (SeedRange - SourceStart));
-                            SeedsAndRanges.Enqueue(OutsideRange);
-                            SeedsAndRanges.Enqueue(InsideRange);
+                            SeedStartInclusive = (DestStart - SourceStartInclusive) + SourceStartInclusive;
+                            //var OutsideRange = new SeedRange(SeedStartInclusive, SourceStartInclusive - 1);
+                            //var InsideRange = new SeedRange(SeedEndInclusive, SourceEndInclusive);
+                            //SeedsAndRanges.Enqueue(OutsideRange);
+                            //SeedsAndRanges.Enqueue(InsideRange);
 
-                            break;
+                            continue;
                         }
-
-                        if (SeedStart >= SourceStart && SeedEnd > SourceEnd)
+                        // Sticking out at the end
+                        if (SeedStartInclusive >= SourceStartInclusive && SeedEndInclusive >= SourceEndInclusive)
                         {
-                            var OutsideRange = ValueTuple.Create(SourceEnd, (SeedStart + SeedRange) - SourceEnd);
-                            var InsideRange = ValueTuple.Create(SeedStart, SeedRange - (SeedEnd - SourceEnd));
-                            SeedsAndRanges.Enqueue(OutsideRange);
-                            SeedsAndRanges.Enqueue(InsideRange);
+                            SeedStartInclusive = (DestStart - SourceStartInclusive) + SeedStartInclusive;
+                            SeedEndInclusive = SourceEndInclusive;
+                            //var OutsideRange = new SeedRange(SourceEndInclusive + 1, SeedEndInclusive);
+                            //var InsideRange = new SeedRange(SourceStartInclusive, SeedStartInclusive);
+                            //SeedsAndRanges.Enqueue(OutsideRange);
+                            //SeedsAndRanges.Enqueue(InsideRange);
 
-                            break;
+                            continue;
                         }
-
-                        if (SeedStart < SourceStart && SeedEnd > SourceEnd)
+                        // Sticking out at both ends
+                        if (SeedStartInclusive < SourceStartInclusive && SeedEndInclusive > SourceEndInclusive)
                         {
-                            var OutsideRangeStart = ValueTuple.Create(SeedStart, SeedRange - SourceStart);
-                            var OutsideRangeEnd = ValueTuple.Create(SourceEnd, (SeedStart + SeedRange) - SourceEnd);
-                            var InsideRange = ValueTuple.Create(SourceStart, SourceEnd - SourceStart);
-                            
-                            SeedsAndRanges.Enqueue(OutsideRangeStart);
-                            SeedsAndRanges.Enqueue(OutsideRangeEnd);
-                            SeedsAndRanges.Enqueue(InsideRange);
+                            SeedStartInclusive = (DestStart - SourceStartInclusive) + SourceStartInclusive;
+                            SeedEndInclusive = SourceEndInclusive;
+                            //var OutsideRangeStart = new SeedRange(SeedStartInclusive, SourceStartInclusive - 1);
+                            //var OutsideRangeEnd = new SeedRange(SourceEndInclusive + 1, SeedEndInclusive);
+                            //var InsideRange = new SeedRange(SourceStartInclusive, SourceEndInclusive);
 
-                            break;
+                            //SeedsAndRanges.Enqueue(OutsideRangeStart);
+                            //SeedsAndRanges.Enqueue(OutsideRangeEnd);
+                            //SeedsAndRanges.Enqueue(InsideRange);
+
+                            continue;
                         }
                     }
                 }
 
-                FinalValue = SeedStart < FinalValue ? SeedStart : FinalValue;
+                FinalValue = SeedStartInclusive < FinalValue ? SeedStartInclusive : FinalValue;
             }
 
             Console.WriteLine(FinalValue);
