@@ -1,7 +1,13 @@
-#DisableFormat: true
+BasedOnStyle: webkit
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: WithoutElse
+PointerAlignment: Right
+UseTab: Always
 IndentWidth: 4
----
-Language: C
-# Force pointers to the type for C++.
-DerivePointerAlignment: false
-PointerAlignment: Left
+TabWidth: 4
+SortIncludes: true
+NamespaceIndentation: None
+FixNamespaceComments: true
