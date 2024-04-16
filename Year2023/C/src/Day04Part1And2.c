@@ -1,8 +1,8 @@
 #include "LibThomas.h"
+#include "stdio.h"
 #include "stdlib.h"
 #include <assert.h>
 #include <string.h>
-#include "stdio.h"
 
 i32Array *AllCards;
 i32 Part02Answer = 0;
@@ -14,8 +14,7 @@ void ProcessWinningCards(i32 cardId)
 
     Part02Answer++;
     i32 CardsToTake = AllCards->Value[cardId];
-    for (i32 index = cardId + 1; CardsToTake > 0; index++)
-    {
+    for (i32 index = cardId + 1; CardsToTake > 0; index++) {
         ProcessWinningCards(index);
         CardsToTake--;
     }
@@ -23,7 +22,7 @@ void ProcessWinningCards(i32 cardId)
 
 int main(void)
 {
-    StringArray* Input = File_ReadAllLines("Input/04.txt");
+    StringArray *Input = File_ReadAllLines("Input/04.txt");
     if (Input == NULL) return EXIT_FAILURE;
 
     i32 Part01Answer = 0;
@@ -40,29 +39,26 @@ int main(void)
     Input->Contents[4] = String_Make("Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36", 48);
     Input->Contents[5] = String_Make("Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11", 48);*/
 
-    for(i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++)
-    {
-        String* CurrentString = Input->Contents[LineIndex];
-        char CardIdBuffer[4] = {0};
-        char CardBuffer[3] = {0};
+    for (i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
+        String *CurrentString = Input->Contents[LineIndex];
+        char CardIdBuffer[4] = { 0 };
+        char CardBuffer[3] = { 0 };
 
         memcpy(CardIdBuffer, &CurrentString->Content[5], 3);
-        //i32 CardId = atoi(CardIdBuffer);
-        // printf("Card id: %i\n", CardId);
+        // i32 CardId = atoi(CardIdBuffer);
+        //  printf("Card id: %i\n", CardId);
 
-        i32* WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
+        i32 *WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
         i32 WinningCardIndex = 0;
-        for(i32 Index = 10; Index < 40; Index += 3)
-        {
+        for (i32 Index = 10; Index < 40; Index += 3) {
             memcpy(CardBuffer, &CurrentString->Content[Index], 2);
             WinningCards[WinningCardIndex] = atoi(CardBuffer);
             WinningCardIndex++;
         }
 
-        i32* Scratchcards = malloc(sizeof *Scratchcards * ScratchcardsPlayedCount);
+        i32 *Scratchcards = malloc(sizeof *Scratchcards * ScratchcardsPlayedCount);
         i32 ScratchcardIndex = 0;
-        for(i32 Index = 42; Index < CurrentString->Size; Index += 3)
-        {
+        for (i32 Index = 42; Index < CurrentString->Size; Index += 3) {
             memcpy(CardBuffer, &CurrentString->Content[Index], 2);
             Scratchcards[ScratchcardIndex] = atoi(CardBuffer);
             ScratchcardIndex++;
@@ -70,13 +66,10 @@ int main(void)
 
         i32 Score = 0;
         i32 HowManyWinningCardHits = 0;
-        for(i32 Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++)
-        {
+        for (i32 Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++) {
             i32 CurrentNumber = Scratchcards[Index1];
-            for(i32 Index2 = 0; Index2 < WinningCardCount; Index2++)
-            {
-                if (WinningCards[Index2] == CurrentNumber)
-                {
+            for (i32 Index2 = 0; Index2 < WinningCardCount; Index2++) {
+                if (WinningCards[Index2] == CurrentNumber) {
                     Score = Score == 0 ? 1 : Score * 2;
                     HowManyWinningCardHits++;
                 }
@@ -90,8 +83,7 @@ int main(void)
     printf("Part 1 answer: %i\n", Part01Answer);
     assert(Part01Answer == 26218);
 
-    for(i32 Index = 0; Index < Input->Count; Index++)
-    {
+    for (i32 Index = 0; Index < Input->Count; Index++) {
         ProcessWinningCards(Index);
     }
 
@@ -102,5 +94,3 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
-

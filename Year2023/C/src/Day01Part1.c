@@ -1,12 +1,12 @@
 #include "LibThomas.h"
+#include "stdio.h"
 #include "stdlib.h"
 #include <assert.h>
 #include <string.h>
-#include "stdio.h"
 
 int main(void)
 {
-    StringArray* Input = File_ReadAllLines("Input/01.txt");
+    StringArray *Input = File_ReadAllLines("Input/01.txt");
     if (Input == NULL) return EXIT_FAILURE;
     i32 PartAnswer = 0;
 
@@ -15,15 +15,12 @@ int main(void)
     Buffer[2] = '\0';
     int BufferIndex = 0;
 
-    for(i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++)
-    {
-        String* CurrentString = Input->Contents[LineIndex];
+    for (i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
+        String *CurrentString = Input->Contents[LineIndex];
 
-        for(i32 StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++)
-        {
+        for (i32 StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
             char CurrentChar = CurrentString->Content[StringIndex];
-            if ((int)CurrentChar < 58 && (int)CurrentChar > 48)
-            {
+            if ((int)CurrentChar < 58 && (int)CurrentChar > 48) {
                 Buffer[BufferIndex] = CurrentChar;
                 if (BufferIndex == 0) BufferIndex = 1;
             }
@@ -36,7 +33,7 @@ int main(void)
         BufferIndex = 0;
 
         PartAnswer += CalibrationNumber;
-        //if (LineIndex == 10) break;
+        // if (LineIndex == 10) break;
     }
 
     printf("Part answer: %i\n", PartAnswer);
@@ -44,5 +41,3 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
-

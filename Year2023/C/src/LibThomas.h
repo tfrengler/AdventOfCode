@@ -68,45 +68,31 @@ typedef struct _StringArray {
 	String *Contents[];
 } StringArray;
 
-typedef struct _i32Array {
-	i64 Size;
-	i32 *Value;
-} i32Array;
+typedef enum _IntegerType {
+    U8,
+    I8,
+    U16,
+    I16,
+    U32,
+    I32,
+    U64,
+    I64
+} IntegerType;
 
-typedef struct _i64Array {
-	i64 Size;
-	i64 *Value;
-} i64Array;
-
-typedef struct _i16Array {
-	i64 Size;
-	i16 *Value;
-} i16Array;
-
-typedef struct _i8Array {
-	i64 Size;
-	i8 *Value;
-} i8Array;
-
-typedef struct _u32Array {
-	i64 Size;
-	u32 *Value;
-} u32Array;
-
-typedef struct _u64Array {
-	i64 Size;
-	u64 *Value;
-} u64Array;
-
-typedef struct _u16Array {
-	i64 Size;
-	u16 *Value;
-} u16Array;
-
-typedef struct _u8Array {
-	i64 Size;
-	u8 *Value;
-} u8Array;
+typedef struct _IntegerArray {
+    size_t Size;
+    IntegerType Type;
+    union {
+        u8 *u8Data;
+        i8 *i8Data;
+        u16 *u16Data;
+        i16 *i16Data;
+        u32 *u32Data;
+        i32 *i32Data;
+        u64 *u64Data;
+        i64 *i64Data;
+    };
+} IntegerArray;
 
 #if DEBUG()
 #define DEBUG_PRINT(f_, ...) printf((f_), __VA_ARGS__)
@@ -132,17 +118,33 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
 bool String_Equals(const String *original, const String *compare, bool caseInsensitive);
 String *String_Trim(String *input);
 
-i32 i32Array_Max(const i32Array *input);
-i64 i64Array_Max(const i64Array *input);
-i16 i16Array_Max(const i16Array *input);
-i8 i8Array_Max(const i8Array *input);
-u64 u64Array_Max(const u64Array *input);
-u64 u64Array_Min(const u64Array *input);
-u32 u32Array_Max(const u32Array *input);
-u16 u16Array_Max(const u16Array *input);
-u8 u8Array_Max(const u8Array *input);
+IntegerArray* u8Array_Make(size_t size, u8* values);
+IntegerArray* i8Array_Make(size_t size, i8* values);
+IntegerArray* u16Array_Make(size_t size, u16* values);
+IntegerArray* i16Array_Make(size_t size, i16* values);
+IntegerArray* u32Array_Make(size_t size, u32* values);
+IntegerArray* i32Array_Make(size_t size, i32* values);
+IntegerArray* u64Array_Make(size_t size, u64* values);
+IntegerArray *i64Array_Make(size_t size, i64 *values);
 
-i32Array *i32Array_Make(i64 size, const i32 *values);
-void i32Array_Free(i32Array *input);
+void IntegerArray_Free(IntegerArray *input);
+
+u64 u64Array_Max(const IntegerArray *input);
+i64 i64Array_Max(const IntegerArray *input);
+u32 u32Array_Max(const IntegerArray *input);
+i32 i32Array_Max(const IntegerArray *input);
+u16 u16Array_Max(const IntegerArray *input);
+i16 i16Array_Max(const IntegerArray *input);
+i8 i8Array_Max(const IntegerArray *input);
+u8 u8Array_Max(const IntegerArray *input);
+
+u64 u64Array_Min(const IntegerArray *input);
+i64 i64Array_Min(const IntegerArray *input);
+u32 u32Array_Min(const IntegerArray *input);
+i32 i32Array_Min(const IntegerArray *input);
+u16 u16Array_Min(const IntegerArray *input);
+i16 i16Array_Min(const IntegerArray *input);
+i8 i8Array_Min(const IntegerArray *input);
+u8 u8Array_Min(const IntegerArray *input);
 
 #endif
