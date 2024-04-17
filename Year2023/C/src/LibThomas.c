@@ -223,14 +223,14 @@ String *String_Empty(void)
  * @param  input: The string to trim of whitespace.
  * @retval Pointer to a copy of input with whitespace trimmed, or if the string is empty (size == 0) the original instance is returned instead.
  */
-String *String_Trim(String *input)
+String *String_Trim(const String *input)
 {
 #if DEBUG()
     assert(input != NULL);
 #endif
 
     if (input->Size == 0) {
-        return input;
+        return (String*)input;
     }
 
     u16 SubStringStart = 0;
@@ -767,9 +767,9 @@ u8 u8Array_Min(const IntegerArray *input)
     return *(u8 *)ReturnData;
 }
 
-/*
- * */
-static IntegerArray *IntegerArray_Make(size_t size, IntegerType type, void *values)
+/* ********************** Numeric array functions ********************/
+
+static IntegerArray *IntegerArray_Make(size_t size, IntegerType type, const void *values)
 {
     IntegerArray *ReturnData = malloc(sizeof(*ReturnData));
 #if DEBUG()
@@ -879,50 +879,42 @@ void IntegerArray_Free(IntegerArray *input)
     input = 0;
 }
 
-IntegerArray *u8Array_Make(size_t size, u8 values[static size])
+IntegerArray *u8Array_Make(size_t size, const u8 values[static size])
 {
-    IntegerType Type = U8;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, U8, values);
 }
 
-IntegerArray *i8Array_Make(size_t size, i8 *values)
+IntegerArray *i8Array_Make(size_t size, const i8 values[static size])
 {
-    IntegerType Type = I8;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, I8, values);
 }
 
-IntegerArray *u16Array_Make(size_t size, u16 *values)
+IntegerArray *u16Array_Make(size_t size, const u16 values[static size])
 {
-    IntegerType Type = U16;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, U16, values);
 }
 
-IntegerArray *i16Array_Make(size_t size, i16 *values)
+IntegerArray *i16Array_Make(size_t size, const i16 values[static size])
 {
-    IntegerType Type = I16;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, I16, values);
 }
 
-IntegerArray *u32Array_Make(size_t size, u32 *values)
+IntegerArray *u32Array_Make(size_t size, const u32 values[static size])
 {
-    IntegerType Type = U32;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, U32, values);
 }
 
-IntegerArray *i32Array_Make(size_t size, i32 *values)
+IntegerArray *i32Array_Make(size_t size, const i32 values[static size])
 {
-    IntegerType Type = I32;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, I32, values);
 }
 
-IntegerArray *u64Array_Make(size_t size, u64 *values)
+IntegerArray *u64Array_Make(size_t size, const u64 values[static size])
 {
-    IntegerType Type = U64;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, U64, values);
 }
 
-IntegerArray *i64Array_Make(size_t size, i64 *values)
+IntegerArray *i64Array_Make(size_t size, const i64 values[static size])
 {
-    IntegerType Type = I64;
-    return IntegerArray_Make(size, Type, values);
+    return IntegerArray_Make(size, I64, values);
 }
