@@ -118,14 +118,14 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
 bool String_Equals(const String *original, const String *compare, bool caseInsensitive);
 String *String_Trim(const String *input);
 
-IntegerArray* u8Array_Make(size_t size, const u8 values[static size]);
-IntegerArray* i8Array_Make(size_t size, const i8 values[static size]);
-IntegerArray* u16Array_Make(size_t size, const u16 values[static size]);
-IntegerArray* i16Array_Make(size_t size, const i16 values[static size]);
-IntegerArray* u32Array_Make(size_t size, const u32 values[static size]);
-IntegerArray* i32Array_Make(size_t size, const i32 values[static size]);
-IntegerArray* u64Array_Make(size_t size, const u64 values[static size]);
-IntegerArray *i64Array_Make(size_t size, const i64  values[static size]);
+IntegerArray* u8Array_Make(size_t size, const u8 *values);
+IntegerArray* i8Array_Make(size_t size, const i8 *values);
+IntegerArray* u16Array_Make(size_t size, const u16 *values);
+IntegerArray* i16Array_Make(size_t size, const i16 *values);
+IntegerArray* u32Array_Make(size_t size, const u32 *values);
+IntegerArray* i32Array_Make(size_t size, const i32 *values);
+IntegerArray* u64Array_Make(size_t size, const u64 *values);
+IntegerArray *i64Array_Make(size_t size, const i64 *values);
 
 void IntegerArray_Free(IntegerArray *input);
 

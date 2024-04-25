@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 typedef struct _MapEntry {
     u64 Source;
@@ -129,7 +130,7 @@ int main(void)
         MapStartAndEndIndex += 2;
     }
 
-    // Part01();
+    Part01();
     Part02();
 
     return EXIT_SUCCESS;
@@ -146,17 +147,21 @@ void Part01(void)
         PartAnswer = Location < PartAnswer ? Location : PartAnswer;
     }
 
-    printf("Part answer: %llu\n", PartAnswer);
+    printf("Part 1 answer: %llu\n", PartAnswer);
     assert(PartAnswer == 389056265);
+    puts("Part 1 passed");
 }
 
 const i32 ExpectedRanges = 166;
 SeedAndRange *SeedsAndRanges;
 
+// NOTE: Compile without address sanitizer or it will take forever
+// At O2 with 4 threads it takes about 24 seconds
+// At O0 with 4 threads it takes about 89 seconds
 void Part02(void)
 {
     const u64 RangeSplit = 10000000;
-    SeedsAndRanges = calloc(176 * sizeof(*SeedsAndRanges), sizeof(*SeedsAndRanges));
+    SeedsAndRanges = calloc(ExpectedRanges * sizeof(*SeedsAndRanges), sizeof(*SeedsAndRanges));
 
     i32 SeedAndRangeIndex = 0;
 
@@ -199,24 +204,32 @@ void Part02(void)
         }
     }
 
-    Part2Locations = malloc(sizeof(*Part2Locations) * ExpectedRanges);
-    Part2Locations->Size = ExpectedRanges;
-    Part2Locations->u64Data = malloc(ExpectedRanges * sizeof(u64));
+    Part2Locations = u64Array_Make(ExpectedRanges, 0);
 
-    pthread_t Thread1, Thread2, Thread3, Thread4;
+    i32 NumThreads = 4;
+    pthread_t Threads[NumThreads];
+    time_t Start = clock();
 
-    pthread_create(&Thread1, NULL, CalculateLocationTask, NULL);
-    pthread_create(&Thread2, NULL, CalculateLocationTask, NULL);
-    pthread_create(&Thread3, NULL, CalculateLocationTask, NULL);
-    pthread_create(&Thread4, NULL, CalculateLocationTask, NULL);
-    pthread_join(Thread1, NULL);
-    pthread_join(Thread2, NULL);
-    pthread_join(Thread3, NULL);
-    pthread_join(Thread4, NULL);
+    for (i32 Index = 0; Index < NumThreads; Index++) {
+        pthread_create(&Threads[Index], NULL, CalculateLocationTask, NULL);
+        printf("Thread %i created \n", Index);
+    }
+
+    puts("Waiting for threads to finish...");
+
+    for (i32 Index = 0; Index < NumThreads; Index++) {
+        pthread_join(Threads[Index], NULL);
+        printf("Thread %i done \n", Index);
+    }
+    
+    time_t End = clock();
+    double TimeSpent = (double)(End - Start) / CLOCKS_PER_SEC;
+    printf("Time taken: %f seconds\n", TimeSpent);
 
     u64 Part2Answer = u64Array_Min(Part2Locations);
     printf("Part 2 answer: %llu\n", Part2Answer);
     assert(Part2Answer == 137516820);
+    puts("Part 2 passed");
 }
 
 u64 LocationIndex = 0;
@@ -254,8 +267,9 @@ void *CalculateLocationTask(void *_)
         }
 
         pthread_mutex_lock(&LocationIndexLock);
-
+        Part2Locations->u64Data[LocationIndex] = MinValue;
         LocationIndex++;
+        pthread_mutex_unlock(&LocationIndexLock);
     }
 }
 
@@ -263,10 +277,10 @@ u64 CalculateLocation(u64 seed)
 {
     u64 ReturnData = seed;
     for (int ChainIndex = 0; ChainIndex < MapCount; ChainIndex++) {
-        MapEntry *CurrentMap = MapsInOrder[ChainIndex];
+        const MapEntry *CurrentMap = MapsInOrder[ChainIndex];
 
         for (i32 MapIndex = 0; MapIndex < MapSizes[ChainIndex]; MapIndex++) {
-            MapEntry CurrentMapEntry = CurrentMap[MapIndex];
+            const MapEntry CurrentMapEntry = CurrentMap[MapIndex];
 
             if (ReturnData >= CurrentMapEntry.Source && ReturnData < (CurrentMapEntry.Source + CurrentMapEntry.Range)) {
                 ReturnData = (CurrentMapEntry.Destination - CurrentMapEntry.Source) + ReturnData;

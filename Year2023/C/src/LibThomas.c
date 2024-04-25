@@ -879,42 +879,42 @@ void IntegerArray_Free(IntegerArray *input)
     input = 0;
 }
 
-IntegerArray *u8Array_Make(size_t size, const u8 values[static size])
+IntegerArray *u8Array_Make(size_t size, const u8 *values)
 {
     return IntegerArray_Make(size, U8, values);
 }
 
-IntegerArray *i8Array_Make(size_t size, const i8 values[static size])
+IntegerArray *i8Array_Make(size_t size, const i8 *values)
 {
     return IntegerArray_Make(size, I8, values);
 }
 
-IntegerArray *u16Array_Make(size_t size, const u16 values[static size])
+IntegerArray *u16Array_Make(size_t size, const u16 *values)
 {
     return IntegerArray_Make(size, U16, values);
 }
 
-IntegerArray *i16Array_Make(size_t size, const i16 values[static size])
+IntegerArray *i16Array_Make(size_t size, const i16 *values)
 {
     return IntegerArray_Make(size, I16, values);
 }
 
-IntegerArray *u32Array_Make(size_t size, const u32 values[static size])
+IntegerArray *u32Array_Make(size_t size, const u32 *values)
 {
     return IntegerArray_Make(size, U32, values);
 }
 
-IntegerArray *i32Array_Make(size_t size, const i32 values[static size])
+IntegerArray *i32Array_Make(size_t size, const i32 *values)
 {
     return IntegerArray_Make(size, I32, values);
 }
 
-IntegerArray *u64Array_Make(size_t size, const u64 values[static size])
+IntegerArray *u64Array_Make(size_t size, const u64 *values)
 {
     return IntegerArray_Make(size, U64, values);
 }
 
-IntegerArray *i64Array_Make(size_t size, const i64 values[static size])
+IntegerArray *i64Array_Make(size_t size, const i64 *values)
 {
     return IntegerArray_Make(size, I64, values);
 }
