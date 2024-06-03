@@ -918,3 +918,93 @@ IntegerArray *i64Array_Make(size_t size, const i64 *values)
 {
     return IntegerArray_Make(size, I64, values);
 }
+
+/* Test cases
+    char* TestString01 = "    000123abc456"; // True, 123
+    char* TestString02 = "000123abc456    "; // True, 123
+    char* TestString03 = "123             "; // True, 123
+    char* TestString04 = "             123"; // True, 123
+    char* TestString05 = "abcd123456      "; // False, 0
+    char *TestString06 = "123 456         "; // True, 123
+    char *TestString07 = "00-123abc456    "; // True, -123
+    char* TestString08 = "0-00123abc456   "; // True, -123
+    char* TestString09 = "-123            "; // True, -123
+    char *TestString10 = "            -123"; // True, -123
+    char* TestString11 = "abcd-123456     "; // False, 0
+    char *TestString12 = "2147483647      "; // True,  2147483647 (max int edge detection)
+    char *TestString13 = "2147483648      "; // False, max int overflow
+
+    int Result = 42;
+    bool Success = false;
+    Success = stringToInt(TestString1, 16, &Result);
+    assert(Success == true);
+    assert(Result == 123);*/
+bool stringToInt(const char *input, int32_t length, bool allowLeadingZeros, int* output)
+{
+    if (output == NULL || input == NULL || length < 1) {
+        return false;
+    }
+
+    *output = 0;
+    bool InLeadingWhitespace = true;
+    bool NegativeSign = false;
+    int32_t Progress = 0;
+
+    while (1) {
+        if (Progress > length) {
+            break;
+        }
+
+        char NextCharacter = input[Progress];
+        // Detect end of string regardless of length param
+        if (NextCharacter == '\0') {
+            break;
+        }
+
+        // Are we in leading whitespace?
+        if (InLeadingWhitespace) {
+            // Is a white-space character?
+            if ((NextCharacter < 14 && NextCharacter > 9) || NextCharacter == 32 || NextCharacter == '0') {
+                Progress++;
+                continue;
+            }
+            // Is a negative character?
+            if (NextCharacter == '-') {
+                NegativeSign = true;
+                Progress++;
+                continue;
+            }
+        }
+
+        InLeadingWhitespace = false;
+
+        // No longer in leading whitespace, and not a number?
+        if (NextCharacter < '0' || NextCharacter > '9') {
+            break;
+        }
+
+        if (!allowLeadingZeros && NegativeSign && NextCharacter == '0') {
+            *output = 0;
+            return false;
+        }
+
+        *output *= 10; // Advance to next decimal
+        int32_t NextNumber = NextCharacter - '0';
+        int32_t ValueSoFar = *output;
+        bool Overflow = NextNumber > INT_MAX - ValueSoFar;
+
+        if (Overflow) {
+            *output = 0;
+            return false;
+        }
+
+        *output += NextNumber;
+        Progress++;
+    }
+
+    if (NegativeSign) {
+        *output *= -1;
+    }
+
+    return true;
+}
