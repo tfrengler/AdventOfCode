@@ -2,8 +2,8 @@
 #define LIB_THOMAS_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-
 
 // Enables extra checks, such as NULL checks after each malloc, asserts on function parameters etc.
 #define DEBUG() 1
@@ -64,7 +64,7 @@ typedef struct _String {
 
 /* Represents a wrapper around an fixed length array of String*-instances. Count is the amount of structs in Contents, and Contents is the array (ptr to the start)*/
 typedef struct _StringArray {
-	i64 Count;
+	size_t Count;
 	String *Contents[];
 } StringArray;
 

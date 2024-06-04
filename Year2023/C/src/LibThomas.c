@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,9 +42,9 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
 
     i32 PatternIndex = 0;
     i32 PatternIndexMax = pattern->Size - 1;
-    i32 IndexMax = input->Size;
+    size_t IndexMax = input->Size;
 
-    for (i32 Index = 0; Index < IndexMax; Index++) {
+    for (size_t Index = 0; Index < IndexMax; Index++) {
         if (PatternIndex == 0 && pattern->Size > (input->Size - Index)) return false;
 
         char InputChar = input->Content[Index];
@@ -85,7 +86,7 @@ bool String_EndsWith(const String *input, const String *pattern, bool caseInsens
     if (pattern->Size > input->Size) return false;
 
     i32 InputIndex = input->Size - 1;
-    for (i32 PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
+    for (size_t PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
         char CurrentInputChar = input->Content[InputIndex];
         char CurrentPatternChar = pattern->Content[PatternIndex];
 
@@ -119,7 +120,7 @@ bool String_StartsWith(const String *input, const String *pattern, bool caseInse
 
     if (pattern->Size > input->Size) return false;
 
-    for (i32 Index = 0; Index < pattern->Size; Index++) {
+    for (size_t Index = 0; Index < pattern->Size; Index++) {
         char CurrentInputChar = input->Content[Index];
         char CurrentPatternChar = pattern->Content[Index];
 
@@ -154,8 +155,8 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
     if (original->Size == 0 || compare->Size == 0) return false;
     if (compare->Size != original->Size) return false;
 
-    i32 IndexLimit = original->Size;
-    for (i32 Index = 0; Index < IndexLimit; Index++) {
+    size_t IndexLimit = original->Size;
+    for (size_t Index = 0; Index < IndexLimit; Index++) {
         char CurrentOriginalChar = original->Content[Index];
         char CurrentCompareChar = compare->Content[Index];
 
@@ -278,10 +279,10 @@ StringArray *String_Split(const String *inputString, char delimiter)
         return NULL;
     }
 
-    i32 LineCount = 1;
-    i32 SearchEndIndex = inputString->Size - 1;
+    size_t LineCount = 1;
+    size_t SearchEndIndex = inputString->Size - 1;
 
-    for (i32 Index = 1; Index < SearchEndIndex; Index++) {
+    for (size_t Index = 1; Index < SearchEndIndex; Index++) {
         if (inputString->Content[Index] == delimiter) {
             LineCount++;
         }
@@ -306,8 +307,8 @@ StringArray *String_Split(const String *inputString, char delimiter)
         StringStartIndex++;
     }
 
-    for (i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
-        for (i32 IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
+    for (size_t IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
+        for (size_t IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
             if (StringLength > STRING_MAX_SIZE) {
                 Fatal("Text file content larger than max size string");
             }
@@ -460,7 +461,7 @@ void StringArray_Free(StringArray *input)
     assert(input != NULL);
 #endif
 
-    for (i32 Index = 0; Index < input->Count; Index++) {
+    for (size_t Index = 0; Index < input->Count; Index++) {
         String *Current = input->Contents[Index];
 #if DEBUG()
         assert(Current != NULL);
