@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-i32Array *AllCards;
+IntegerArray *AllCards;
 i32 Part02Answer = 0;
 
 void ProcessWinningCards(i32 cardId)
@@ -13,7 +13,7 @@ void ProcessWinningCards(i32 cardId)
     if (cardId >= AllCards->Size) return;
 
     Part02Answer++;
-    i32 CardsToTake = AllCards->Value[cardId];
+    i32 CardsToTake = AllCards->i32Data[cardId];
     for (i32 index = cardId + 1; CardsToTake > 0; index++) {
         ProcessWinningCards(index);
         CardsToTake--;
@@ -77,7 +77,7 @@ int main(void)
         }
 
         Part01Answer += Score;
-        AllCards->Value[LineIndex] = HowManyWinningCardHits;
+        AllCards->i32Data[LineIndex] = HowManyWinningCardHits;
     }
 
     printf("Part 1 answer: %i\n", Part01Answer);
@@ -90,7 +90,7 @@ int main(void)
     printf("Part 2 answer: %i\n", Part02Answer);
     assert(Part02Answer == 9997537);
 
-    i32Array_Free(AllCards);
+    IntegerArray_Free(AllCards);
 
     return EXIT_SUCCESS;
 }

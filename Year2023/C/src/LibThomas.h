@@ -54,17 +54,17 @@ typedef uint16_t u16;
 typedef uint8_t u8;
 
 /* The maximum size of a string as used by String-instances. */
-static const u16 STRING_MAX_SIZE = 65535;
+static const int32_t STRING_MAX_SIZE = 65535;
 
 /* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the null-terminator.*/
 typedef struct _String {
-	u16 Size; // Size is until but not including the line terminator
+	i32 Size; // Size is until but not including the line terminator
 	char *Content;
 } String;
 
 /* Represents a wrapper around an fixed length array of String*-instances. Count is the amount of structs in Contents, and Contents is the array (ptr to the start)*/
 typedef struct _StringArray {
-	size_t Count;
+	i32 Count;
 	String *Contents[];
 } StringArray;
 
@@ -80,7 +80,7 @@ typedef enum _IntegerType {
 } IntegerType;
 
 typedef struct _IntegerArray {
-    size_t Size;
+    i32 Size;
     IntegerType Type;
     union {
         u8 *u8Data;
@@ -110,22 +110,23 @@ void StringArray_Free(StringArray *input);
 
 void String_Free(String *input);
 String *File_ReadAllText(const char *fileNameAndPath);
-String *String_Make(const char *content, u16 size);
+String *String_Make(const char *content, i32 size);
 String *String_Empty(void);
 bool String_StartsWith(const String *input, const String *pattern, bool caseInsensitive);
 bool String_EndsWith(const String *input, const String *pattern, bool caseInsensitive);
 bool String_Contains(const String *input, const String *pattern, bool caseInsensitive);
 bool String_Equals(const String *original, const String *compare, bool caseInsensitive);
 String *String_Trim(const String *input);
+bool StringToInt(const char *input, int32_t length, int* output);
 
-IntegerArray* u8Array_Make(size_t size, const u8 *values);
-IntegerArray* i8Array_Make(size_t size, const i8 *values);
-IntegerArray* u16Array_Make(size_t size, const u16 *values);
-IntegerArray* i16Array_Make(size_t size, const i16 *values);
-IntegerArray* u32Array_Make(size_t size, const u32 *values);
-IntegerArray* i32Array_Make(size_t size, const i32 *values);
-IntegerArray* u64Array_Make(size_t size, const u64 *values);
-IntegerArray *i64Array_Make(size_t size, const i64 *values);
+IntegerArray* u8Array_Make(i32 size, const u8 *values);
+IntegerArray* i8Array_Make(i32 size, const i8 *values);
+IntegerArray* u16Array_Make(i32 size, const u16 *values);
+IntegerArray* i16Array_Make(i32 size, const i16 *values);
+IntegerArray* u32Array_Make(i32 size, const u32 *values);
+IntegerArray* i32Array_Make(i32 size, const i32 *values);
+IntegerArray* u64Array_Make(i32 size, const u64 *values);
+IntegerArray *i64Array_Make(i32 size, const i64 *values);
 
 void IntegerArray_Free(IntegerArray *input);
 

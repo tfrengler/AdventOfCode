@@ -1,6 +1,7 @@
 #include "LibThomas.h"
 #include "errno.h"
 #include <assert.h>
+#include <complex.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -40,11 +41,11 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
 
     if (pattern->Size > input->Size) return false;
 
-    i32 PatternIndex = 0;
-    i32 PatternIndexMax = pattern->Size - 1;
-    size_t IndexMax = input->Size;
+    i64 PatternIndex = 0;
+    i64 PatternIndexMax = pattern->Size - 1;
+    i32 IndexMax = input->Size;
 
-    for (size_t Index = 0; Index < IndexMax; Index++) {
+    for (i32 Index = 0; Index < IndexMax; Index++) {
         if (PatternIndex == 0 && pattern->Size > (input->Size - Index)) return false;
 
         char InputChar = input->Content[Index];
@@ -85,8 +86,8 @@ bool String_EndsWith(const String *input, const String *pattern, bool caseInsens
 
     if (pattern->Size > input->Size) return false;
 
-    i32 InputIndex = input->Size - 1;
-    for (size_t PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
+    i64 InputIndex = input->Size - 1;
+    for (i32 PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
         char CurrentInputChar = input->Content[InputIndex];
         char CurrentPatternChar = pattern->Content[PatternIndex];
 
@@ -120,7 +121,7 @@ bool String_StartsWith(const String *input, const String *pattern, bool caseInse
 
     if (pattern->Size > input->Size) return false;
 
-    for (size_t Index = 0; Index < pattern->Size; Index++) {
+    for (i32 Index = 0; Index < pattern->Size; Index++) {
         char CurrentInputChar = input->Content[Index];
         char CurrentPatternChar = pattern->Content[Index];
 
@@ -155,8 +156,8 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
     if (original->Size == 0 || compare->Size == 0) return false;
     if (compare->Size != original->Size) return false;
 
-    size_t IndexLimit = original->Size;
-    for (size_t Index = 0; Index < IndexLimit; Index++) {
+    i32 IndexLimit = original->Size;
+    for (i32 Index = 0; Index < IndexLimit; Index++) {
         char CurrentOriginalChar = original->Content[Index];
         char CurrentCompareChar = compare->Content[Index];
 
@@ -179,7 +180,7 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
  * @param  size: The size of the string MINUS the null-terminator. Must be greater than 0 and content[size] is expected to be '\0'.
  * @retval A pointer to the newly created String wrapped around the C-string.
  */
-String *String_Make(const char *content, u16 size)
+String *String_Make(const char *content, i32 size)
 {
 #if DEBUG()
     assert(content != NULL);
@@ -234,8 +235,8 @@ String *String_Trim(const String *input)
         return (String*)input;
     }
 
-    u16 SubStringStart = 0;
-    u16 SubStringEnd = input->Size - 1;
+    i32 SubStringStart = 0;
+    i32 SubStringEnd = input->Size - 1;
 
     char NextChar = input->Content[0];
     while (isspace(NextChar)) {
@@ -252,7 +253,7 @@ String *String_Trim(const String *input)
         NextChar = input->Content[SubStringEnd];
     }
 
-    u16 StringSize = (SubStringEnd - SubStringStart) + 1;
+    i32 StringSize = (SubStringEnd - SubStringStart) + 1;
     char LocalSubStringCopy[StringSize + 1];
 
     memcpy(LocalSubStringCopy, &input->Content[SubStringStart], StringSize);
@@ -279,10 +280,10 @@ StringArray *String_Split(const String *inputString, char delimiter)
         return NULL;
     }
 
-    size_t LineCount = 1;
-    size_t SearchEndIndex = inputString->Size - 1;
+    i32 LineCount = 1;
+    i32 SearchEndIndex = inputString->Size - 1;
 
-    for (size_t Index = 1; Index < SearchEndIndex; Index++) {
+    for (i32 Index = 1; Index < SearchEndIndex; Index++) {
         if (inputString->Content[Index] == delimiter) {
             LineCount++;
         }
@@ -307,8 +308,8 @@ StringArray *String_Split(const String *inputString, char delimiter)
         StringStartIndex++;
     }
 
-    for (size_t IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
-        for (size_t IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
+    for (i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
+        for (i32 IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
             if (StringLength > STRING_MAX_SIZE) {
                 Fatal("Text file content larger than max size string");
             }
@@ -461,7 +462,7 @@ void StringArray_Free(StringArray *input)
     assert(input != NULL);
 #endif
 
-    for (size_t Index = 0; Index < input->Count; Index++) {
+    for (i32 Index = 0; Index < input->Count; Index++) {
         String *Current = input->Contents[Index];
 #if DEBUG()
         assert(Current != NULL);
@@ -485,7 +486,7 @@ void StringArray_Free(StringArray *input)
  * @param   compare     : Pointer to a function that can compare two numbers, returning true when comparing p1 against p2.
  * @retval  A void pointer that can be cast to an integer type (u8,i8,i16,u16,i32,u32,i64,u64).
  */
-static const void *ArrayNumberCompare(const void *array, size_t arraySize, size_t objectSize, bool (*compare)(const void *p1, const void *p2))
+static const void *ArrayNumberCompare(const void *array, i32 arraySize, i32 objectSize, bool (*compare)(const void *p1, const void *p2))
 {
 #if DEBUG()
     assert(array != NULL);
@@ -503,7 +504,7 @@ static const void *ArrayNumberCompare(const void *array, size_t arraySize, size_
         ReturnData = &ByteArray[objectSize];
     }
 
-    for (size_t Index = 2; Index < arraySize; Index++) {
+    for (i32 Index = 2; Index < arraySize; Index++) {
         if (compare(&ByteArray[Index * objectSize], ReturnData)) {
             ReturnData = &ByteArray[Index * objectSize];
         }
@@ -770,7 +771,7 @@ u8 u8Array_Min(const IntegerArray *input)
 
 /* ********************** Numeric array functions ********************/
 
-static IntegerArray *IntegerArray_Make(size_t size, IntegerType type, const void *values)
+static IntegerArray *IntegerArray_Make(i32 size, IntegerType type, const void *values)
 {
     IntegerArray *ReturnData = malloc(sizeof(*ReturnData));
 #if DEBUG()
@@ -781,7 +782,7 @@ static IntegerArray *IntegerArray_Make(size_t size, IntegerType type, const void
     ReturnData->Type = type;
     ReturnData->u8Data = 0;
 
-    size_t ElementSize = 0;
+    i32 ElementSize = 0;
     void *DataDestination = 0;
 
     if (size == 0) {
@@ -880,131 +881,162 @@ void IntegerArray_Free(IntegerArray *input)
     input = 0;
 }
 
-IntegerArray *u8Array_Make(size_t size, const u8 *values)
+IntegerArray *u8Array_Make(i32 size, const u8 *values)
 {
     return IntegerArray_Make(size, U8, values);
 }
 
-IntegerArray *i8Array_Make(size_t size, const i8 *values)
+IntegerArray *i8Array_Make(i32 size, const i8 *values)
 {
     return IntegerArray_Make(size, I8, values);
 }
 
-IntegerArray *u16Array_Make(size_t size, const u16 *values)
+IntegerArray *u16Array_Make(i32 size, const u16 *values)
 {
     return IntegerArray_Make(size, U16, values);
 }
 
-IntegerArray *i16Array_Make(size_t size, const i16 *values)
+IntegerArray *i16Array_Make(i32 size, const i16 *values)
 {
     return IntegerArray_Make(size, I16, values);
 }
 
-IntegerArray *u32Array_Make(size_t size, const u32 *values)
+IntegerArray *u32Array_Make(i32 size, const u32 *values)
 {
     return IntegerArray_Make(size, U32, values);
 }
 
-IntegerArray *i32Array_Make(size_t size, const i32 *values)
+IntegerArray *i32Array_Make(i32 size, const i32 *values)
 {
     return IntegerArray_Make(size, I32, values);
 }
 
-IntegerArray *u64Array_Make(size_t size, const u64 *values)
+IntegerArray *u64Array_Make(i32 size, const u64 *values)
 {
     return IntegerArray_Make(size, U64, values);
 }
 
-IntegerArray *i64Array_Make(size_t size, const i64 *values)
+IntegerArray *i64Array_Make(i32 size, const i64 *values)
 {
     return IntegerArray_Make(size, I64, values);
 }
 
-/* Test cases
-    char* TestString01 = "    000123abc456"; // True, 123
-    char* TestString02 = "000123abc456    "; // True, 123
-    char* TestString03 = "123             "; // True, 123
-    char* TestString04 = "             123"; // True, 123
-    char* TestString05 = "abcd123456      "; // False, 0
-    char *TestString06 = "123 456         "; // True, 123
-    char *TestString07 = "00-123abc456    "; // True, -123
-    char* TestString08 = "0-00123abc456   "; // True, -123
-    char* TestString09 = "-123            "; // True, -123
-    char *TestString10 = "            -123"; // True, -123
-    char* TestString11 = "abcd-123456     "; // False, 0
-    char *TestString12 = "2147483647      "; // True,  2147483647 (max int edge detection)
-    char *TestString13 = "2147483648      "; // False, max int overflow
-
-    int Result = 42;
-    bool Success = false;
-    Success = stringToInt(TestString1, 16, &Result);
-    assert(Success == true);
-    assert(Result == 123);*/
-bool stringToInt(const char *input, int32_t length, bool allowLeadingZeros, int* output)
+/**
+ * @brief   Converts numbers founds in strings to 32-bit integers. Ignores leading whitespace, and will convert a sequence of contigous digits to an int until a non-digit character is found or until length is reached.
+            Leading zeroes before the first number sequence - or between the negative sign and the first digit - are counted as non-digits.
+            Examples:
+            - "0123", "a123", "-0123", "0-123" returns true with output = 0
+            - "123x4", "123 4". "123" or "  123" returns true with output = 123
+            - "-456x7", "-456 7". "-456" or "  -456" returns true with output = -456
+            - "2147483648" and "-2147483649" returns false with output = 0 (int under/overflow by calculation)
+            - "21474836471" and "-21474836481" returns false with output = 0 (max int overflow by too many contigous digits)
+ * @param  *input: The string with potential numbers in them you want to parse. Not allowed to be NULL or false is returned.
+ * @param  length: The max amount of characters to process in the input. Typically the length of input (minus null terminator) but can be less. Must be at least 1 or false is returned.
+ * @param  output: A pointer to an int where the parsed number will be stored in. Will be initialized to 0. Must not be NULL or false is returned.
+ * @retval True if parsing succeeded, or false if parsing failed due to an error. True does not mean a number was found, just that no errors happened. False can mean multiple things:
+ * - input or output was NULL
+ * - length was was less than 1
+ * - a number was found but it under- or overflowed the max value of a 32-bit int
+ * - a null terminator character was found in input before length was reached
+ * In all cases output will be 0 upon return EXCEPT if output is NULL (since that would be dereferencing a null pointer)
+ */
+bool StringToInt(const char *input, int32_t length, int* output)
 {
-    if (output == NULL || input == NULL || length < 1) {
+    if (output == NULL) {
         return false;
     }
 
     *output = 0;
-    bool InLeadingWhitespace = true;
-    bool NegativeSign = false;
-    int32_t Progress = 0;
 
-    while (1) {
-        if (Progress > length) {
-            break;
-        }
+    if (input == NULL || length < 1) {
+        return false;
+    }
 
-        char NextCharacter = input[Progress];
+    bool IsNegative = false;
+    char NextCharacter;
+    int32_t InputIndex = 0;
+
+    // Pre-process until we find the first number or a negative sign
+    while (InputIndex < length) {
+        NextCharacter = input[InputIndex];
+
         // Detect end of string regardless of length param
         if (NextCharacter == '\0') {
-            break;
+            return false;
         }
-
-        // Are we in leading whitespace?
-        if (InLeadingWhitespace) {
-            // Is a white-space character?
-            if ((NextCharacter < 14 && NextCharacter > 9) || NextCharacter == 32 || NextCharacter == '0') {
-                Progress++;
-                continue;
-            }
-            // Is a negative character?
-            if (NextCharacter == '-') {
-                NegativeSign = true;
-                Progress++;
-                continue;
-            }
+        // Ignore leading whitespace
+        if ((NextCharacter < 14 && NextCharacter > 9) || NextCharacter == 32) {
+            InputIndex++;
+            continue;
         }
+        // Break, because we have non-whitespace chars
+        break;
+    }
 
-        InLeadingWhitespace = false;
+    // Is the non-whitespace char a sign?
+    if (NextCharacter == '-') {
+        // If not at end of input as defined by length, peek and determine if we have leading zeroes after negative sign
+        if (InputIndex < length && input[InputIndex + 1] == '0') {
+            return true;
+        }
+        // Otherwise flag it and continue
+        IsNegative = true;
+        InputIndex++;
+    }
 
-        // No longer in leading whitespace, and not a number?
+    if (NextCharacter == '0') {
+        return true;
+    }
+
+    i32 Digits = 0;
+
+    while (InputIndex < length) {
+        NextCharacter = input[InputIndex];
+
+        // Not a number anymore? Break, and return the number we have parsed so far...
         if (NextCharacter < '0' || NextCharacter > '9') {
+            // ...unless it's a null terminator in which cases length is longer than input which is bad
+            if (NextCharacter == '\0') {
+                *output = 0;
+                return false;
+            }
             break;
         }
 
-        if (!allowLeadingZeros && NegativeSign && NextCharacter == '0') {
+        Digits++;
+        // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a null terminator
+        if (Digits > 10) {
             *output = 0;
             return false;
         }
 
         *output *= 10; // Advance to next decimal
-        int32_t NextNumber = NextCharacter - '0';
-        int32_t ValueSoFar = *output;
-        bool Overflow = NextNumber > INT_MAX - ValueSoFar;
+        int32_t NextNumber = NextCharacter - '0'; // Convert char to int
 
-        if (Overflow) {
-            *output = 0;
-            return false;
+        // Deal with potential over- or underflow of max/min int value
+        if (Digits == 10) {
+            int32_t ValueSoFar = *output;
+            int32_t MaxBeforeOverflow;
+
+            if (IsNegative) {
+                MaxBeforeOverflow = (INT_MIN - ValueSoFar) * -1;
+            } else {
+                MaxBeforeOverflow = INT_MAX - ValueSoFar;
+            }
+
+            if (NextNumber > MaxBeforeOverflow) {
+                *output = 0;
+                return false;
+            }
         }
 
-        *output += NextNumber;
-        Progress++;
-    }
+        if (IsNegative) {
+            *output -= NextNumber;
+        } else {
+            *output += NextNumber;
+        }
 
-    if (NegativeSign) {
-        *output *= -1;
+        InputIndex++;
     }
 
     return true;

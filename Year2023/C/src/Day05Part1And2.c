@@ -91,8 +91,9 @@ int main(void)
     char SeedConversionBuffer[11] = { 0 };
 
     i32 SeedIndex = 0;
-    i32 CopyFromIndex = 7;
-    for (i32 Index = CopyFromIndex; Index < SeedInput->Size + 1; Index++) {
+    i64 CopyFromIndex = 7;
+
+    for (i64 Index = CopyFromIndex; Index < SeedInput->Size + 1; Index++) {
         char NextChar = Index < SeedInput->Size ? SeedInput->Content[Index] : ' ';
         if (NextChar == ' ') {
             memcpy(SeedConversionBuffer, &SeedInput->Content[CopyFromIndex], Index - CopyFromIndex);
@@ -104,13 +105,13 @@ int main(void)
     }
 
     i32 MapStartAndEndIndex = 0;
-    for (i32 Index = 0; Index < MapCount; Index++) {
+    for (i64 Index = 0; Index < MapCount; Index++) {
         MapEntry *CurrentMap = MapsInOrder[Index];
         i32 MapStart = MapStartAndEndIndices[MapStartAndEndIndex];
-        i32 MapEnd = MapStartAndEndIndices[MapStartAndEndIndex + 1] + 1;
+        i64 MapEnd = MapStartAndEndIndices[MapStartAndEndIndex + 1] + 1;
         i32 MapIndex = 0;
 
-        for (i32 Index2 = MapStart; Index2 < MapEnd; Index2++) {
+        for (i64 Index2 = MapStart; Index2 < MapEnd; Index2++) {
             String *CurrentMapLine = Input->Contents[Index2];
             StringArray *Parts = String_Split(CurrentMapLine, ' ');
             assert(Parts->Count == 3);
@@ -141,7 +142,7 @@ void Part01(void)
     u64 PartAnswer = LONG_LONG_MAX;
     u64 Location = 0;
 
-    for (i32 Index = 0; Index < SeedCount; Index++) {
+    for (i64 Index = 0; Index < SeedCount; Index++) {
         u64 CurrentSeed = Seeds[Index];
         Location = CalculateLocation(CurrentSeed);
         PartAnswer = Location < PartAnswer ? Location : PartAnswer;
@@ -206,22 +207,22 @@ void Part02(void)
 
     Part2Locations = u64Array_Make(ExpectedRanges, 0);
 
-    i32 NumThreads = 4;
+    i64 NumThreads = 4;
     pthread_t Threads[NumThreads];
     time_t Start = clock();
 
-    for (i32 Index = 0; Index < NumThreads; Index++) {
+    for (i64 Index = 0; Index < NumThreads; Index++) {
         pthread_create(&Threads[Index], NULL, CalculateLocationTask, NULL);
-        printf("Thread %i created \n", Index);
+        printf("Thread %zu created \n", Index);
     }
 
     puts("Waiting for threads to finish...");
 
-    for (i32 Index = 0; Index < NumThreads; Index++) {
+    for (i64 Index = 0; Index < NumThreads; Index++) {
         pthread_join(Threads[Index], NULL);
-        printf("Thread %i done \n", Index);
+        printf("Thread %zu done \n", Index);
     }
-    
+
     time_t End = clock();
     double TimeSpent = (double)(End - Start) / CLOCKS_PER_SEC;
     printf("Time taken: %f seconds\n", TimeSpent);
@@ -259,10 +260,10 @@ void *CalculateLocationTask(void *_)
         SeedAndRange *TaskInput = GetTaskInput();
         if (TaskInput == NULL) return NULL;
 
-        u64 MinValue = LONG_LONG_MAX;
-        u64 SeedMaxExclusive = TaskInput->Seed + TaskInput->Range;
-        for (u64 Index = TaskInput->Seed; Index < SeedMaxExclusive; Index++) {
-            u64 Location = CalculateLocation(Index);
+        i64 MinValue = LONG_MAX;
+        i64 SeedMaxExclusive = TaskInput->Seed + TaskInput->Range;
+        for (i64 Index = TaskInput->Seed; Index < SeedMaxExclusive; Index++) {
+            i64 Location = CalculateLocation(Index);
             MinValue = Location < MinValue ? Location : MinValue;
         }
 
