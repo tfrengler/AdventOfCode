@@ -2,12 +2,13 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include <assert.h>
+#include <stdint.h>
 #include <string.h>
 #include <strings.h>
 
 typedef struct _Gear {
-    u64 SymbolPosition;
-    i32 Number;
+    int64_t SymbolPosition;
+    int32_t Number;
 } Gear;
 
 bool IsSymbol(char input)
@@ -34,14 +35,14 @@ int main(void)
     if (InputParts == NULL) return EXIT_FAILURE;
     assert(InputParts->Count == 140);
 
-    i32 Part1Answer = 0;
-    i32 Part2Answer = 0;
+    int32_t Part1Answer = 0;
+    int32_t Part2Answer = 0;
 
-    const i32 GearAllocCount = 700;
+    const int32_t GearAllocCount = 700;
     Gear **Gears = calloc(GearAllocCount, sizeof(**Gears));
-    i32 GearIndex = 0;
+    int32_t GearIndex = 0;
 
-    for (i32 LineIndex = 0; LineIndex < InputParts->Count; LineIndex++) {
+    for (int32_t LineIndex = 0; LineIndex < InputParts->Count; LineIndex++) {
         String *CurrentLine = InputParts->Contents[LineIndex];
         char *CurrentString = CurrentLine->Content;
 
@@ -50,7 +51,7 @@ int main(void)
         LinesToCheck[1] = CurrentLine;
         if (LineIndex < InputParts->Count - 1) LinesToCheck[2] = InputParts->Contents[LineIndex + 1];
 
-        for (i32 StringIndex = 0; StringIndex < CurrentLine->Size;) {
+        for (int32_t StringIndex = 0; StringIndex < CurrentLine->Size;) {
             if (CurrentString[StringIndex] < 48 || CurrentString[StringIndex] > 57) {
                 StringIndex++;
                 continue;
@@ -59,10 +60,10 @@ int main(void)
             char NumberBuffer[4] = { 0 };
             memcpy(&NumberBuffer, &CurrentString[StringIndex], 3);
 
-            i32 Number = atoi(NumberBuffer);
-            i32 DigitsToCheck = 0;
-            i32 NumberStartPosition = StringIndex;
-            i32 SymbolPositionsLeftToCheck = 0;
+            int32_t Number = atoi(NumberBuffer);
+            int32_t DigitsToCheck = 0;
+            int32_t NumberStartPosition = StringIndex;
+            int32_t SymbolPositionsLeftToCheck = 0;
 
             if (Number < 10) {
                 DigitsToCheck = 3;
@@ -80,7 +81,7 @@ int main(void)
                 DigitsToCheck--;
             }
 
-            i32 LinesToCheckIndex = 0;
+            int32_t LinesToCheckIndex = 0;
             while (LinesToCheckIndex < 3) {
                 String *LineToCheck = LinesToCheck[LinesToCheckIndex];
                 if (LineToCheck == NULL) {
@@ -90,7 +91,7 @@ int main(void)
 
                 bool SymbolFound = false;
                 SymbolPositionsLeftToCheck = DigitsToCheck;
-                i32 SymbolCheckIndex = NumberStartPosition == 0 ? NumberStartPosition : NumberStartPosition - 1;
+                int32_t SymbolCheckIndex = NumberStartPosition == 0 ? NumberStartPosition : NumberStartPosition - 1;
 
                 while (SymbolPositionsLeftToCheck > 0) {
                     char PotentialSymbol = LineToCheck->Content[SymbolCheckIndex];
@@ -100,7 +101,7 @@ int main(void)
 
                         if (PotentialSymbol == '*') {
                             Gear *CurrentGear = malloc(sizeof(*CurrentGear));
-                            CurrentGear->SymbolPosition = (u64)&LineToCheck->Content[SymbolCheckIndex];
+                            CurrentGear->SymbolPosition = (int64_t)&LineToCheck->Content[SymbolCheckIndex];
                             CurrentGear->Number = Number;
 
                             Gears[GearIndex] = CurrentGear;
@@ -122,13 +123,13 @@ int main(void)
     printf("Part 1 answer: %i\n", Part1Answer);
     assert(Part1Answer == 538046);
 
-    for (i32 OuterGearIndex = 0; OuterGearIndex < GearAllocCount; OuterGearIndex++) {
+    for (int32_t OuterGearIndex = 0; OuterGearIndex < GearAllocCount; OuterGearIndex++) {
         Gear *CurrentGear = Gears[OuterGearIndex];
         if (CurrentGear == NULL) break;
-        i32 Occurences = 1;
+        int32_t Occurences = 1;
 
         Gear *PreviousCompareGear = NULL;
-        for (i32 InnerGearIndex = 0; InnerGearIndex < GearAllocCount; InnerGearIndex++) {
+        for (int32_t InnerGearIndex = 0; InnerGearIndex < GearAllocCount; InnerGearIndex++) {
             if (InnerGearIndex == OuterGearIndex) continue;
             Gear *CurrentCompareGear = Gears[InnerGearIndex];
             if (CurrentCompareGear == NULL) break;

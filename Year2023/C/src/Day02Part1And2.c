@@ -10,21 +10,21 @@ int main(void)
     StringArray *InputParts = File_ReadAllLines("Input/02.txt");
     if (InputParts == NULL) return EXIT_FAILURE;
 
-    i32 FinalAnswerPart1 = 0;
-    i32 FinalAnswerPart2 = 0;
+    int32_t FinalAnswerPart1 = 0;
+    int32_t FinalAnswerPart2 = 0;
 
-    for (i32 LineIndex = 0; LineIndex < InputParts->Count; LineIndex++) {
+    for (int32_t LineIndex = 0; LineIndex < InputParts->Count; LineIndex++) {
         String *CurrentLine = InputParts->Contents[LineIndex];
         char GameIndexBuffer[4] = { 0 };
         memcpy(GameIndexBuffer, CurrentLine->Content + 5, 3);
 
-        u8 Red = 0;
-        u8 Green = 0;
-        u8 Blue = 0;
+        int32_t Red = 0;
+        int32_t Green = 0;
+        int32_t Blue = 0;
 
-        i32 GameIndex = atoi(GameIndexBuffer);
+        int32_t GameIndex = atoi(GameIndexBuffer);
 
-        i32 ColorIndex = 5;
+        int32_t ColorIndex = 5;
         if (GameIndex < 10)
             ColorIndex += 3;
         else if (GameIndex < 100)
@@ -33,13 +33,16 @@ int main(void)
             ColorIndex += 5;
 
         char *CurrentLineContent = CurrentLine->Content;
-        for (i32 ColorParseIndex = ColorIndex; ColorParseIndex < CurrentLine->Size;) {
+        for (int32_t ColorParseIndex = ColorIndex; ColorParseIndex < CurrentLine->Size;) {
             char ColorCountBuffer[3] = { 0 };
 
             ColorCountBuffer[0] = CurrentLineContent[ColorParseIndex];
             ColorCountBuffer[1] = CurrentLineContent[ColorParseIndex + 1];
 
-            u8 ColorCount = (u8)atoi(ColorCountBuffer);
+            int32_t ColorCount;
+            if (!StringToInt(ColorCountBuffer, sizeof(ColorCountBuffer)-1, &ColorCount)) {
+                Fatal("Failed to parse string in colorbuffer to int :(");
+            }
 
             if (ColorCount < 10)
                 ColorParseIndex += 2;

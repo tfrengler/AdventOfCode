@@ -5,16 +5,16 @@
 #include <string.h>
 
 IntegerArray *AllCards;
-i32 Part02Answer = 0;
+int32_t Part02Answer = 0;
 
-void ProcessWinningCards(i32 cardId)
+void ProcessWinningCards(int32_t cardId)
 {
     // To prevent the recursion from overflowing, since it takes index + 1
     if (cardId >= AllCards->Size) return;
 
     Part02Answer++;
-    i32 CardsToTake = AllCards->i32Data[cardId];
-    for (i32 index = cardId + 1; CardsToTake > 0; index++) {
+    int32_t CardsToTake = AllCards->int32_tData[cardId];
+    for (int32_t index = cardId + 1; CardsToTake > 0; index++) {
         ProcessWinningCards(index);
         CardsToTake--;
     }
@@ -25,10 +25,10 @@ int main(void)
     StringArray *Input = File_ReadAllLines("Input/04.txt");
     if (Input == NULL) return EXIT_FAILURE;
 
-    i32 Part01Answer = 0;
-    const i32 WinningCardCount = 10;
-    const i32 ScratchcardsPlayedCount = 25;
-    AllCards = i32Array_Make(Input->Count, NULL);
+    int32_t Part01Answer = 0;
+    const int32_t WinningCardCount = 10;
+    const int32_t ScratchcardsPlayedCount = 25;
+    AllCards = int32_tArray_Make(Input->Count, NULL);
 
     /*StringArray* Input = malloc(sizeof *Input + sizeof(String*[6]));
     Input->Count = 6;
@@ -39,36 +39,36 @@ int main(void)
     Input->Contents[4] = String_Make("Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36", 48);
     Input->Contents[5] = String_Make("Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11", 48);*/
 
-    for (i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
+    for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
         String *CurrentString = Input->Contents[LineIndex];
         char CardIdBuffer[4] = { 0 };
         char CardBuffer[3] = { 0 };
 
         memcpy(CardIdBuffer, &CurrentString->Content[5], 3);
-        // i32 CardId = atoi(CardIdBuffer);
+        // int32_t CardId = atoi(CardIdBuffer);
         //  printf("Card id: %i\n", CardId);
 
-        i32 *WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
-        i32 WinningCardIndex = 0;
-        for (i32 Index = 10; Index < 40; Index += 3) {
+        int32_t *WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
+        int32_t WinningCardIndex = 0;
+        for (int32_t Index = 10; Index < 40; Index += 3) {
             memcpy(CardBuffer, &CurrentString->Content[Index], 2);
             WinningCards[WinningCardIndex] = atoi(CardBuffer);
             WinningCardIndex++;
         }
 
-        i32 *Scratchcards = malloc(sizeof *Scratchcards * ScratchcardsPlayedCount);
-        i32 ScratchcardIndex = 0;
-        for (i32 Index = 42; Index < CurrentString->Size; Index += 3) {
+        int32_t *Scratchcards = malloc(sizeof *Scratchcards * ScratchcardsPlayedCount);
+        int32_t ScratchcardIndex = 0;
+        for (int32_t Index = 42; Index < CurrentString->Size; Index += 3) {
             memcpy(CardBuffer, &CurrentString->Content[Index], 2);
             Scratchcards[ScratchcardIndex] = atoi(CardBuffer);
             ScratchcardIndex++;
         }
 
-        i32 Score = 0;
-        i32 HowManyWinningCardHits = 0;
-        for (i32 Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++) {
-            i32 CurrentNumber = Scratchcards[Index1];
-            for (i32 Index2 = 0; Index2 < WinningCardCount; Index2++) {
+        int32_t Score = 0;
+        int32_t HowManyWinningCardHits = 0;
+        for (int32_t Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++) {
+            int32_t CurrentNumber = Scratchcards[Index1];
+            for (int32_t Index2 = 0; Index2 < WinningCardCount; Index2++) {
                 if (WinningCards[Index2] == CurrentNumber) {
                     Score = Score == 0 ? 1 : Score * 2;
                     HowManyWinningCardHits++;
@@ -77,13 +77,13 @@ int main(void)
         }
 
         Part01Answer += Score;
-        AllCards->i32Data[LineIndex] = HowManyWinningCardHits;
+        AllCards->int32_tData[LineIndex] = HowManyWinningCardHits;
     }
 
     printf("Part 1 answer: %i\n", Part01Answer);
     assert(Part01Answer == 26218);
 
-    for (i32 Index = 0; Index < Input->Count; Index++) {
+    for (int32_t Index = 0; Index < Input->Count; Index++) {
         ProcessWinningCards(Index);
     }
 

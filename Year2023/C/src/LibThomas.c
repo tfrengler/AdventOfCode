@@ -1,5 +1,4 @@
 #include "LibThomas.h"
-#include "errno.h"
 #include <assert.h>
 #include <complex.h>
 #include <ctype.h>
@@ -16,7 +15,6 @@
  */
 void Fatal(const char *message)
 {
-    if (errno == 0) errno = EBADMSG;
     perror(message);
     exit(EXIT_FAILURE);
 }
@@ -41,11 +39,11 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
 
     if (pattern->Size > input->Size) return false;
 
-    i64 PatternIndex = 0;
-    i64 PatternIndexMax = pattern->Size - 1;
-    i32 IndexMax = input->Size;
+    int64_t PatternIndex = 0;
+    int64_t PatternIndexMax = pattern->Size - 1;
+    int32_t IndexMax = input->Size;
 
-    for (i32 Index = 0; Index < IndexMax; Index++) {
+    for (int32_t Index = 0; Index < IndexMax; Index++) {
         if (PatternIndex == 0 && pattern->Size > (input->Size - Index)) return false;
 
         char InputChar = input->Content[Index];
@@ -86,8 +84,8 @@ bool String_EndsWith(const String *input, const String *pattern, bool caseInsens
 
     if (pattern->Size > input->Size) return false;
 
-    i64 InputIndex = input->Size - 1;
-    for (i32 PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
+    int64_t InputIndex = input->Size - 1;
+    for (int32_t PatternIndex = (pattern->Size - 1); PatternIndex != 0; PatternIndex--, InputIndex--) {
         char CurrentInputChar = input->Content[InputIndex];
         char CurrentPatternChar = pattern->Content[PatternIndex];
 
@@ -121,7 +119,7 @@ bool String_StartsWith(const String *input, const String *pattern, bool caseInse
 
     if (pattern->Size > input->Size) return false;
 
-    for (i32 Index = 0; Index < pattern->Size; Index++) {
+    for (int32_t Index = 0; Index < pattern->Size; Index++) {
         char CurrentInputChar = input->Content[Index];
         char CurrentPatternChar = pattern->Content[Index];
 
@@ -156,8 +154,8 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
     if (original->Size == 0 || compare->Size == 0) return false;
     if (compare->Size != original->Size) return false;
 
-    i32 IndexLimit = original->Size;
-    for (i32 Index = 0; Index < IndexLimit; Index++) {
+    int32_t IndexLimit = original->Size;
+    for (int32_t Index = 0; Index < IndexLimit; Index++) {
         char CurrentOriginalChar = original->Content[Index];
         char CurrentCompareChar = compare->Content[Index];
 
@@ -180,7 +178,7 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
  * @param  size: The size of the string MINUS the null-terminator. Must be greater than 0 and content[size] is expected to be '\0'.
  * @retval A pointer to the newly created String wrapped around the C-string.
  */
-String *String_Make(const char *content, i32 size)
+String *String_Make(const char *content, int32_t size)
 {
 #if DEBUG()
     assert(content != NULL);
@@ -235,8 +233,8 @@ String *String_Trim(const String *input)
         return (String*)input;
     }
 
-    i32 SubStringStart = 0;
-    i32 SubStringEnd = input->Size - 1;
+    int32_t SubStringStart = 0;
+    int32_t SubStringEnd = input->Size - 1;
 
     char NextChar = input->Content[0];
     while (isspace(NextChar)) {
@@ -253,7 +251,7 @@ String *String_Trim(const String *input)
         NextChar = input->Content[SubStringEnd];
     }
 
-    i32 StringSize = (SubStringEnd - SubStringStart) + 1;
+    int32_t StringSize = (SubStringEnd - SubStringStart) + 1;
     char LocalSubStringCopy[StringSize + 1];
 
     memcpy(LocalSubStringCopy, &input->Content[SubStringStart], StringSize);
@@ -280,10 +278,10 @@ StringArray *String_Split(const String *inputString, char delimiter)
         return NULL;
     }
 
-    i32 LineCount = 1;
-    i32 SearchEndIndex = inputString->Size - 1;
+    int32_t LineCount = 1;
+    int32_t SearchEndIndex = inputString->Size - 1;
 
-    for (i32 Index = 1; Index < SearchEndIndex; Index++) {
+    for (int32_t Index = 1; Index < SearchEndIndex; Index++) {
         if (inputString->Content[Index] == delimiter) {
             LineCount++;
         }
@@ -301,15 +299,15 @@ StringArray *String_Split(const String *inputString, char delimiter)
         return ReturnData;
     }
 
-    i32 StringStartIndex = 0;
-    u16 StringLength = 0;
+    int32_t StringStartIndex = 0;
+    uint16_t StringLength = 0;
 
     if (inputString->Content[0] == delimiter) {
         StringStartIndex++;
     }
 
-    for (i32 IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
-        for (i32 IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
+    for (int32_t IndexOuter = 0; IndexOuter < LineCount; IndexOuter++) {
+        for (int32_t IndexInner = StringStartIndex; IndexInner <= inputString->Size; IndexInner++) {
             if (StringLength > STRING_MAX_SIZE) {
                 Fatal("Text file content larger than max size string");
             }
@@ -357,18 +355,18 @@ String *File_ReadAllText(const char *fileNameAndPath)
     }
 
     fseek(fileHandle, 0, SEEK_END);
-    i64 FileSize = ftell(fileHandle);
+    int64_t FileSize = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
     char *FileContents = malloc(FileSize + 1);
-    i32 Index = 0;
+    int32_t Index = 0;
 
 #if DEBUG()
     assert(FileContents != NULL);
 #endif
 
     while (1) {
-        i32 NextChar = fgetc(fileHandle);
+        int32_t NextChar = fgetc(fileHandle);
         if (NextChar == EOF) break;
 
         if ((NextChar & ~127) > 0) {
@@ -397,7 +395,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     }
 
     FileContents[Index] = '\0';
-    u16 FinalSizeWithTerminator = (u16)Index + 1;
+    uint16_t FinalSizeWithTerminator = (uint16_t)Index + 1;
 
     if (FinalSizeWithTerminator > FileSize) {
         FileContents = realloc(FileContents, FinalSizeWithTerminator);
@@ -462,7 +460,7 @@ void StringArray_Free(StringArray *input)
     assert(input != NULL);
 #endif
 
-    for (i32 Index = 0; Index < input->Count; Index++) {
+    for (int32_t Index = 0; Index < input->Count; Index++) {
         String *Current = input->Contents[Index];
 #if DEBUG()
         assert(Current != NULL);
@@ -484,9 +482,9 @@ void StringArray_Free(StringArray *input)
  * @param   arraySize   : The amount of elements in the array.
  * @param   objectSize  : The size of the objects in the array.
  * @param   compare     : Pointer to a function that can compare two numbers, returning true when comparing p1 against p2.
- * @retval  A void pointer that can be cast to an integer type (u8,i8,i16,u16,i32,u32,i64,u64).
+ * @retval  A void pointer that can be cast to an integer type (uint8_t,int8_t,int16_t,uint16_t,int32_t,uint32_t,int64_t,uint64_t).
  */
-static const void *ArrayNumberCompare(const void *array, i32 arraySize, i32 objectSize, bool (*compare)(const void *p1, const void *p2))
+static const void *ArrayNumberCompare(const void *array, int32_t arraySize, int32_t objectSize, bool (*compare)(const void *p1, const void *p2))
 {
 #if DEBUG()
     assert(array != NULL);
@@ -495,7 +493,7 @@ static const void *ArrayNumberCompare(const void *array, i32 arraySize, i32 obje
     assert(compare != NULL);
 #endif
 
-    const u8 *ByteArray = array;
+    const uint8_t *ByteArray = array;
     const void *ReturnData;
 
     if (compare(&ByteArray[0], &ByteArray[objectSize])) {
@@ -504,7 +502,7 @@ static const void *ArrayNumberCompare(const void *array, i32 arraySize, i32 obje
         ReturnData = &ByteArray[objectSize];
     }
 
-    for (i32 Index = 2; Index < arraySize; Index++) {
+    for (int32_t Index = 2; Index < arraySize; Index++) {
         if (compare(&ByteArray[Index * objectSize], ReturnData)) {
             ReturnData = &ByteArray[Index * objectSize];
         }
@@ -515,263 +513,263 @@ static const void *ArrayNumberCompare(const void *array, i32 arraySize, i32 obje
 
 /* ********************** Signed 32-bit ********************/
 
-static bool i32_Max(const void *number1Pointer, const void *number2Pointer)
+static bool int32_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i32 *)number1Pointer > *(i32 *)number2Pointer;
+    return *(int32_t *)number1Pointer > *(int32_t *)number2Pointer;
 }
 
-i32 i32Array_Max(const IntegerArray *input)
+int32_t int32_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i32Data, input->Size, sizeof(input->i32Data[0]), &i32_Max);
-    return *(i32 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int32_tData, input->Size, sizeof(input->int32_tData[0]), &int32_t_Max);
+    return *(int32_t *)ReturnData;
 }
 
-static bool i32_Min(const void *number1Pointer, const void *number2Pointer)
+static bool int32_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i32 *)number1Pointer < *(i32 *)number2Pointer;
+    return *(int32_t *)number1Pointer < *(int32_t *)number2Pointer;
 }
 
-i32 i32Array_Min(const IntegerArray *input)
+int32_t int32_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i32Data, input->Size, sizeof(input->i32Data[0]), &i32_Min);
-    return *(i32 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int32_tData, input->Size, sizeof(input->int32_tData[0]), &int32_t_Min);
+    return *(int32_t *)ReturnData;
 }
 
 /* ********************** Unsigned 32-bit ********************/
 
-static bool u32_Max(const void *number1Pointer, const void *number2Pointer)
+static bool uint32_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u32 *)number1Pointer > *(u32 *)number2Pointer;
+    return *(uint32_t *)number1Pointer > *(uint32_t *)number2Pointer;
 }
 
-u32 u32Array_Max(const IntegerArray *input)
+uint32_t uint32_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u32Data, input->Size, sizeof(input->u32Data[0]), &u32_Max);
-    return *(u32 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint32_tData, input->Size, sizeof(input->uint32_tData[0]), &uint32_t_Max);
+    return *(uint32_t *)ReturnData;
 }
 
-static bool u32_Min(const void *number1Pointer, const void *number2Pointer)
+static bool uint32_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u32 *)number1Pointer < *(u32 *)number2Pointer;
+    return *(uint32_t *)number1Pointer < *(uint32_t *)number2Pointer;
 }
 
-u32 u32Array_Min(const IntegerArray *input)
+uint32_t uint32_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u32Data, input->Size, sizeof(input->u32Data[0]), &u32_Min);
-    return *(u32 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint32_tData, input->Size, sizeof(input->uint32_tData[0]), &uint32_t_Min);
+    return *(uint32_t *)ReturnData;
 }
 
 /* ********************** Signed 64-bit ********************/
 
-static bool i64_Max(const void *number1Pointer, const void *number2Pointer)
+static bool int64_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i64 *)number1Pointer > *(i64 *)number2Pointer;
+    return *(int64_t *)number1Pointer > *(int64_t *)number2Pointer;
 }
 
-i64 i64Array_Max(const IntegerArray *input)
+int64_t int64_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i64Data, input->Size, sizeof(input->i64Data[0]), &i64_Max);
-    return *(i64 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int64_tData, input->Size, sizeof(input->int64_tData[0]), &int64_t_Max);
+    return *(int64_t *)ReturnData;
 }
 
-static bool i64_Min(const void *number1Pointer, const void *number2Pointer)
+static bool int64_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i64 *)number1Pointer < *(i64 *)number2Pointer;
+    return *(int64_t *)number1Pointer < *(int64_t *)number2Pointer;
 }
 
-i64 i64Array_Min(const IntegerArray *input)
+int64_t int64_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i64Data, input->Size, sizeof(input->i64Data[0]), &i64_Min);
-    return *(i64 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int64_tData, input->Size, sizeof(input->int64_tData[0]), &int64_t_Min);
+    return *(int64_t *)ReturnData;
 }
 
 /* ********************** Unsigned 64-bit ********************/
 
-static bool u64_Max(const void *number1Pointer, const void *number2Pointer)
+static bool uint64_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u64 *)number1Pointer > *(u64 *)number2Pointer;
+    return *(uint64_t *)number1Pointer > *(uint64_t *)number2Pointer;
 }
 
-u64 u64Array_Max(const IntegerArray *input)
+uint64_t uint64_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u64Data, input->Size, sizeof(input->u64Data[0]), &u64_Max);
-    return *(u64 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint64_tData, input->Size, sizeof(input->uint64_tData[0]), &uint64_t_Max);
+    return *(uint64_t *)ReturnData;
 }
 
-static bool u64_Min(const void *number1Pointer, const void *number2Pointer)
+static bool uint64_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u64 *)number1Pointer < *(u64 *)number2Pointer;
+    return *(uint64_t *)number1Pointer < *(uint64_t *)number2Pointer;
 }
 
-u64 u64Array_Min(const IntegerArray *input)
+uint64_t uint64_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u64Data, input->Size, sizeof(input->u64Data[0]), &u64_Min);
-    return *(u64 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint64_tData, input->Size, sizeof(input->uint64_tData[0]), &uint64_t_Min);
+    return *(uint64_t *)ReturnData;
 }
 
 /* ********************** Signed 16-bit ********************/
 
-static bool i16_Max(const void *number1Pointer, const void *number2Pointer)
+static bool int16_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i16 *)number1Pointer > *(i16 *)number2Pointer;
+    return *(int16_t *)number1Pointer > *(int16_t *)number2Pointer;
 }
 
-i16 i16Array_Max(const IntegerArray *input)
+int16_t int16_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i16Data, input->Size, sizeof(input->i16Data[0]), &i16_Max);
-    return *(i16 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int16_tData, input->Size, sizeof(input->int16_tData[0]), &int16_t_Max);
+    return *(int16_t *)ReturnData;
 }
 
-static bool i16_Min(const void *number1Pointer, const void *number2Pointer)
+static bool int16_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i16 *)number1Pointer < *(i16 *)number2Pointer;
+    return *(int16_t *)number1Pointer < *(int16_t *)number2Pointer;
 }
 
-i16 i16Array_Min(const IntegerArray *input)
+int16_t int16_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i16Data, input->Size, sizeof(input->i16Data[0]), &i16_Min);
-    return *(i16 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int16_tData, input->Size, sizeof(input->int16_tData[0]), &int16_t_Min);
+    return *(int16_t *)ReturnData;
 }
 
 /* ********************** Unsigned 16-bit ********************/
 
-static bool u16_Max(const void *number1Pointer, const void *number2Pointer)
+static bool uint16_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u16 *)number1Pointer > *(u16 *)number2Pointer;
+    return *(uint16_t *)number1Pointer > *(uint16_t *)number2Pointer;
 }
 
-u16 u16Array_Max(const IntegerArray *input)
+uint16_t uint16_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u16Data, input->Size, sizeof(input->u16Data[0]), &u16_Max);
-    return *(u16 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint16_tData, input->Size, sizeof(input->uint16_tData[0]), &uint16_t_Max);
+    return *(uint16_t *)ReturnData;
 }
 
-static bool u16_Min(const void *number1Pointer, const void *number2Pointer)
+static bool uint16_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i16 *)number1Pointer < *(i16 *)number2Pointer;
+    return *(int16_t *)number1Pointer < *(int16_t *)number2Pointer;
 }
 
-u16 u16Array_Min(const IntegerArray *input)
+uint16_t uint16_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u16Data, input->Size, sizeof(input->u16Data[0]), &u16_Min);
-    return *(u16 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint16_tData, input->Size, sizeof(input->uint16_tData[0]), &uint16_t_Min);
+    return *(uint16_t *)ReturnData;
 }
 
 /* ********************** Signed 8-bit ********************/
 
-static bool i8_Max(const void *number1Pointer, const void *number2Pointer)
+static bool int8_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i8 *)number1Pointer > *(i8 *)number2Pointer;
+    return *(int8_t *)number1Pointer > *(int8_t *)number2Pointer;
 }
 
-i8 i8Array_Max(const IntegerArray *input)
+int8_t int8_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i8Data, input->Size, sizeof(input->i8Data[0]), &i8_Max);
-    return *(i8 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int8_tData, input->Size, sizeof(input->int8_tData[0]), &int8_t_Max);
+    return *(int8_t *)ReturnData;
 }
 
-static bool i8_Min(const void *number1Pointer, const void *number2Pointer)
+static bool int8_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(i8 *)number1Pointer < *(i8 *)number2Pointer;
+    return *(int8_t *)number1Pointer < *(int8_t *)number2Pointer;
 }
 
-i8 i8Array_Min(const IntegerArray *input)
+int8_t int8_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->i8Data, input->Size, sizeof(input->i8Data[0]), &i8_Min);
-    return *(i8 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->int8_tData, input->Size, sizeof(input->int8_tData[0]), &int8_t_Min);
+    return *(int8_t *)ReturnData;
 }
 
 /* ********************** Unsigned 8-bit ********************/
 
-static bool u8_Max(const void *number1Pointer, const void *number2Pointer)
+static bool uint8_t_Max(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u8 *)number1Pointer > *(u8 *)number2Pointer;
+    return *(uint8_t *)number1Pointer > *(uint8_t *)number2Pointer;
 }
 
-u8 u8Array_Max(const IntegerArray *input)
+uint8_t uint8_tArray_Max(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u8Data, input->Size, sizeof(input->u8Data[0]), &u8_Max);
-    return *(u8 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint8_tData, input->Size, sizeof(input->uint8_tData[0]), &uint8_t_Max);
+    return *(uint8_t *)ReturnData;
 }
 
-static bool u8_Min(const void *number1Pointer, const void *number2Pointer)
+static bool uint8_t_Min(const void *number1Pointer, const void *number2Pointer)
 {
 #if DEBUG()
     assert(number1Pointer != NULL);
     assert(number2Pointer != NULL);
 #endif
-    return *(u8 *)number1Pointer > *(u8 *)number2Pointer;
+    return *(uint8_t *)number1Pointer > *(uint8_t *)number2Pointer;
 }
 
-u8 u8Array_Min(const IntegerArray *input)
+uint8_t uint8_tArray_Min(const IntegerArray *input)
 {
-    const void *ReturnData = ArrayNumberCompare(input->u8Data, input->Size, sizeof(input->u8Data[0]), &u8_Min);
-    return *(u8 *)ReturnData;
+    const void *ReturnData = ArrayNumberCompare(input->uint8_tData, input->Size, sizeof(input->uint8_tData[0]), &uint8_t_Min);
+    return *(uint8_t *)ReturnData;
 }
 
 /* ********************** Numeric array functions ********************/
 
-static IntegerArray *IntegerArray_Make(i32 size, IntegerType type, const void *values)
+static IntegerArray *IntegerArray_Make(int32_t size, IntegerType type, const void *values)
 {
     IntegerArray *ReturnData = malloc(sizeof(*ReturnData));
 #if DEBUG()
@@ -780,9 +778,9 @@ static IntegerArray *IntegerArray_Make(i32 size, IntegerType type, const void *v
 
     ReturnData->Size = size;
     ReturnData->Type = type;
-    ReturnData->u8Data = 0;
+    ReturnData->uint8_tData = 0;
 
-    i32 ElementSize = 0;
+    int32_t ElementSize = 0;
     void *DataDestination = 0;
 
     if (size == 0) {
@@ -790,46 +788,46 @@ static IntegerArray *IntegerArray_Make(i32 size, IntegerType type, const void *v
     }
 
     switch (type) {
-    case U8:
-        ReturnData->u8Data = malloc(sizeof(u8) * size);
-        ElementSize = sizeof(u8);
-        DataDestination = ReturnData->u8Data;
-        break;
-    case I8:
-        ReturnData->i8Data = malloc(sizeof(i8) * size);
-        ElementSize = sizeof(i8);
-        DataDestination = ReturnData->i8Data;
-        break;
-    case U16:
-        ReturnData->u16Data = malloc(sizeof(u16) * size);
-        ElementSize = sizeof(u16);
-        DataDestination = ReturnData->u16Data;
-        break;
-    case I16:
-        ReturnData->i16Data = malloc(sizeof(i16) * size);
-        ElementSize = sizeof(i16);
-        DataDestination = ReturnData->i16Data;
-        break;
-    case U32:
-        ReturnData->u32Data = malloc(sizeof(u32) * size);
-        ElementSize = sizeof(u32);
-        DataDestination = ReturnData->u32Data;
-        break;
-    case I32:
-        ReturnData->i32Data = malloc(sizeof(i32) * size);
-        ElementSize = sizeof(i32);
-        DataDestination = ReturnData->i32Data;
-        break;
-    case U64:
-        ReturnData->u64Data = malloc(sizeof(u64) * size);
-        ElementSize = sizeof(u64);
-        DataDestination = ReturnData->u64Data;
-        break;
-    case I64:
-        ReturnData->i64Data = malloc(sizeof(i64) * size);
-        ElementSize = sizeof(i64);
-        DataDestination = ReturnData->i64Data;
-        break;
+        case U8:
+            ReturnData->uint8_tData = malloc(sizeof(uint8_t) * size);
+            ElementSize = sizeof(uint8_t);
+            DataDestination = ReturnData->uint8_tData;
+            break;
+        case I8:
+            ReturnData->int8_tData = malloc(sizeof(int8_t) * size);
+            ElementSize = sizeof(int8_t);
+            DataDestination = ReturnData->int8_tData;
+            break;
+        case U16:
+            ReturnData->uint16_tData = malloc(sizeof(uint16_t) * size);
+            ElementSize = sizeof(uint16_t);
+            DataDestination = ReturnData->uint16_tData;
+            break;
+        case I16:
+            ReturnData->int16_tData = malloc(sizeof(int16_t) * size);
+            ElementSize = sizeof(int16_t);
+            DataDestination = ReturnData->int16_tData;
+            break;
+        case U32:
+            ReturnData->uint32_tData = malloc(sizeof(uint32_t) * size);
+            ElementSize = sizeof(uint32_t);
+            DataDestination = ReturnData->uint32_tData;
+            break;
+        case I32:
+            ReturnData->int32_tData = malloc(sizeof(int32_t) * size);
+            ElementSize = sizeof(int32_t);
+            DataDestination = ReturnData->int32_tData;
+            break;
+        case U64:
+            ReturnData->uint64_tData = malloc(sizeof(uint64_t) * size);
+            ElementSize = sizeof(uint64_t);
+            DataDestination = ReturnData->uint64_tData;
+            break;
+        case I64:
+            ReturnData->int64_tData = malloc(sizeof(int64_t) * size);
+            ElementSize = sizeof(int64_t);
+            DataDestination = ReturnData->int64_tData;
+            break;
     }
 
 #if DEBUG()
@@ -851,72 +849,72 @@ void IntegerArray_Free(IntegerArray *input)
 
     switch (input->Type) {
     case U8:
-        if (input->u8Data != NULL) free(input->u8Data);
+        if (input->uint8_tData != NULL) free(input->uint8_tData);
         break;
     case I8:
-        if (input->i8Data != NULL) free(input->i8Data);
+        if (input->int8_tData != NULL) free(input->int8_tData);
         break;
     case U16:
-        if (input->u16Data != NULL) free(input->u16Data);
+        if (input->uint16_tData != NULL) free(input->uint16_tData);
         break;
     case I16:
-        if (input->i16Data != NULL) free(input->i16Data);
+        if (input->int16_tData != NULL) free(input->int16_tData);
         break;
     case U32:
-        if (input->u32Data != NULL) free(input->u32Data);
+        if (input->uint32_tData != NULL) free(input->uint32_tData);
         break;
     case I32:
-        if (input->i32Data != NULL) free(input->i32Data);
+        if (input->int32_tData != NULL) free(input->int32_tData);
         break;
     case U64:
-        if (input->u64Data != NULL) free(input->u64Data);
+        if (input->uint64_tData != NULL) free(input->uint64_tData);
         break;
     case I64:
-        if (input->i64Data != NULL) free(input->i64Data);
+        if (input->int64_tData != NULL) free(input->int64_tData);
         break;
     }
 
-    input->u8Data = 0;
+    input->uint8_tData = 0;
     free(input);
     input = 0;
 }
 
-IntegerArray *u8Array_Make(i32 size, const u8 *values)
+IntegerArray *uint8_tArray_Make(int32_t size, const uint8_t *values)
 {
     return IntegerArray_Make(size, U8, values);
 }
 
-IntegerArray *i8Array_Make(i32 size, const i8 *values)
+IntegerArray *int8_tArray_Make(int32_t size, const int8_t *values)
 {
     return IntegerArray_Make(size, I8, values);
 }
 
-IntegerArray *u16Array_Make(i32 size, const u16 *values)
+IntegerArray *uint16_tArray_Make(int32_t size, const uint16_t *values)
 {
     return IntegerArray_Make(size, U16, values);
 }
 
-IntegerArray *i16Array_Make(i32 size, const i16 *values)
+IntegerArray *int16_tArray_Make(int32_t size, const int16_t *values)
 {
     return IntegerArray_Make(size, I16, values);
 }
 
-IntegerArray *u32Array_Make(i32 size, const u32 *values)
+IntegerArray *uint32_tArray_Make(int32_t size, const uint32_t *values)
 {
     return IntegerArray_Make(size, U32, values);
 }
 
-IntegerArray *i32Array_Make(i32 size, const i32 *values)
+IntegerArray *int32_tArray_Make(int32_t size, const int32_t *values)
 {
     return IntegerArray_Make(size, I32, values);
 }
 
-IntegerArray *u64Array_Make(i32 size, const u64 *values)
+IntegerArray *uint64_tArray_Make(int32_t size, const uint64_t *values)
 {
     return IntegerArray_Make(size, U64, values);
 }
 
-IntegerArray *i64Array_Make(i32 size, const i64 *values)
+IntegerArray *int64_tArray_Make(int32_t size, const int64_t *values)
 {
     return IntegerArray_Make(size, I64, values);
 }
@@ -943,12 +941,14 @@ IntegerArray *i64Array_Make(i32 size, const i64 *values)
 bool StringToInt(const char *input, int32_t length, int* output)
 {
     if (output == NULL) {
+        DEBUG_PRINT("StringToInt: output is null", NULL);
         return false;
     }
 
     *output = 0;
 
     if (input == NULL || length < 1) {
+        DEBUG_PRINT("StringToInt: input is null and/or length is less than 0\n", NULL);
         return false;
     }
 
@@ -962,6 +962,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
 
         // Detect end of string regardless of length param
         if (NextCharacter == '\0') {
+            DEBUG_PRINT("StringToInt: premature null terminator found in input (1)\n", NULL);
             return false;
         }
         // Ignore leading whitespace
@@ -988,7 +989,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
         return true;
     }
 
-    i32 Digits = 0;
+    int32_t Digits = 0;
 
     while (InputIndex < length) {
         NextCharacter = input[InputIndex];
@@ -997,6 +998,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
         if (NextCharacter < '0' || NextCharacter > '9') {
             // ...unless it's a null terminator in which cases length is longer than input which is bad
             if (NextCharacter == '\0') {
+                DEBUG_PRINT("StringToInt: premature null terminator found in input (2)\n", NULL);
                 *output = 0;
                 return false;
             }
@@ -1006,6 +1008,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
         Digits++;
         // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a null terminator
         if (Digits > 10) {
+            DEBUG_PRINT("StringToInt: max/min int over flow (11 digits)\n", NULL);
             *output = 0;
             return false;
         }
@@ -1025,6 +1028,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
             }
 
             if (NextNumber > MaxBeforeOverflow) {
+                DEBUG_PRINT("StringToInt: max/min int overflow (calculation)\n", NULL);
                 *output = 0;
                 return false;
             }

@@ -6,13 +6,13 @@
 #include <strings.h>
 
 typedef struct _PatternTestResult {
-    i32 PatternSize;
+    int32_t PatternSize;
     char Value;
 } PatternTestResult;
 
 PatternTestResult *TestPattern(const String *input, const String *pattern, char returnOnSuccess)
 {
-    u8 Result = String_StartsWith(input, pattern, 0);
+    bool Result = String_StartsWith(input, pattern, 0);
     if (!Result) return NULL;
 
     PatternTestResult *ReturnData = malloc(sizeof(*ReturnData));
@@ -102,7 +102,7 @@ int main(void)
 {
     StringArray *Input = File_ReadAllLines("Input/01.txt");
     if (Input == NULL) return EXIT_FAILURE;
-    i32 PartAnswer = 0;
+    int32_t PartAnswer = 0;
 
     PatternTestResult *(*PatternTesters[9])(const String *input);
     PatternTesters[0] = Test1;
@@ -118,12 +118,12 @@ int main(void)
     char NumberAsStringBuffer[3];
     memset(&NumberAsStringBuffer, 0, sizeof(NumberAsStringBuffer));
 
-    i32 BufferIndex = 0;
+    int32_t BufferIndex = 0;
 
-    for (i32 LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
+    for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
         String *CurrentString = Input->Contents[LineIndex];
 
-        for (i32 StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
+        for (int32_t StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
             char CurrentChar = CurrentString->Content[StringIndex];
             if ((int)CurrentChar < 58 && (int)CurrentChar > 48) {
                 NumberAsStringBuffer[BufferIndex] = CurrentChar;
@@ -131,16 +131,16 @@ int main(void)
                 continue;
             }
 
-            i32 CharsToTake = CurrentString->Size - StringIndex;
+            int32_t CharsToTake = CurrentString->Size - StringIndex;
             assert(CharsToTake > 0);
             if (CharsToTake > 5) CharsToTake = 5;
 
             char NumberAsWordBuffer[CharsToTake + 1];
             memset(&NumberAsWordBuffer, 0, CharsToTake + 1);
             memcpy(&NumberAsWordBuffer, &CurrentString->Content[StringIndex], CharsToTake);
-            String *StringToTest = String_Make(NumberAsWordBuffer, (u16)CharsToTake);
+            String *StringToTest = String_Make(NumberAsWordBuffer, CharsToTake);
 
-            for (i32 Index = 0; Index < 9; Index++) {
+            for (int32_t Index = 0; Index < 9; Index++) {
                 PatternTestResult *TestResult = PatternTesters[Index](StringToTest);
                 if (TestResult != NULL) {
                     NumberAsStringBuffer[BufferIndex] = TestResult->Value;
@@ -154,7 +154,7 @@ int main(void)
         }
 
         if (NumberAsStringBuffer[1] == 0) NumberAsStringBuffer[1] = NumberAsStringBuffer[0];
-        i32 CalibrationNumber = atoi(NumberAsStringBuffer);
+        int32_t CalibrationNumber = atoi(NumberAsStringBuffer);
 
         memset(&NumberAsStringBuffer, 0, sizeof NumberAsStringBuffer);
         BufferIndex = 0;
