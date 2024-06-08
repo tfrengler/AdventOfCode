@@ -13,25 +13,26 @@
 // For toolchain use MSYS2 with the following package(s): pacman -S mingw-w64-clang-x86_64-toolchain
 // Use the following compiler flags for debugging. For release-like mode omit -g3, fsanitize-flags and use -O3
 /*
-	-std=c17
-	-Wall
-	-Wextra
-	-Wconversion
-	-Wshadow-all
-	-Wundef
-	-Wunreachable-code
-	-Wuninitialized
-	-Wold-style-cast
-	-Wno-error=unused-variable
-	-Wfloat-equal
-	-pedantic-errors
-	-Wtype-limits
-	-Wno-unused-function
-	-Wno-sign-conversion
-	-Wdouble-promotion
-	-Wformat=2
-	-Wformat-pedantic
-	-Wfor-loop-analysis
+    -std=c17
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wshadow-all
+    -Wundef
+    -Wunreachable-code
+    -Wuninitialized
+    -Wold-style-cast
+    -Wno-error=unused-variable
+    -Wfloat-equal
+    -pedantic-errors
+    -Wtype-limits
+    -Wno-unused-function
+    -Wno-sign-conversion
+    -Wdouble-promotion
+    -Wformat=2
+    -Wformat-pedantic
+    -Wfor-loop-analysis
+	-pthread
 	-fsanitize=undefined
 	-fsanitize=address
 	-fsanitize-trap

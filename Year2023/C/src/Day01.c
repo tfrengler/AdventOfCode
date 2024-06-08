@@ -98,7 +98,46 @@ PatternTestResult *Test9(const String *input)
     return ReturnData;
 }
 
-int main(void)
+int Part1(void)
+{
+    StringArray *Input = File_ReadAllLines("Input/01.txt");
+    if (Input == NULL) return EXIT_FAILURE;
+    int32_t PartAnswer = 0;
+
+    char Buffer[3] = {0};
+    int BufferIndex = 0;
+
+    for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
+        String *CurrentString = Input->Contents[LineIndex];
+
+        for (int32_t StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
+            char CurrentChar = CurrentString->Content[StringIndex];
+            if ((int)CurrentChar < 58 && (int)CurrentChar > 48) {
+                Buffer[BufferIndex] = CurrentChar;
+                if (BufferIndex == 0) BufferIndex = 1;
+            }
+        }
+
+        if (Buffer[1] == 0) Buffer[1] = Buffer[0];
+        int32_t CalibrationNumber;
+        if (!StringToInt(Buffer, sizeof(Buffer) - 1, &CalibrationNumber)) {
+            Fatal("Failed to parse string buffer to int32");
+        }
+
+        memset(&Buffer, 0, sizeof(Buffer));
+        BufferIndex = 0;
+
+        PartAnswer += CalibrationNumber;
+        // if (LineIndex == 10) break;
+    }
+
+    printf("Part answer: %i\n", PartAnswer);
+    assert(PartAnswer == 55621);
+
+    return EXIT_SUCCESS;
+}
+
+int Part2(void)
 {
     StringArray *Input = File_ReadAllLines("Input/01.txt");
     if (Input == NULL) return EXIT_FAILURE;
@@ -132,7 +171,9 @@ int main(void)
             }
 
             int32_t CharsToTake = CurrentString->Size - StringIndex;
+#if DEBUG()
             assert(CharsToTake > 0);
+#endif
             if (CharsToTake > 5) CharsToTake = 5;
 
             char NumberAsWordBuffer[CharsToTake + 1];
@@ -168,4 +209,14 @@ int main(void)
     assert(PartAnswer == 53592);
 
     return EXIT_SUCCESS;
+}
+
+int main(void)
+{
+    int ExitCode;
+
+    ExitCode = Part1();
+    ExitCode = Part2();
+
+    return ExitCode;
 }

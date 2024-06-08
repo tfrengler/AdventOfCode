@@ -41,31 +41,30 @@ int main(void)
 
     for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
         String *CurrentString = Input->Contents[LineIndex];
-        char CardIdBuffer[4] = { 0 };
-        char CardBuffer[3] = { 0 };
 
-        memcpy(CardIdBuffer, &CurrentString->Content[5], 3);
-        // int32_t CardId = atoi(CardIdBuffer);
-        //  printf("Card id: %i\n", CardId);
-
-        int32_t *WinningCards = malloc(sizeof *WinningCards * WinningCardCount);
+        int32_t WinningCards[WinningCardCount];
         int32_t WinningCardIndex = 0;
+
         for (int32_t Index = 10; Index < 40; Index += 3) {
-            memcpy(CardBuffer, &CurrentString->Content[Index], 2);
-            WinningCards[WinningCardIndex] = atoi(CardBuffer);
+            if (!StringToInt(&CurrentString->Content[Index], 2, &WinningCards[WinningCardIndex])) {
+                Fatal("Failed to parse string to int32");
+            }
             WinningCardIndex++;
         }
 
-        int32_t *Scratchcards = malloc(sizeof *Scratchcards * ScratchcardsPlayedCount);
+        int32_t Scratchcards[ScratchcardsPlayedCount];
         int32_t ScratchcardIndex = 0;
+
         for (int32_t Index = 42; Index < CurrentString->Size; Index += 3) {
-            memcpy(CardBuffer, &CurrentString->Content[Index], 2);
-            Scratchcards[ScratchcardIndex] = atoi(CardBuffer);
+            if (!StringToInt(&CurrentString->Content[Index], 2, &Scratchcards[ScratchcardIndex])) {
+                Fatal("Failed to parse string to int32");
+            }
             ScratchcardIndex++;
         }
 
         int32_t Score = 0;
         int32_t HowManyWinningCardHits = 0;
+
         for (int32_t Index1 = 0; Index1 < ScratchcardsPlayedCount; Index1++) {
             int32_t CurrentNumber = Scratchcards[Index1];
             for (int32_t Index2 = 0; Index2 < WinningCardCount; Index2++) {

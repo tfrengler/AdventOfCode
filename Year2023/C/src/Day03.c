@@ -38,8 +38,8 @@ int main(void)
     int32_t Part1Answer = 0;
     int32_t Part2Answer = 0;
 
-    const int32_t GearAllocCount = 700;
-    Gear **Gears = calloc(GearAllocCount, sizeof(**Gears));
+    Gear Gears[700] = {0};
+    const int32_t GearCount = arrayCount(Gears);
     int32_t GearIndex = 0;
 
     for (int32_t LineIndex = 0; LineIndex < InputParts->Count; LineIndex++) {
@@ -100,9 +100,11 @@ int main(void)
                         Part1Answer += Number;
 
                         if (PotentialSymbol == '*') {
-                            Gear *CurrentGear = malloc(sizeof(*CurrentGear));
-                            CurrentGear->SymbolPosition = (int64_t)&LineToCheck->Content[SymbolCheckIndex];
-                            CurrentGear->Number = Number;
+
+                            Gear CurrentGear = {
+                                .SymbolPosition = (int64_t)&LineToCheck->Content[SymbolCheckIndex],
+                                .Number = Number
+                            };
 
                             Gears[GearIndex] = CurrentGear;
                             GearIndex++;
@@ -120,21 +122,24 @@ int main(void)
         }
     }
 
+    DEBUG_PRINT("Gears parsed: %i\n", GearIndex + 1);
+
     printf("Part 1 answer: %i\n", Part1Answer);
     assert(Part1Answer == 538046);
 
-    for (int32_t OuterGearIndex = 0; OuterGearIndex < GearAllocCount; OuterGearIndex++) {
-        Gear *CurrentGear = Gears[OuterGearIndex];
-        if (CurrentGear == NULL) break;
+    for (int32_t OuterGearIndex = 0; OuterGearIndex < GearCount; OuterGearIndex++) {
+        Gear CurrentGear = Gears[OuterGearIndex];
+        if (CurrentGear.Number == 0 && CurrentGear.SymbolPosition == 0) break;
         int32_t Occurences = 1;
 
-        Gear *PreviousCompareGear = NULL;
-        for (int32_t InnerGearIndex = 0; InnerGearIndex < GearAllocCount; InnerGearIndex++) {
-            if (InnerGearIndex == OuterGearIndex) continue;
-            Gear *CurrentCompareGear = Gears[InnerGearIndex];
-            if (CurrentCompareGear == NULL) break;
+        Gear PreviousCompareGear;
 
-            if (CurrentGear->SymbolPosition == CurrentCompareGear->SymbolPosition) {
+        for (int32_t InnerGearIndex = 0; InnerGearIndex < GearCount; InnerGearIndex++) {
+            if (InnerGearIndex == OuterGearIndex) continue;
+            Gear CurrentCompareGear = Gears[InnerGearIndex];
+            if (CurrentCompareGear.Number == 0 && CurrentCompareGear.SymbolPosition == 0) break;
+
+            if (CurrentGear.SymbolPosition == CurrentCompareGear.SymbolPosition) {
                 Occurences++;
                 if (Occurences > 2) break;
                 PreviousCompareGear = Gears[InnerGearIndex];
@@ -142,7 +147,7 @@ int main(void)
         }
 
         if (Occurences == 2) {
-            Part2Answer += CurrentGear->Number * PreviousCompareGear->Number;
+            Part2Answer += CurrentGear.Number * PreviousCompareGear.Number;
         }
     }
 
