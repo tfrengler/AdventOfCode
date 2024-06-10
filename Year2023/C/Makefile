@@ -9,7 +9,7 @@ CFLAGS				:= ${cflags.${BUILD}}
 SRC_DIR				:= src/
 BUILD_DIR			:= build/
 OBJ_DIR				:= obj/
-LIBS				:= ${OBJ_DIR}LibThomas.o
+LIBS				:= ${OBJ_DIR}LibThomas.o ${OBJ_DIR}LibString.o ${OBJ_DIR}LibNumeric.o
 SOURCE_FILES 		:= $(wildcard $(SRC_DIR)*.c)
 OBJECT_FILES		:= $(SOURCE_FILES:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)

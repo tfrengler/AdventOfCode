@@ -33,8 +33,9 @@
                 "-g3",
                 "-O0",
                 "${file}",
-                // "${workspaceFolder}\\src\\Day01Part2.c",
                 "${workspaceFolder}\\src\\LibThomas.c",
+                "${workspaceFolder}\\src\\LibString.c",
+                "${workspaceFolder}\\src\\LibNumeric.c",
                 "-o",
                 "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe"
             ],

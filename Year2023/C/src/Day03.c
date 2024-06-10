@@ -1,4 +1,5 @@
 #include "LibThomas.h"
+#include "LibString.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include <assert.h>
