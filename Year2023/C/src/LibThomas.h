@@ -75,14 +75,14 @@ typedef struct _IntegerArray {
     int32_t Size;
     IntegerType Type;
     union {
-        uint8_t *uint8_tData;
-        int8_t *int8_tData;
-        uint16_t *uint16_tData;
-        int16_t *int16_tData;
-        uint32_t *uint32_tData;
-        int32_t *int32_tData;
-        uint64_t *uint64_tData;
-        int64_t *int64_tData;
+        uint8_t *u8Data;
+        int8_t *i8Data;
+        uint16_t *u16Data;
+        int16_t *i16Data;
+        uint32_t *u32Data;
+        int32_t *i32Data;
+        uint64_t *u64Data;
+        int64_t *i64Data;
     };
 } IntegerArray;
 
@@ -111,33 +111,33 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
 String *String_Trim(const String *input);
 bool StringToInt(const char *input, int32_t length, int* output);
 
-IntegerArray* uint8_tArray_Make(int32_t size, const uint8_t *values);
-IntegerArray* int8_tArray_Make(int32_t size, const int8_t *values);
-IntegerArray* uint16_tArray_Make(int32_t size, const uint16_t *values);
-IntegerArray* int16_tArray_Make(int32_t size, const int16_t *values);
-IntegerArray* uint32_tArray_Make(int32_t size, const uint32_t *values);
-IntegerArray* int32_tArray_Make(int32_t size, const int32_t *values);
-IntegerArray* uint64_tArray_Make(int32_t size, const uint64_t *values);
-IntegerArray *int64_tArray_Make(int32_t size, const int64_t *values);
+IntegerArray* u8Array_Make(int32_t size, const uint8_t *values);
+IntegerArray* i8Array_Make(int32_t size, const int8_t *values);
+IntegerArray* u16Array_Make(int32_t size, const uint16_t *values);
+IntegerArray* i16Array_Make(int32_t size, const int16_t *values);
+IntegerArray* u32Array_Make(int32_t size, const uint32_t *values);
+IntegerArray* i32Array_Make(int32_t size, const int32_t *values);
+IntegerArray* u64Array_Make(int32_t size, const uint64_t *values);
+IntegerArray* i64Array_Make(int32_t size, const int64_t *values);
 
 void IntegerArray_Free(IntegerArray *input);
 
-uint64_t uint64_tArray_Max(const IntegerArray *input);
-int64_t int64_tArray_Max(const IntegerArray *input);
-uint32_t uint32_tArray_Max(const IntegerArray *input);
-int32_t int32_tArray_Max(const IntegerArray *input);
-uint16_t uint16_tArray_Max(const IntegerArray *input);
-int16_t int16_tArray_Max(const IntegerArray *input);
-int8_t int8_tArray_Max(const IntegerArray *input);
-uint8_t uint8_tArray_Max(const IntegerArray *input);
+uint8_t u8Array_Max(const IntegerArray *input);
+int8_t i8Array_Max(const IntegerArray *input);
+uint16_t u16Array_Max(const IntegerArray *input);
+int16_t i16Array_Max(const IntegerArray *input);
+uint32_t u32Array_Max(const IntegerArray *input);
+int32_t i32Array_Max(const IntegerArray *input);
+uint64_t u64Array_Max(const IntegerArray *input);
+int64_t i64Array_Max(const IntegerArray *input);
 
-uint64_t uint64_tArray_Min(const IntegerArray *input);
-int64_t int64_tArray_Min(const IntegerArray *input);
-uint32_t uint32_tArray_Min(const IntegerArray *input);
-int32_t int32_tArray_Min(const IntegerArray *input);
-uint16_t uint16_tArray_Min(const IntegerArray *input);
-int16_t int16_tArray_Min(const IntegerArray *input);
-int8_t int8_tArray_Min(const IntegerArray *input);
-uint8_t uint8_tArray_Min(const IntegerArray *input);
+uint8_t u8Array_Min(const IntegerArray *input);
+int8_t i8Array_Min(const IntegerArray *input);
+uint16_t u16Array_Min(const IntegerArray *input);
+int16_t i16Array_Min(const IntegerArray *input);
+uint32_t u32Array_Min(const IntegerArray *input);
+int32_t i32Array_Min(const IntegerArray *input);
+uint64_t u64Array_Min(const IntegerArray *input);
+int64_t i64Array_Min(const IntegerArray *input);
 
 #endif

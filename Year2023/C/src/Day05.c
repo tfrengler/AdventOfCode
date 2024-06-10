@@ -205,7 +205,7 @@ void Part02(void)
         }
     }
 
-    Part2Locations = int64_tArray_Make(ExpectedRanges, 0);
+    Part2Locations = i64Array_Make(ExpectedRanges, 0);
 
     int64_t NumThreads = 4;
     pthread_t Threads[NumThreads];
@@ -227,7 +227,7 @@ void Part02(void)
     double TimeSpent = (double)(End - Start) / CLOCKS_PER_SEC;
     printf("Time taken: %f seconds\n", TimeSpent);
 
-    int64_t Part2Answer = int64_tArray_Min(Part2Locations);
+    int64_t Part2Answer = i64Array_Min(Part2Locations);
     printf("Part 2 answer: %llu\n", Part2Answer);
     assert(Part2Answer == 137516820);
     puts("Part 2 passed");
@@ -268,7 +268,7 @@ void *CalculateLocationTask(void *_)
         }
 
         pthread_mutex_lock(&LocationIndexLock);
-        Part2Locations->int64_tData[LocationIndex] = MinValue;
+        Part2Locations->i64Data[LocationIndex] = MinValue;
         LocationIndex++;
         pthread_mutex_unlock(&LocationIndexLock);
     }

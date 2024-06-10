@@ -13,7 +13,7 @@ void ProcessWinningCards(int32_t cardId)
     if (cardId >= AllCards->Size) return;
 
     Part02Answer++;
-    int32_t CardsToTake = AllCards->int32_tData[cardId];
+    int32_t CardsToTake = AllCards->i32Data[cardId];
     for (int32_t index = cardId + 1; CardsToTake > 0; index++) {
         ProcessWinningCards(index);
         CardsToTake--;
@@ -28,7 +28,7 @@ int main(void)
     int32_t Part01Answer = 0;
     const int32_t WinningCardCount = 10;
     const int32_t ScratchcardsPlayedCount = 25;
-    AllCards = int32_tArray_Make(Input->Count, NULL);
+    AllCards = i32Array_Make(Input->Count, NULL);
 
     /*StringArray* Input = malloc(sizeof *Input + sizeof(String*[6]));
     Input->Count = 6;
@@ -76,7 +76,7 @@ int main(void)
         }
 
         Part01Answer += Score;
-        AllCards->int32_tData[LineIndex] = HowManyWinningCardHits;
+        AllCards->i32Data[LineIndex] = HowManyWinningCardHits;
     }
 
     printf("Part 1 answer: %i\n", Part01Answer);
