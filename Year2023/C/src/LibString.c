@@ -280,9 +280,13 @@ StringArray *String_Split(const String *inputString, char delimiter)
         }
     }
 
-    StringArray *ReturnData = malloc(sizeof *ReturnData + sizeof(String *[LineCount]));
+    StringArray *ReturnData = malloc(sizeof *ReturnData);
 #if DEBUG()
     assert(ReturnData != NULL);
+#endif
+    ReturnData->Contents = malloc(sizeof(**ReturnData->Contents) * LineCount);
+#if DEBUG()
+    assert(ReturnData->Contents != NULL);
 #endif
 
     ReturnData->Count = LineCount;
@@ -323,8 +327,7 @@ StringArray *String_Split(const String *inputString, char delimiter)
         memcpy(LocalString, &inputString->Content[StringStartIndex], StringLength);
         LocalString[StringLength] = '\0';
 
-        String *CurrentContentData = String_Make(LocalString, StringLength);
-        ReturnData->Contents[IndexOuter] = CurrentContentData;
+        ReturnData->Contents[IndexOuter] = String_Make(LocalString, StringLength);
 
         StringStartIndex = StringStartIndex + StringLength + 1;
         StringLength = 0;
@@ -407,6 +410,27 @@ String *File_ReadAllText(const char *fileNameAndPath)
     return ReturnData;
 }
 
+StringArray *StringArray_Make(String *contents, const int32_t size)
+{
+    if (contents == 0x0 || size < 1) {
+        Fatal("Error making string array. Contents were NULL or size was less than 1");
+    }
+
+    StringArray *ReturnData = malloc(sizeof(StringArray));
+#if DEBUG()
+    assert(ReturnData != 0x0);
+#endif
+    ReturnData->Contents = malloc(size * sizeof(String));
+#if DEBUG()
+    assert(ReturnData->Contents != 0x0);
+#endif
+
+    ReturnData->Count = size;
+    ReturnData->Contents = &contents;
+
+    return ReturnData;
+}
+
 /**
  * @brief  Opens a text file, reads all the content, parses it into lines (based on \n), closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
  * @param   fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
@@ -436,10 +460,10 @@ void String_Free(String *input)
 
     if (input->Content != NULL) {
         free(input->Content);
-        input->Content = 0;
+        input->Content = 0x0;
     }
     free(input);
-    input = 0;
+    input = 0x0;
 }
 
 /**
@@ -447,20 +471,24 @@ void String_Free(String *input)
  * @param   input: The instance to free. Cannot be NULL.
  * @retval  None.
  */
-void StringArray_Free(StringArray *input)
+void StringArray_Free(StringArray *input, bool freeContent)
 {
 #if DEBUG()
     assert(input != NULL);
+    assert(input->Contents != NULL);
 #endif
-
-    for (int32_t Index = 0; Index < input->Count; Index++) {
-        String *Current = input->Contents[Index];
+    
+    if (freeContent) {
+        for (int32_t Index = 2; Index < input->Count; Index++) {
+            String *Current = input->Contents[Index];
 #if DEBUG()
         assert(Current != NULL);
 #endif
-        String_Free(Current);
+            String_Free(Current);
+        }
+        free(input->Contents);
     }
 
     free(input);
-    input = 0;
+    input = 0x0;
 }

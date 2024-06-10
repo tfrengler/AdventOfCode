@@ -110,7 +110,7 @@ int Part1(void)
     int BufferIndex = 0;
 
     for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
-        String *CurrentString = Input->Contents[LineIndex];
+        String* CurrentString = Input->Contents[LineIndex];
 
         for (int32_t StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
             char CurrentChar = CurrentString->Content[StringIndex];
@@ -162,7 +162,7 @@ int Part2(void)
     int32_t BufferIndex = 0;
 
     for (int32_t LineIndex = 0; LineIndex < Input->Count; LineIndex++) {
-        String *CurrentString = Input->Contents[LineIndex];
+        String* CurrentString = Input->Contents[LineIndex];
 
         for (int32_t StringIndex = 0; StringIndex < CurrentString->Size; StringIndex++) {
             char CurrentChar = CurrentString->Content[StringIndex];
@@ -185,6 +185,7 @@ int Part2(void)
 
             for (int32_t Index = 0; Index < 9; Index++) {
                 PatternTestResult *TestResult = PatternTesters[Index](StringToTest);
+
                 if (TestResult != NULL) {
                     NumberAsStringBuffer[BufferIndex] = TestResult->Value;
                     StringIndex += (TestResult->PatternSize - 2); // Min 2 because the last letter could be the start of a new number, tricksy...
@@ -192,6 +193,7 @@ int Part2(void)
                     free(TestResult);
                     break;
                 }
+
                 free(TestResult);
             }
         }

@@ -17,12 +17,13 @@ typedef struct _String {
 /* Represents a wrapper around an fixed length array of String*-instances. Count is the amount of structs in Contents, and Contents is the array (ptr to the start)*/
 typedef struct _StringArray {
 	int32_t Count;
-	String *Contents[];
+	String **Contents;
 } StringArray;
 
 StringArray *File_ReadAllLines(const char *fileNameAndPath);
 StringArray *String_Split(const String *inputString, char delimiter);
-void StringArray_Free(StringArray *input);
+void StringArray_Free(StringArray *input, bool freeContent);
+StringArray* StringArray_Make(String *input, int32_t size);
 
 void String_Free(String *input);
 String *File_ReadAllText(const char *fileNameAndPath);
