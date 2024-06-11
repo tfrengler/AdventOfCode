@@ -1,3 +1,4 @@
+#include "LibNumeric.h"
 #include "LibThomas.h"
 #include "LibString.h"
 #include "stdio.h"
@@ -33,7 +34,7 @@ int main(void)
     // StringArray *InputParts = String_Split(TestString, '\n');
     // String_Free(TestString);
 
-    if (InputParts == NULL) return EXIT_FAILURE;
+    if (InputParts == NULL) Fatal("Failed to read input\n");
     assert(InputParts->Count == 140);
 
     int32_t Part1Answer = 0;
@@ -61,7 +62,10 @@ int main(void)
             char NumberBuffer[4] = { 0 };
             memcpy(&NumberBuffer, &CurrentString[StringIndex], 3);
 
-            int32_t Number = atoi(NumberBuffer);
+            int32_t Number;
+            if (!StringToInt(NumberBuffer, sizeof(NumberBuffer) - 1, &Number)) {
+                Fatal("Failed to parse NumberBuffer to int\n");
+            }
             int32_t DigitsToCheck = 0;
             int32_t NumberStartPosition = StringIndex;
             int32_t SymbolPositionsLeftToCheck = 0;

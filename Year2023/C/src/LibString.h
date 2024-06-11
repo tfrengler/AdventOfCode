@@ -23,7 +23,7 @@ typedef struct _StringArray {
 StringArray *File_ReadAllLines(const char *fileNameAndPath);
 StringArray *String_Split(const String *inputString, char delimiter);
 void StringArray_Free(StringArray *input, bool freeContent);
-StringArray* StringArray_Make(String *input, int32_t size);
+StringArray* StringArray_Make(String **input, int32_t size);
 
 void String_Free(String *input);
 String *File_ReadAllText(const char *fileNameAndPath);

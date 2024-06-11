@@ -123,7 +123,7 @@ int Part1(void)
         if (Buffer[1] == 0) Buffer[1] = Buffer[0];
         int32_t CalibrationNumber;
         if (!StringToInt(Buffer, sizeof(Buffer) - 1, &CalibrationNumber)) {
-            Fatal("Failed to parse string buffer to int32");
+            Fatal("Failed to parse string buffer to int32\n");
         }
 
         memset(&Buffer, 0, sizeof(Buffer));
@@ -199,7 +199,10 @@ int Part2(void)
         }
 
         if (NumberAsStringBuffer[1] == 0) NumberAsStringBuffer[1] = NumberAsStringBuffer[0];
-        int32_t CalibrationNumber = atoi(NumberAsStringBuffer);
+        int32_t CalibrationNumber;
+        if (!StringToInt(NumberAsStringBuffer, sizeof(NumberAsStringBuffer) - 1, &CalibrationNumber)) {
+            Fatal("Failed to parse NumberAsStringBuffer to int");
+        }
 
         memset(&NumberAsStringBuffer, 0, sizeof NumberAsStringBuffer);
         BufferIndex = 0;

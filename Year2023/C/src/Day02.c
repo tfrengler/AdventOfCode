@@ -24,7 +24,10 @@ int main(void)
         int32_t Green = 0;
         int32_t Blue = 0;
 
-        int32_t GameIndex = atoi(GameIndexBuffer);
+        int32_t GameIndex;
+        if (!StringToInt(GameIndexBuffer, sizeof(GameIndexBuffer) - 1, &GameIndex)) {
+            Fatal("Failed to parse string in GameIndex to int\n");
+        }
 
         int32_t ColorIndex = 5;
         if (GameIndex < 10)
@@ -43,7 +46,7 @@ int main(void)
 
             int32_t ColorCount;
             if (!StringToInt(ColorCountBuffer, sizeof(ColorCountBuffer)-1, &ColorCount)) {
-                Fatal("Failed to parse string in colorbuffer to int :(");
+                Fatal("Failed to parse string in colorbuffer to int\n");
             }
 
             if (ColorCount < 10)

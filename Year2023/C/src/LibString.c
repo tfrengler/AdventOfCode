@@ -412,7 +412,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     return ReturnData;
 }
 
-StringArray *StringArray_Make(String *contents, const int32_t size)
+StringArray *StringArray_Make(String **contents, const int32_t size)
 {
     if (contents == 0x0 || size < 1) {
         Fatal("Error making string array. Contents were NULL or size was less than 1");
@@ -428,7 +428,7 @@ StringArray *StringArray_Make(String *contents, const int32_t size)
 #endif
 
     ReturnData->Count = size;
-    ReturnData->Contents = &contents;
+    ReturnData->Contents = contents;
 
     return ReturnData;
 }

@@ -1,4 +1,3 @@
-Write-Host -f Green "Cleaning old files"
 make clean
 
 Write-Host -f Green "Rebuilding in debug mode"
