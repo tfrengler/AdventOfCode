@@ -126,7 +126,7 @@ int main(void)
 
             MapIndex++;
 
-            StringArray_Free(Parts);
+            StringArray_Free(Parts, true);
         }
 
         MapStartAndEndIndex += 2;
@@ -151,7 +151,7 @@ void Part01(void)
 
     printf("Part 1 answer: %llu\n", PartAnswer);
     assert(PartAnswer == 389056265);
-    puts("Part 1 passed");
+    //puts("Part 1 passed");
 }
 
 const int32_t ExpectedRanges = 166;
@@ -231,7 +231,7 @@ void Part02(void)
     int64_t Part2Answer = i64Array_Min(Part2Locations);
     printf("Part 2 answer: %llu\n", Part2Answer);
     assert(Part2Answer == 137516820);
-    puts("Part 2 passed");
+    //puts("Part 2 passed");
 }
 
 int64_t LocationIndex = 0;

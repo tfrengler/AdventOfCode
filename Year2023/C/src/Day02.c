@@ -71,10 +71,10 @@ int main(void)
         FinalAnswerPart2 += (Red * Green * Blue);
     }
 
-    StringArray_Free(InputParts);
+    StringArray_Free(InputParts, true);
 
-    printf("Answer (part 1): %i\n", FinalAnswerPart1);
-    printf("Answer (part 2): %i\n", FinalAnswerPart2);
+    printf("Part 1 answer: %i\n", FinalAnswerPart1);
+    printf("Part 2 answer: %i\n", FinalAnswerPart2);
     assert(FinalAnswerPart1 == 2204);
     assert(FinalAnswerPart2 == 71036);
 

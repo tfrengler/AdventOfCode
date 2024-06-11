@@ -133,7 +133,7 @@ int Part1(void)
         // if (LineIndex == 10) break;
     }
 
-    printf("Part answer: %i\n", PartAnswer);
+    printf("Part 1 answer: %i\n", PartAnswer);
     assert(PartAnswer == 55621);
 
     return EXIT_SUCCESS;
@@ -207,9 +207,9 @@ int Part2(void)
         PartAnswer += CalibrationNumber;
     }
 
-    StringArray_Free(Input);
+    StringArray_Free(Input, true);
 
-    printf("Part answer: %i\n", PartAnswer);
+    printf("Part 1 answer: %i\n", PartAnswer);
     assert(PartAnswer == 53592);
 
     return EXIT_SUCCESS;

@@ -34,11 +34,11 @@ int main(void)
                 WinningCombos++;
             }
         }
-        
+
         FinalAnswerPart1 *= WinningCombos;
     }
 
-    printf("Part 01 answer: %i\n", FinalAnswerPart1);
+    printf("Part 1 answer: %i\n", FinalAnswerPart1);
     assert(FinalAnswerPart1 == 1710720);
 
     // Part 02
@@ -72,6 +72,6 @@ int main(void)
     }
 
     FinalAnswerPart2 = WinningCombos;
-    printf("Part 02 answer: %i\n", FinalAnswerPart2);
+    printf("Part 2 answer: %i\n", FinalAnswerPart2);
     assert(FinalAnswerPart2 == 35349468);
 }

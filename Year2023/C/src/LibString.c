@@ -387,6 +387,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
 #endif
 
     if (Index == 0) {
+        fclose(fileHandle);
         return String_Empty();
     }
 
@@ -397,6 +398,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
         FileContents = realloc(FileContents, FinalSizeWithTerminator);
 #if DEBUG()
         if (FileContents == NULL) {
+            fclose(fileHandle);
             Fatal("Error reading text file contents. Cannot allocate memory");
             return NULL;
         }
@@ -469,15 +471,16 @@ void String_Free(String *input)
 /**
  * @brief   De-allocates (frees) a StringArray-instance.
  * @param   input: The instance to free. Cannot be NULL.
+ * @param   freeContent: If true then all String-instances in Content are looped over and free'd along with the Content itself. If false then only input itself is freed.
  * @retval  None.
  */
 void StringArray_Free(StringArray *input, bool freeContent)
 {
 #if DEBUG()
     assert(input != NULL);
-    assert(input->Contents != NULL);
+    if (freeContent) assert(input->Contents != NULL);
 #endif
-    
+
     if (freeContent) {
         for (int32_t Index = 2; Index < input->Count; Index++) {
             String *Current = input->Contents[Index];

@@ -123,7 +123,7 @@ int main(void)
         }
     }
 
-    DEBUG_PRINT("Gears parsed: %i\n", GearIndex + 1);
+    //DEBUG_PRINT("Gears parsed: %i\n", GearIndex + 1);
 
     printf("Part 1 answer: %i\n", Part1Answer);
     assert(Part1Answer == 538046);
@@ -153,7 +153,7 @@ int main(void)
     }
 
     Part2Answer = Part2Answer / 2;
-    printf("Part 2 answer: %i", Part2Answer);
+    printf("Part 2 answer: %i\n", Part2Answer);
     assert(Part2Answer == 81709807);
 
     return EXIT_SUCCESS;
