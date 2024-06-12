@@ -49,27 +49,27 @@ int main(void)
     int32_t Part1Answer = 0;
     int32_t HandInsertIndex = 0;
 
-    String *TestStringX[19] = {0};
-    TestStringX[0] = &(String){ .Size = 7, .Content = "2345A 1" };  // 00 High card
-    TestStringX[1] = &(String){ .Size = 7, .Content = "Q2KJJ 13" }; // 01 One pair
-    TestStringX[2] = &(String){ .Size = 7, .Content = "Q2Q2Q 19" }; // 02 Full house
-    TestStringX[3] = &(String){ .Size = 7, .Content = "T3T3J 17" }; // 03 Two pairs
-    TestStringX[4] = &(String){ .Size = 7, .Content = "T3Q33 11" }; // 04 Three of a kind
-    TestStringX[5] = &(String){ .Size = 7, .Content = "2345J 3" };  // 05 High card
-    TestStringX[6] = &(String){ .Size = 7, .Content = "J345A 2" };  // 06 High card
-    TestStringX[7] = &(String){ .Size = 7, .Content = "32T3K 5" };  // 07 One pair
-    TestStringX[8] = &(String){ .Size = 7, .Content = "T55J5 29" }; // 08 Three of a kind
-    TestStringX[9] = &(String){ .Size = 7, .Content = "KK677 7" };  // 09 Two pairs
-    TestStringX[10] = &(String){ .Size = 7, .Content = "KTJJT 34" }; // 10 Two pairs
-    TestStringX[11] = &(String){ .Size = 7, .Content = "QQQJA 31" }; // 11 Three of a kind
-    TestStringX[12] = &(String){ .Size = 7, .Content = "JJJJJ 37" }; // 12 Five of a kind-
-    TestStringX[13] = &(String){ .Size = 7, .Content = "JAAAA 43" }; // 13 Four of a kind
-    TestStringX[14] = &(String){ .Size = 7, .Content = "AAAAJ 59" }; // 14 Four of a kind
-    TestStringX[15] = &(String){ .Size = 7, .Content = "AAAAA 61" }; // 15 Five of a kind
-    TestStringX[16] = &(String){ .Size = 7, .Content = "2AAAA 23" }; // 16 Four of a kind
-    TestStringX[17] = &(String){ .Size = 7, .Content = "2JJJJ 53" }; // 17 Four of a kind
-    TestStringX[18] = &(String){ .Size = 7, .Content = "JJJJ2 41" }; // 18 Four of a kind
-    StringArray *TestInput = StringArray_Make(TestStringX, sizeof(TestStringX) / sizeof(TestStringX[0]));
+    String *TestString[19] = {0};
+    TestString[0] = &(String){ .Size = 7, .Content = "2345A 1" };  // 00 High card
+    TestString[1] = &(String){ .Size = 7, .Content = "Q2KJJ 13" }; // 01 One pair
+    TestString[2] = &(String){ .Size = 7, .Content = "Q2Q2Q 19" }; // 02 Full house
+    TestString[3] = &(String){ .Size = 7, .Content = "T3T3J 17" }; // 03 Two pairs
+    TestString[4] = &(String){ .Size = 7, .Content = "T3Q33 11" }; // 04 Three of a kind
+    TestString[5] = &(String){ .Size = 7, .Content = "2345J 3" };  // 05 High card
+    TestString[6] = &(String){ .Size = 7, .Content = "J345A 2" };  // 06 High card
+    TestString[7] = &(String){ .Size = 7, .Content = "32T3K 5" };  // 07 One pair
+    TestString[8] = &(String){ .Size = 7, .Content = "T55J5 29" }; // 08 Three of a kind
+    TestString[9] = &(String){ .Size = 7, .Content = "KK677 7" };  // 09 Two pairs
+    TestString[10] = &(String){ .Size = 7, .Content = "KTJJT 34" }; // 10 Two pairs
+    TestString[11] = &(String){ .Size = 7, .Content = "QQQJA 31" }; // 11 Three of a kind
+    TestString[12] = &(String){ .Size = 7, .Content = "JJJJJ 37" }; // 12 Five of a kind-
+    TestString[13] = &(String){ .Size = 7, .Content = "JAAAA 43" }; // 13 Four of a kind
+    TestString[14] = &(String){ .Size = 7, .Content = "AAAAJ 59" }; // 14 Four of a kind
+    TestString[15] = &(String){ .Size = 7, .Content = "AAAAA 61" }; // 15 Five of a kind
+    TestString[16] = &(String){ .Size = 7, .Content = "2AAAA 23" }; // 16 Four of a kind
+    TestString[17] = &(String){ .Size = 7, .Content = "2JJJJ 53" }; // 17 Four of a kind
+    TestString[18] = &(String){ .Size = 7, .Content = "JJJJ2 41" }; // 18 Four of a kind
+    StringArray *TestInput = StringArray_Make(TestString, sizeof(TestString) / sizeof(TestString[0]));
 
     for (int32_t InputIndex = 0; InputIndex < TestInput->Count; InputIndex++) {
 
@@ -78,32 +78,48 @@ int main(void)
         for (size_t CardLetterIndex = 0; CardLetterIndex < 5; CardLetterIndex++) {
             char CurrentCardChar = CurrentInputString->Content[CardLetterIndex];
 
-            if (CurrentCardChar == 'A')
-                CardBuffer[12]++;
-            else if (CurrentCardChar == 'K')
-                CardBuffer[11]++;
-            else if (CurrentCardChar == 'Q')
-                CardBuffer[10]++;
-            else if (CurrentCardChar == 'J')
-                CardBuffer[9]++;
-            else if (CurrentCardChar == 'T')
-                CardBuffer[8]++;
-            else if (CurrentCardChar == '9')
-                CardBuffer[7]++;
-            else if (CurrentCardChar == '8')
-                CardBuffer[6]++;
-            else if (CurrentCardChar == '7')
-                CardBuffer[5]++;
-            else if (CurrentCardChar == '6')
-                CardBuffer[4]++;
-            else if (CurrentCardChar == '5')
-                CardBuffer[3]++;
-            else if (CurrentCardChar == '4')
-                CardBuffer[2]++;
-            else if (CurrentCardChar == '3')
-                CardBuffer[1]++;
-            else if (CurrentCardChar == '2')
-                CardBuffer[0]++;
+            switch(CurrentCardChar)
+            {
+                case 'A':
+                    CardBuffer[12]++;
+                    break;
+                case 'K':
+                    CardBuffer[11]++;
+                    break;
+                case 'Q':
+                    CardBuffer[10]++;
+                    break;
+                case 'J':
+                    CardBuffer[9]++;
+                    break;
+                case 'T':
+                    CardBuffer[8]++;
+                    break;
+                case '9':
+                    CardBuffer[7]++;
+                    break;
+                case '8':
+                    CardBuffer[6]++;
+                    break;
+                case '7':
+                    CardBuffer[5]++;
+                    break;
+                case '6':
+                    CardBuffer[4]++;
+                    break;
+                case '5':
+                    CardBuffer[3]++;
+                    break;
+                case '4':
+                    CardBuffer[2]++;
+                    break;
+                case '3':
+                    CardBuffer[1]++;
+                    break;
+                case '2':
+                    CardBuffer[0]++;
+                    break;
+            }
 
             Cards[CardLetterIndex] = CardValues[(int32_t)CurrentCardChar];
         }
