@@ -482,7 +482,7 @@ void StringArray_Free(StringArray *input, bool freeContent)
 #endif
 
     if (freeContent) {
-        for (int32_t Index = 2; Index < input->Count; Index++) {
+        for (int32_t Index = 0; Index < input->Count; Index++) {
             String *Current = input->Contents[Index];
 #if DEBUG()
         assert(Current != NULL);

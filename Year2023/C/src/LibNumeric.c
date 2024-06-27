@@ -475,6 +475,7 @@ IntegerArray *i64Array_Make(int32_t size, const int64_t *values)
  * - length was was less than 1
  * - a number was found but it under- or overflowed the max value of a 32-bit int
  * - a null terminator character was found in input before length was reached
+ *
  * In all cases output will be 0 upon return EXCEPT if output is NULL (since that would be dereferencing a null pointer)
  */
 bool StringToInt(const char *input, int32_t length, int* output)
