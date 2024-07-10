@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.IO.Compression;
 
+// https://kristoff.it/blog/improving-your-zls-experience/
+
 public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
 {
     Directory.CreateDirectory(target.FullName);
@@ -113,6 +115,10 @@ DownloadResponse.EnsureSuccessStatusCode();
 Trace.Assert(DownloadResponse.Content.Headers.ContentLength == Convert.ToInt64(ChosenVersion.Win64.Size));
 
 WriteLine("Done");
+
+OutputDir.Delete(true);
+OutputDir.Refresh();
+Output.Create();
 
 WriteLine("Extracting files...");
 var NewestVersionContent = new ZipArchive(DownloadResponse.Content.ReadAsStream(), System.IO.Compression.ZipArchiveMode.Read);

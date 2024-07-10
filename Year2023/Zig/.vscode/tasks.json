@@ -8,7 +8,7 @@
             "args": [
                 "build-exe",
                 "${file}",
-                "-femit-bin=${workspaceFolder}\\bin\\bin"
+                "-femit-bin=${workspaceFolder}\\bin\\${fileBasenameNoExtension}.exe"
             ]
         }
     ]
