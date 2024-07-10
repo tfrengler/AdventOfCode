@@ -346,7 +346,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     FILE *fileHandle = fopen(fileNameAndPath, "r");
 
     if (fileHandle == NULL) {
-        puts("Unable to read all text from file");
+        printf("Unable to read all text from file: %s\n", fileNameAndPath);
         return NULL;
     }
 
