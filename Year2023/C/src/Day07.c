@@ -51,12 +51,10 @@ int32_t DetermineCardValue(const char input)
 Hand* ParseCardIntoHand(const String *input)
 {
     int32_t CardCount[13] = { 0 }; 
-    //int32_t HandValue = 0;
     
     for (int32_t index = 0; index < 5; index++) {
 
         char NextChar = input->Content[index];
-        //HandValue += DetermineCardValue(NextChar);
 
         switch (NextChar) {
             case 'A': CardCount[0]++; break;
@@ -208,6 +206,7 @@ int main(void)
     assert(sizeof(Hands) / sizeof(Hands[0]) == TestInput->Count);
 #endif
 
+    // PART 01
     for (int32_t index = 0; index < TestInput->Count; index++) {
         
         String *CurrentInput = TestInput->Contents[index];
@@ -222,6 +221,7 @@ int main(void)
         Hand CurrentHand = Hands[Index];
         Part1Answer += CurrentHand.Bid * (Index + 1);
     }
+    // END PART 01
 
     StringArray_Free(TestInput, true);
 
