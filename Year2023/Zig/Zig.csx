@@ -118,7 +118,7 @@ WriteLine("Done");
 
 OutputDir.Delete(true);
 OutputDir.Refresh();
-Output.Create();
+OutputDir.Create();
 
 WriteLine("Extracting files...");
 var NewestVersionContent = new ZipArchive(DownloadResponse.Content.ReadAsStream(), System.IO.Compression.ZipArchiveMode.Read);
