@@ -3,7 +3,7 @@
 cflags.debug 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread -fsanitize=undefined -fsanitize=address -fsanitize-trap -fno-omit-frame-pointer -fno-common -g3 -O0
 cflags.release 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread -O2
 
-BUILD 				:= release
+BUILD 				:= debug
 CC					:= clang
 CFLAGS				:= ${cflags.${BUILD}}
 SRC_DIR				:= src/
@@ -42,6 +42,10 @@ Day06: $(OBJ_DIR)Day06.o $(LIBS)
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 
 Day07: $(OBJ_DIR)Day07.o $(LIBS)
+	@echo "Linking and creating binary for $@"
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
+
+Day08: $(OBJ_DIR)Day08.o $(LIBS)
 	@echo "Linking and creating binary for $@"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 

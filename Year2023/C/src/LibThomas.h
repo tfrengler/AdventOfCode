@@ -54,5 +54,6 @@
 #endif
 
 void Fatal(const char *message);
+void *Malloc(size_t size);
 
 #endif
