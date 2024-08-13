@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe",
             "args": [],
-            "terminal": "integrated",
+            "terminal": "external",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Clang - build"
         }
