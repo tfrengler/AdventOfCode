@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.ExceptionServices;
+using System.Text;
 
 namespace AdventOfCode.Year2023
 {
@@ -33,27 +35,20 @@ namespace AdventOfCode.Year2023
 
         public static uint Fnv1aHash(string input, uint offsetBasis = 2166136261)
         {
-            uint hash = offsetBasis == 0 ? 2166136261 : offsetBasis;    // FNV offset basis. Should be anything but non-zero
-            uint prime = 16777619;                                      // FNV prime for 32-bit hashes
-
-            foreach (char currentChar in input)
-            {
-                unchecked
-                {
-                    hash = hash ^ currentChar;
-                    hash = hash * prime;
-                }
-            }
-
-            return hash;
+            return Fnv1aHash(Encoding.ASCII.GetBytes(input), offsetBasis);
         }
 
-        public static uint Fnv1aHash(uint input, uint offsetBasis = 2166136261)
+        public static uint Fnv1aHash(uint input, uint offsetBasis = 0)
+        {
+            return Fnv1aHash(BitConverter.GetBytes(input), offsetBasis);
+        }
+
+        public static uint Fnv1aHash(byte[] input, uint offsetBasis = 2166136261)
         {
             uint hash = offsetBasis == 0 ? 2166136261 : offsetBasis;    // FNV offset basis. Should be anything but non-zero
             uint prime = 16777619;                                      // FNV prime for 32-bit hashes
 
-            foreach (byte currentChar in BitConverter.GetBytes(input))
+            foreach (byte currentChar in input)
             {
                 unchecked
                 {
@@ -70,10 +65,10 @@ namespace AdventOfCode.Year2023
         {
             uint Size = (uint)Nodes.Count;
             var Buckets = new List<string>[Size];
-            var G = new int[Size];
+            var Intermediate = new int[Size];
             var Values = new Tuple<string,string>[Size];
 
-            for(int Index = 0; Index < Size; Index++)
+            for(int Index = 0; Index < Buckets.Length; Index++)
             {
                 Buckets[Index] = new List<string>();
             }
@@ -92,12 +87,18 @@ namespace AdventOfCode.Year2023
                 return 0;
             });
 
-            /*for(int Index = 0; Index < Buckets.Length; Index++)
+            using (var BucketFile = File.Create("C:/Temp/Buckets.txt"))
             {
-                Console.WriteLine($"Count ({Index}): " + Buckets[Index].Count);
-            }*/
+                for (int Index = 0; Index < Buckets.Length; Index++)
+                {
+                    BucketFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + string.Join(',', Buckets[Index]) + Environment.NewLine));
+                    //Console.WriteLine($"Count ({Index}): " + Buckets[Index].Count);
+                }
+                BucketFile.Flush();
+            }
 
-            //Console.WriteLine(Buckets[0]);
+            //return;
+            /* STEP 2: Parse buckets and create intermediate- and value table */
 
             for (int Index = 0; Index < Size; Index++)
             {
@@ -134,8 +135,8 @@ namespace AdventOfCode.Year2023
                     }
                 }
 
-                Debug.Assert(G[Fnv1aHash(CurrentBucket[0]) % Size] == 0, $"Expected G[{Fnv1aHash(CurrentBucket[0]) % Size}] to be null");
-                G[Fnv1aHash(CurrentBucket[0]) % Size] = (int)HashOffsetBasis;
+                Debug.Assert(Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] == 0, $"Expected Intermediate[{Fnv1aHash(CurrentBucket[0]) % Size}] to be null");
+                Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] = (int)HashOffsetBasis;
 
                 for(int IndexInner = 0; IndexInner < CurrentBucket.Count; IndexInner++)
                 {
@@ -144,14 +145,23 @@ namespace AdventOfCode.Year2023
                 }
             }
 
-            for(int Index = 0; Index < G.Length; Index++)
+            using (var IntermediateTableOutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
             {
-                //var d = G[Fnv1aHash(currentNode.Key) % Size];
-                //if (d < 0) continue;
-                //var Value = Values[Fnv1aHash(currentNode.Key, (uint)d) % Size];
-                //if (Value is null) continue;
-                //Console.WriteLine($"{currentNode.Key} = ({currentNode.Value.Item1},{currentNode.Value.Item2}) | ({Value.Item1},{Value.Item2})");
+                for (int Index = 0; Index < Intermediate.Length; Index++)
+                {
+                    IntermediateTableOutputFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + Intermediate[Index] + Environment.NewLine));
+                }
+                IntermediateTableOutputFile.Flush();
             }
+
+            /*foreach(var currentNode in Nodes)
+            {
+                var d = Intermediate[Fnv1aHash(currentNode.Key) % Size];
+                if (d == 0) continue;
+                var Value = Values[Fnv1aHash(currentNode.Key, (uint)d) % Size];
+                if (Value is null) continue;
+                Console.WriteLine($"{currentNode.Key} = ({currentNode.Value.Item1},{currentNode.Value.Item2}) | ({Value.Item1},{Value.Item2})");
+            }*/
         }
 
         [TestCase]

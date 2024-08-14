@@ -1,7 +1,7 @@
 
-
-cflags.debug 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread -fsanitize=undefined -fsanitize=address -fsanitize-trap -fno-omit-frame-pointer -fno-common -g3 -O0
-cflags.release 		:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread -O2
+cflagsBase 			:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread
+cflags.debug 		:= ${cflagsBase} -fsanitize=undefined -fsanitize=address -fsanitize-trap -fno-omit-frame-pointer -fno-common -g3 -O0
+cflags.release 		:= ${cflagsBase} -O2
 
 BUILD 				:= debug
 CC					:= clang
@@ -15,7 +15,7 @@ OBJECT_FILES		:= $(SOURCE_FILES:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
 -include $(DEPENDENCY_FILES)
 
-all: Day01 Day02 Day03 Day04 Day05 Day06 Day07
+all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08
 
 Day01: $(OBJ_DIR)Day01.o $(LIBS)
 	@echo "Linking and creating binary for $@"
