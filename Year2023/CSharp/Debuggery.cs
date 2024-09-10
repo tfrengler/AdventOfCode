@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace AdventOfCode.Year2023
@@ -43,10 +42,12 @@ namespace AdventOfCode.Year2023
             return Fnv1aHash(BitConverter.GetBytes(input), offsetBasis);
         }
 
-        public static uint Fnv1aHash(byte[] input, uint offsetBasis = 2166136261)
+        private const uint DefaultOffsetBasis = 2166136261;
+
+        public static uint Fnv1aHash(byte[] input, uint offsetBasis = DefaultOffsetBasis)
         {
-            uint hash = offsetBasis == 0 ? 2166136261 : offsetBasis;    // FNV offset basis. Should be anything but non-zero
-            uint prime = 16777619;                                      // FNV prime for 32-bit hashes
+            uint hash = offsetBasis == 0 ? DefaultOffsetBasis : offsetBasis;    // FNV offset basis. Should be anything but non-zero
+            uint prime = 16777619;                                              // FNV prime for 32-bit hashes
 
             foreach (byte currentChar in input)
             {
@@ -63,22 +64,28 @@ namespace AdventOfCode.Year2023
         [TestCase]
         public void DoDebug2()
         {
+            // Based on http://stevehanov.ca/blog/?id=119
+
             uint Size = (uint)Nodes.Count;
             var Buckets = new List<string>[Size];
             var Intermediate = new int[Size];
             var Values = new Tuple<string,string>[Size];
 
+            // Create temp buckets to group the hashed values together in
             for(int Index = 0; Index < Buckets.Length; Index++)
             {
                 Buckets[Index] = new List<string>();
             }
 
+            // Loop through and hash all the values and find the index. Add to the buckets
+            // This is how we detect collisions (values that hash to the same index) which we will resolve in step 2
             foreach(var CurrentNode in Nodes)
             {
                 uint HashIndex = Fnv1aHash(CurrentNode.Key) % Size;
                 Buckets[HashIndex].Add(CurrentNode.Key);
             }
 
+            // Sorts buckets by amount of elements in them, from high to low
             Array.Sort(Buckets, (a, b) =>
             {
                 if (a.Count > b.Count) return -1;
@@ -87,7 +94,7 @@ namespace AdventOfCode.Year2023
                 return 0;
             });
 
-            using (var BucketFile = File.Create("C:/Temp/Buckets.txt"))
+            /*using (var BucketFile = File.Create("C:/Temp/Buckets.txt"))
             {
                 for (int Index = 0; Index < Buckets.Length; Index++)
                 {
@@ -95,49 +102,63 @@ namespace AdventOfCode.Year2023
                     //Console.WriteLine($"Count ({Index}): " + Buckets[Index].Count);
                 }
                 BucketFile.Flush();
-            }
+            }*/
 
             //return;
-            /* STEP 2: Parse buckets and create intermediate- and value table */
-
+            /* STEP 2: Parse buckets with multiple entries (duplicates), create and populate the intermediate- and final value table */
             for (int Index = 0; Index < Size; Index++)
             {
                 List<string> CurrentBucket = Buckets[Index];
-                if (CurrentBucket.Count <= 1) break;
+                if (CurrentBucket.Count <= 1) break; // No multiples? Then we are done parsing buckets
 
-                uint HashOffsetBasis = 1;
+                uint HashOffsetBasis = DefaultOffsetBasis;
                 var BucketIndex = 0;
-                List<uint> SlotsInValueTable = [];
                 int Iterations = 0;
+                // Temp table containing all the computed indices
+                // This is basically what maps bucket[index] => SlotsInValueTable[index] => final value table[value from SlotsInValueTable]
+                List<uint> SlotsInValueTable = [];
 
+                // Keep processing until there's no collisions basically
                 while (BucketIndex < CurrentBucket.Count)
                 {
+                    // Get the current value that needs to be hashed and indexed
                     string CurrentKey = CurrentBucket[BucketIndex];
 
+                    // Compute index in final value table (hash-algorithm mod final value table size)
                     uint ValueSlot = Fnv1aHash(CurrentKey, HashOffsetBasis) % Size;
+                    // Check if final value table index we computed is occupoed OR temp index table contains an already computed index
                     if (Values[ValueSlot] is not null || SlotsInValueTable.Contains(ValueSlot))
                     {
-                        // Collision, reset and retry entire bucket with different offset
+                        // We have collision. Reset and retry entire bucket with different offset
                         HashOffsetBasis++;
                         BucketIndex = 0;
                         SlotsInValueTable.Clear();
                     }
                     else
                     {
+                        // No collisions? Success! Add computed index to our temp table
                         SlotsInValueTable.Add(ValueSlot);
                         BucketIndex++;
                     }
 
+                    // Safe-guard against infinite loops
                     Iterations++;
                     if (Iterations > 100_000)
                     {
-                        throw new Exception("Took more than 100k iterations to find hash value for bucket");
+                        throw new Exception($"Took more than 100k iterations to find hash value for bucket ({Index})");
                     }
                 }
 
-                Debug.Assert(Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] == 0, $"Expected Intermediate[{Fnv1aHash(CurrentBucket[0]) % Size}] to be null");
+                //Debug.Assert(Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] == 0, $"Expected Intermediate[{Fnv1aHash(CurrentBucket[0]) % Size}] to be null");
+                /* Add the succesful hashoffset to the intermediate table based on the first value of the bucket (which value is ultimately irrelevant
+                   since we know that all values in the bucket will yield the same index). This is how we map between:
+                    value to look up:
+                        => index in intermediate table
+                        => hashoffset to use for value to get index for value in final value table
+                */
                 Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] = (int)HashOffsetBasis;
 
+                // Loop through values in bucket and insert them into final value table based on indices we computed and stored in temp table
                 for(int IndexInner = 0; IndexInner < CurrentBucket.Count; IndexInner++)
                 {
                     Debug.Assert(Values[SlotsInValueTable[IndexInner]] == null, $"Expected Values[{SlotsInValueTable[IndexInner]}] to be null");
@@ -145,14 +166,22 @@ namespace AdventOfCode.Year2023
                 }
             }
 
-            using (var IntermediateTableOutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
+            /* STEP 3: Parse the remaining values that hashed to a unique value without duplicates and fit them into the holes in the table */
+
+            // Iterate over 
+            for (int Index = 0; Index < Size; Index++)
+            {
+
+            }
+
+            /*using (var IntermediateTableOutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
             {
                 for (int Index = 0; Index < Intermediate.Length; Index++)
                 {
                     IntermediateTableOutputFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + Intermediate[Index] + Environment.NewLine));
                 }
                 IntermediateTableOutputFile.Flush();
-            }
+            }*/
 
             /*foreach(var currentNode in Nodes)
             {
