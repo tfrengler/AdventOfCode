@@ -106,10 +106,15 @@ namespace AdventOfCode.Year2023
 
             //return;
             /* STEP 2: Parse buckets with multiple entries (duplicates), create and populate the intermediate- and final value table */
+            int BucketsWithOneStartIndex = -1;
             for (int Index = 0; Index < Size; Index++)
             {
                 List<string> CurrentBucket = Buckets[Index];
-                if (CurrentBucket.Count <= 1) break; // No multiples? Then we are done parsing buckets
+                if (CurrentBucket.Count <= 1) // No multiples? Then we are done parsing buckets
+                {
+                    BucketsWithOneStartIndex = Index;
+                    break;
+                }
 
                 uint HashOffsetBasis = DefaultOffsetBasis;
                 var BucketIndex = 0;
@@ -168,11 +173,42 @@ namespace AdventOfCode.Year2023
 
             /* STEP 3: Parse the remaining values that hashed to a unique value without duplicates and fit them into the holes in the table */
 
-            // Iterate over 
+            // Iterate over the final value table and find empty slots
+            int FreeSlotIndex = 0;
+            var FreeSlotsList = new int[Size - (BucketsWithOneStartIndex + 1)];
             for (int Index = 0; Index < Size; Index++)
             {
-
+                if (Values[Index] is null)
+                {
+                    FreeSlotsList[FreeSlotIndex] = Index;
+                    FreeSlotIndex++;
+                }
             }
+            FreeSlotIndex = 0;
+
+            // Iterate over the remaining buckets with just one item and assign them to the free slots
+            for (int Index = BucketsWithOneStartIndex; Index < FreeSlotsList.Length; Index++)
+            {
+                List<string> CurrentBucket = Buckets[Index];
+                // If we reach an empty bucket then quit. Since we have sorted buckets ASC we know the empty ones are at the end
+                if (CurrentBucket.Count == 0) break;
+
+                // Get the next free slot in the value table
+                int ValueSlot = FreeSlotsList[FreeSlotIndex];
+                FreeSlotIndex++;
+                uint IntermediateSlot = Fnv1aHash(CurrentBucket[0]) % Size;
+
+                // Set the intermediate table value to the index in the value table.
+                // However to indicate that it's a direct reference make it negative.
+                // We subtract 1 to cover the case where the value table index is 0.
+                Intermediate[IntermediateSlot] = (-ValueSlot) - 1;
+                Values[ValueSlot] = Nodes[CurrentBucket[0]];
+            }
+
+            /*
+             NOTE: An optimization for space/memory is to compress the intermediate table ie. removing the empty cells
+             but that is for later.
+             */
 
             /*using (var IntermediateTableOutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
             {
@@ -183,14 +219,30 @@ namespace AdventOfCode.Year2023
                 IntermediateTableOutputFile.Flush();
             }*/
 
-            /*foreach(var currentNode in Nodes)
+
+            // TESTING AND VALIDATION
+            foreach(var currentNode in Nodes)
             {
-                var d = Intermediate[Fnv1aHash(currentNode.Key) % Size];
-                if (d == 0) continue;
-                var Value = Values[Fnv1aHash(currentNode.Key, (uint)d) % Size];
-                if (Value is null) continue;
-                Console.WriteLine($"{currentNode.Key} = ({currentNode.Value.Item1},{currentNode.Value.Item2}) | ({Value.Item1},{Value.Item2})");
-            }*/
+                int HashOffset = Intermediate[Fnv1aHash(currentNode.Key) % Size];
+                if (HashOffset == 0)
+                {
+                    throw new Exception($"Key {currentNode.Key} does not exist in hash table");
+                }
+
+                Tuple<string, string> Value;
+                if (HashOffset > 0)
+                {
+                    Value = Values[Fnv1aHash(currentNode.Key, (uint)HashOffset) % Size];
+                }
+                else
+                {
+                    int ValueIndex = (-HashOffset) + 1;
+                    Value = Values[ValueIndex];
+                }
+
+                Debug.Assert(currentNode.Value == Value, $"Expected key '{currentNode.Key}' to yield value '{currentNode.Value}' but found '{Value}'");
+                //Console.WriteLine($"{currentNode.Key} = ({currentNode.Value.Item1},{currentNode.Value.Item2}) | ({Value.Item1},{Value.Item2})");
+            }
         }
 
         [TestCase]
