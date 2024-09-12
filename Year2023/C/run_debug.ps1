@@ -19,3 +19,5 @@ Write-Host -f Green "DAY 06:"
 ./build/Day06_debug.exe
 Write-Host -f Green "DAY 07:"
 ./build/Day07_debug.exe
+Write-Host -f Green "DAY 08:"
+./build/Day08_debug.exe
