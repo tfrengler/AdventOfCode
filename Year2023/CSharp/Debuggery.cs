@@ -68,7 +68,7 @@ namespace AdventOfCode.Year2023
 
             uint Size = (uint)Nodes.Count;
             var Buckets = new List<string>[Size];
-            var Intermediate = new int[Size];
+            var Intermediate = new long[Size];
             var Values = new Tuple<string,string>[Size];
 
             // Create temp buckets to group the hashed values together in
@@ -161,7 +161,7 @@ namespace AdventOfCode.Year2023
                         => index in intermediate table
                         => hashoffset to use for value to get index for value in final value table
                 */
-                Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] = (int)HashOffsetBasis;
+                Intermediate[Fnv1aHash(CurrentBucket[0]) % Size] = HashOffsetBasis;
 
                 // Loop through values in bucket and insert them into final value table based on indices we computed and stored in temp table
                 for(int IndexInner = 0; IndexInner < CurrentBucket.Count; IndexInner++)
@@ -196,7 +196,7 @@ namespace AdventOfCode.Year2023
                 // Get the next free slot in the value table
                 int ValueSlot = FreeSlotsList[FreeSlotIndex];
                 FreeSlotIndex++;
-                uint IntermediateSlot = Fnv1aHash(CurrentBucket[0]) % Size;
+                long IntermediateSlot = Fnv1aHash(CurrentBucket[0]) % Size;
 
                 // Set the intermediate table value to the index in the value table.
                 // However to indicate that it's a direct reference make it negative.
@@ -223,7 +223,7 @@ namespace AdventOfCode.Year2023
             // TESTING AND VALIDATION
             foreach(var currentNode in Nodes)
             {
-                int HashOffset = Intermediate[Fnv1aHash(currentNode.Key) % Size];
+                long HashOffset = Intermediate[Fnv1aHash(currentNode.Key) % Size];
                 if (HashOffset == 0)
                 {
                     throw new Exception($"Key {currentNode.Key} does not exist in hash table");
@@ -236,7 +236,7 @@ namespace AdventOfCode.Year2023
                 }
                 else
                 {
-                    int ValueIndex = (-HashOffset) + 1;
+                    long ValueIndex = (-HashOffset) + 1;
                     Value = Values[ValueIndex];
                 }
 
