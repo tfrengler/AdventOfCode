@@ -5,7 +5,7 @@
             "name": "LLDB - debug",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe",
+            "program": "${workspaceFolder}/build/${fileBasenameNoExtension}.exe",
             "args": [],
             "terminal": "integrated",
             "cwd": "${workspaceFolder}",

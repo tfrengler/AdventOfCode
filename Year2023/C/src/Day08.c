@@ -1,8 +1,10 @@
 #include "LibString.h"
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "LibThomas.h"
 
 typedef struct _Node {
     char *Name;
@@ -15,23 +17,25 @@ int main(void)
     int32_t Part1Answer = 0;
     StringArray *TestInput = File_ReadAllLines("Input/08.txt");
 
+    printf("%zu allocations made after File_ReadAllLines\n", GetAllocations());
+
     if (TestInput == 0x0) {
         exit(EXIT_FAILURE);
     }
 
-    #define AmountOfNodes() 762
-    const int32_t AmountOfNodes = AmountOfNodes();
+    #define NODE_COUNT() 762
+    const int32_t AmountOfNodes = NODE_COUNT();
     int32_t NodeInsertIndex = 0;
-    Node Nodes[AmountOfNodes()] = { 0 };
+    Node Nodes[NODE_COUNT()] = { 0 };
     String *Instructions = TestInput->Contents[0];
     int32_t StartNodeIndex = 264;
 
     // LDN = (BRL, FLC)
     for (int32_t index = 2; index < TestInput->Count; index++) {
 
-        char *Name = malloc(4 * sizeof(char));
-        char *Left = malloc(4 * sizeof(char));
-        char *Right = malloc(4 * sizeof(char));
+        char *Name = Malloc(4);
+        char *Left = Malloc(4);
+        char *Right = Malloc(4);
         Name[3] = 0x0;
         Left[3] = 0x0;
         Right[3] = 0x0;
@@ -50,6 +54,8 @@ int main(void)
         NodeInsertIndex++;
     }
 
+    printf("%zu allocations made after parsing nodes\n", GetAllocations());
+
     int32_t NextNodeIndex = StartNodeIndex;
     int32_t NextInstructionIndex = 0;
     Part1Answer++;
@@ -66,7 +72,7 @@ int main(void)
         else if (NextInstruction == 'R') {
             NextNodeName = NextNode.Right;
         } else {
-            // DEBUG_PRINT("NextInstruction is not L or R", 0x0);
+            puts("ERROR: NextInstruction neither L nor R");
             exit(EXIT_FAILURE);
         }
 
@@ -90,6 +96,16 @@ int main(void)
         }
     }
 
+    StringArray_Free(TestInput, true);
+
+    for(int32_t index = 0; index < AmountOfNodes; index++) {
+        Free(Nodes[index].Name);
+        Free(Nodes[index].Left);
+        Free(Nodes[index].Right);
+    }
+
     printf("Part 1 answer: %i\n", Part1Answer);
+    PrintAllocations();
+
     return EXIT_SUCCESS;
 }

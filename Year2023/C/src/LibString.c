@@ -23,8 +23,7 @@
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval True if input contains pattern, false otherwise.
  */
-bool String_Contains(const String *input, const String *pattern, bool caseInsensitive)
-{
+bool String_Contains(const String *input, const String *pattern, bool caseInsensitive) {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_Contains: argument 'input' or 'pattern' is NULL");
     assert(caseInsensitive == false || caseInsensitive == true);
@@ -68,8 +67,7 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
  * @param  caseInsensitive: When 1 (true) then each charater for each string will be lower-cased before comparison, otherwise not.
  * @retval True if input ends with pattern, false otherwise.
  */
-bool String_EndsWith(const String *input, const String *pattern, bool caseInsensitive)
-{
+bool String_EndsWith(const String *input, const String *pattern, bool caseInsensitive) {
 #if DEBUG()
     if (input == NULL || pattern == NULL) Fatal("String_EndsWith: argument 'input' or 'pattern' is NULL");
     assert(caseInsensitive == false || caseInsensitive == true);
@@ -166,7 +164,7 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
 }
 
 /**
- * @brief  Creates a heap-allocated instance of String around a char*. The original string is copied so it is safe to free() afterwards.
+ * @brief  Creates a heap-allocated instance of String around a char*. The original string is copied so it is safe to Free() afterwards.
  * @param  content: The string (including the null-terminator) to wrap the return struct around. Is mem-copied to retval->Content.
  * @param  size: The size of the string MINUS the null-terminator. Must be greater than 0 and content[size] is expected to be '\0'.
  * @retval A pointer to the newly created String wrapped around the C-string.
@@ -179,13 +177,13 @@ String *String_Make(const char *content, int32_t size)
     assert(content[size] == '\0');
 #endif
 
-    String *ReturnData = malloc(sizeof(struct _String));
+    String *ReturnData = Malloc(sizeof(struct _String));
 
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
 
-    ReturnData->Content = malloc(size + 1);
+    ReturnData->Content = Malloc(size + 1);
 
 #if DEBUG()
     assert(ReturnData->Content != NULL);
@@ -203,11 +201,12 @@ String *String_Make(const char *content, int32_t size)
  */
 String *String_Empty(void)
 {
-    String *ReturnData = malloc(sizeof(struct _String));
+    String *ReturnData = Malloc(sizeof(struct _String));
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
     ReturnData->Size = 0;
+    ReturnData->Content = 0x0;
     return ReturnData;
 }
 
@@ -280,11 +279,11 @@ StringArray *String_Split(const String *inputString, char delimiter)
         }
     }
 
-    StringArray *ReturnData = malloc(sizeof *ReturnData);
+    StringArray *ReturnData = Malloc(sizeof *ReturnData);
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
-    ReturnData->Contents = malloc(sizeof(**ReturnData->Contents) * LineCount);
+    ReturnData->Contents = Malloc(sizeof(**ReturnData->Contents) * LineCount);
 #if DEBUG()
     assert(ReturnData->Contents != NULL);
 #endif
@@ -320,6 +319,7 @@ StringArray *String_Split(const String *inputString, char delimiter)
         if (StringLength == 0) {
             StringStartIndex++;
             StringLength = 0;
+            ReturnData->Contents[IndexOuter] = String_Empty();
             continue;
         }
 
@@ -354,7 +354,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     int64_t FileSize = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    char *FileContents = malloc(FileSize + 1);
+    char *FileContents = Malloc(FileSize + 1);
     int32_t Index = 0;
 
 #if DEBUG()
@@ -383,7 +383,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     int CloseStatus = fclose(fileHandle);
     if (CloseStatus == -1) Fatal("Error closing file after reading");
 #else
-    fclose(fileHandle)
+    fclose(fileHandle);
 #endif
 
     if (Index == 0) {
@@ -406,7 +406,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     }
 
     String *ReturnData = String_Make(FileContents, FinalSizeWithTerminator - 1);
-    free(FileContents);
+    Free(FileContents);
     FileContents = 0;
 
     return ReturnData;
@@ -418,11 +418,11 @@ StringArray *StringArray_Make(String **contents, const int32_t size)
         Fatal("Error making string array. Contents were NULL or size was less than 1");
     }
 
-    StringArray *ReturnData = malloc(sizeof(StringArray));
+    StringArray *ReturnData = Malloc(sizeof(StringArray));
 #if DEBUG()
     assert(ReturnData != 0x0);
 #endif
-    ReturnData->Contents = malloc(size * sizeof(String));
+    ReturnData->Contents = Malloc(size * sizeof(String));
 #if DEBUG()
     assert(ReturnData->Contents != 0x0);
 #endif
@@ -461,10 +461,10 @@ void String_Free(String *input)
 #endif
 
     if (input->Content != NULL) {
-        free(input->Content);
+        Free(input->Content);
         input->Content = 0x0;
     }
-    free(input);
+    Free(input);
     input = 0x0;
 }
 
@@ -489,9 +489,9 @@ void StringArray_Free(StringArray *input, bool freeContent)
 #endif
             String_Free(Current);
         }
-        free(input->Contents);
+        Free(input->Contents);
     }
 
-    free(input);
+    Free(input);
     input = 0x0;
 }

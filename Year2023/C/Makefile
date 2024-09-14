@@ -17,6 +17,10 @@ DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
 
 all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08
 
+Debug: $(OBJ_DIR)Debug.o $(LIBS)
+	@echo "Linking and creating binary for $@"
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
+
 Day01: $(OBJ_DIR)Day01.o $(LIBS)
 	@echo "Linking and creating binary for $@"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^

@@ -5,7 +5,6 @@
             "type": "shell",
             "command": "clang",
             "args": [
-                "--%",
                 "-std=c17",
                 "-Wall",
                 "-Wextra",
@@ -33,11 +32,11 @@
                 "-g3",
                 "-O0",
                 "${file}",
-                "${workspaceFolder}\\src\\LibThomas.c",
-                "${workspaceFolder}\\src\\LibString.c",
-                "${workspaceFolder}\\src\\LibNumeric.c",
+                "${workspaceFolder}/src/LibThomas.c",
+                "${workspaceFolder}/src/LibString.c",
+                "${workspaceFolder}/src/LibNumeric.c",
                 "-o",
-                "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe"
+                "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
