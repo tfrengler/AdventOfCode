@@ -54,8 +54,10 @@
 #endif
 
 void Fatal(const char *message);
-void *Malloc(size_t size);
+
 void Free(void* ptr);
+void *Malloc(size_t size);
+
 size_t GetAllocations(void);
 void PrintAllocations(void);
 size_t GetDeAllocations(void);

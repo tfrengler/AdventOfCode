@@ -33,9 +33,9 @@ int main(void)
     // LDN = (BRL, FLC)
     for (int32_t index = 2; index < TestInput->Count; index++) {
 
-        char *Name = Malloc(4);
-        char *Left = Malloc(4);
-        char *Right = Malloc(4);
+        char *Name = malloc(4);
+        char *Left = malloc(4);
+        char *Right = malloc(4);
         Name[3] = 0x0;
         Left[3] = 0x0;
         Right[3] = 0x0;
@@ -99,9 +99,9 @@ int main(void)
     StringArray_Free(TestInput, true);
 
     for(int32_t index = 0; index < AmountOfNodes; index++) {
-        Free(Nodes[index].Name);
-        Free(Nodes[index].Left);
-        Free(Nodes[index].Right);
+        free(Nodes[index].Name);
+        free(Nodes[index].Left);
+        free(Nodes[index].Right);
     }
 
     printf("Part 1 answer: %i\n", Part1Answer);

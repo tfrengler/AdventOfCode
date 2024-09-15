@@ -1,5 +1,4 @@
 // #include "LibNumeric.h"
-#include "LibString.h"
 #include "LibThomas.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -45,15 +44,13 @@ int main(void)
         NodeInsertIndex++;
     }
 
-    printf("%zu allocations made after parsing nodes\n", GetAllocations());
-
     for(int32_t index = 0; index < AmountOfNodes; index++) {
         Free(Nodes[index].Name);
         Free(Nodes[index].Left);
         Free(Nodes[index].Right);
     }
 
-    printf("%zu deallocations after freeing nodes\n", GetDeAllocations());
+    PrintAllocations();
 
     puts("DONE");
     return EXIT_SUCCESS;
