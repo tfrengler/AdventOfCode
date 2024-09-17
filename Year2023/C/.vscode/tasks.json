@@ -5,6 +5,7 @@
             "type": "shell",
             "command": "clang",
             "args": [
+                "--%",
                 "-std=c17",
                 "-Wall",
                 "-Wextra",

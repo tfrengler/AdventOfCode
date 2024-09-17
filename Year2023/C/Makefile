@@ -15,7 +15,7 @@ OBJECT_FILES		:= $(SOURCE_FILES:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
 -include $(DEPENDENCY_FILES)
 
-all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08
+all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08 Day09
 
 Debug: $(OBJ_DIR)Debug.o $(LIBS)
 	@echo "Linking and creating binary for $@"
@@ -50,6 +50,10 @@ Day07: $(OBJ_DIR)Day07.o $(LIBS)
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 
 Day08: $(OBJ_DIR)Day08.o $(LIBS)
+	@echo "Linking and creating binary for $@"
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
+
+Day09: $(OBJ_DIR)Day09.o $(LIBS)
 	@echo "Linking and creating binary for $@"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 

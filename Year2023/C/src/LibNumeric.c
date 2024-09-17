@@ -311,7 +311,7 @@ uint8_t u8Array_Min(const IntegerArray *input)
 
 static IntegerArray *IntegerArray_Make(int32_t size, IntegerType type, const void *values)
 {
-    IntegerArray *ReturnData = malloc(sizeof(*ReturnData));
+    IntegerArray *ReturnData = Malloc(sizeof(*ReturnData));
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
@@ -329,42 +329,42 @@ static IntegerArray *IntegerArray_Make(int32_t size, IntegerType type, const voi
 
     switch (type) {
         case U8:
-            ReturnData->u8Data = malloc(sizeof(uint8_t) * size);
+            ReturnData->u8Data = Malloc(sizeof(uint8_t) * size);
             ElementSize = sizeof(uint8_t);
             DataDestination = ReturnData->u8Data;
             break;
         case I8:
-            ReturnData->i8Data = malloc(sizeof(int8_t) * size);
+            ReturnData->i8Data = Malloc(sizeof(int8_t) * size);
             ElementSize = sizeof(int8_t);
             DataDestination = ReturnData->i8Data;
             break;
         case U16:
-            ReturnData->u16Data = malloc(sizeof(uint16_t) * size);
+            ReturnData->u16Data = Malloc(sizeof(uint16_t) * size);
             ElementSize = sizeof(uint16_t);
             DataDestination = ReturnData->u16Data;
             break;
         case I16:
-            ReturnData->u16Data = malloc(sizeof(int16_t) * size);
+            ReturnData->u16Data = Malloc(sizeof(int16_t) * size);
             ElementSize = sizeof(int16_t);
             DataDestination = ReturnData->u16Data;
             break;
         case U32:
-            ReturnData->u32Data = malloc(sizeof(uint32_t) * size);
+            ReturnData->u32Data = Malloc(sizeof(uint32_t) * size);
             ElementSize = sizeof(uint32_t);
             DataDestination = ReturnData->u32Data;
             break;
         case I32:
-            ReturnData->i32Data = malloc(sizeof(int32_t) * size);
+            ReturnData->i32Data = Malloc(sizeof(int32_t) * size);
             ElementSize = sizeof(int32_t);
             DataDestination = ReturnData->i32Data;
             break;
         case U64:
-            ReturnData->u64Data = malloc(sizeof(uint64_t) * size);
+            ReturnData->u64Data = Malloc(sizeof(uint64_t) * size);
             ElementSize = sizeof(uint64_t);
             DataDestination = ReturnData->u64Data;
             break;
         case I64:
-            ReturnData->i64Data = malloc(sizeof(int64_t) * size);
+            ReturnData->i64Data = Malloc(sizeof(int64_t) * size);
             ElementSize = sizeof(int64_t);
             DataDestination = ReturnData->i64Data;
             break;
@@ -389,33 +389,33 @@ void IntegerArray_Free(IntegerArray *input)
 
     switch (input->Type) {
     case U8:
-        if (input->u8Data != NULL) free(input->u8Data);
+        if (input->u8Data != NULL) Free(input->u8Data);
         break;
     case I8:
-        if (input->i8Data != NULL) free(input->i8Data);
+        if (input->i8Data != NULL) Free(input->i8Data);
         break;
     case U16:
-        if (input->u16Data != NULL) free(input->u16Data);
+        if (input->u16Data != NULL) Free(input->u16Data);
         break;
     case I16:
-        if (input->u16Data != NULL) free(input->u16Data);
+        if (input->u16Data != NULL) Free(input->u16Data);
         break;
     case U32:
-        if (input->u32Data != NULL) free(input->u32Data);
+        if (input->u32Data != NULL) Free(input->u32Data);
         break;
     case I32:
-        if (input->i32Data != NULL) free(input->i32Data);
+        if (input->i32Data != NULL) Free(input->i32Data);
         break;
     case U64:
-        if (input->u64Data != NULL) free(input->u64Data);
+        if (input->u64Data != NULL) Free(input->u64Data);
         break;
     case I64:
-        if (input->i64Data != NULL) free(input->i64Data);
+        if (input->i64Data != NULL) Free(input->i64Data);
         break;
     }
 
     input->u8Data = 0;
-    free(input);
+    Free(input);
     input = 0;
 }
 
@@ -489,7 +489,7 @@ bool StringToInt(const char *input, int32_t length, int* output)
     *output = 0;
 
     if (input == NULL || length < 1) {
-        DEBUG_PRINT("StringToInt: input is null and/or length is less than 0\n", NULL);
+        DEBUG_PRINT("StringToInt: input is null and/or length is less than 1\n", NULL);
         return false;
     }
 

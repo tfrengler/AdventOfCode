@@ -208,20 +208,27 @@ namespace AdventOfCode.Year2023
             /*
              NOTE: An optimization for space/memory is to compress the intermediate table ie. removing the empty cells
              but that is for later.
-             */
+            */
 
-            /*using (var IntermediateTableOutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
+            using (var OutputFile = File.Create("C:/Temp/IntermediateTable.txt"))
             {
                 for (int Index = 0; Index < Intermediate.Length; Index++)
                 {
-                    IntermediateTableOutputFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + Intermediate[Index] + Environment.NewLine));
+                    OutputFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + Intermediate[Index] + Environment.NewLine));
                 }
-                IntermediateTableOutputFile.Flush();
-            }*/
-
+                OutputFile.Flush();
+            }
+            using (var OutputFile = File.Create("C:/Temp/ValueTable.txt"))
+            {
+                for (int Index = 0; Index < Values.Length; Index++)
+                {
+                    OutputFile.Write(Encoding.UTF8.GetBytes($"{Index}: " + Values[Index] + Environment.NewLine));
+                }
+                OutputFile.Flush();
+            }
 
             // TESTING AND VALIDATION
-            foreach(var currentNode in Nodes)
+            foreach (var currentNode in Nodes)
             {
                 long HashOffset = Intermediate[Fnv1aHash(currentNode.Key) % Size];
                 if (HashOffset == 0)

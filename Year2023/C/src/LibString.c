@@ -280,13 +280,7 @@ StringArray *String_Split(const String *inputString, char delimiter)
     }
 
     StringArray *ReturnData = Malloc(sizeof *ReturnData);
-#if DEBUG()
-    assert(ReturnData != NULL);
-#endif
     ReturnData->Contents = Malloc(sizeof(**ReturnData->Contents) * LineCount);
-#if DEBUG()
-    assert(ReturnData->Contents != NULL);
-#endif
 
     ReturnData->Count = LineCount;
 
@@ -462,7 +456,6 @@ void String_Free(String *input)
 
     if (input->Content != NULL) {
         Free(input->Content);
-        input->Content = 0x0;
     }
     Free(input);
     input = 0x0;

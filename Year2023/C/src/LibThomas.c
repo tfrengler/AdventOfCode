@@ -1,8 +1,10 @@
+#include <corecrt.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "LibThomas.h"
 
 #define DEBUG_ALLOCATION() 0
@@ -10,14 +12,6 @@
 static size_t Allocations = 0;
 static size_t DeAllocations = 0;
 static size_t Heap = 0;
-
-/*
-void (*__free)(void *ptr) = free;
-#define free(size) Free(size)
-
-void* (*__malloc)(size_t size) = malloc;
-#define malloc(size) Malloc(size)
-*/
 
 /**
  * @brief  Panics and terminates the program with EXIT_FAILURE, caused by an unrecoverable error.
@@ -49,8 +43,14 @@ void *Malloc(size_t size)
     return ReturnData;
 }
 
+/**
+ * @brief   De-allocates memory pointed to by a pointer and changes its value to NULL
+ * @param   input: The pointer to free.
+ * @retval  None.
+ */
 void Free(void *ptr) {
     free(ptr);
+    ptr = 0x0;
     DeAllocations++;
 
 #if DEBUG_ALLOCATION()
@@ -68,19 +68,20 @@ size_t GetDeAllocations(void) {
 
 char* GetReadableBytes(size_t bytes) {
     const int32_t i = (int32_t)floor(log((double_t)bytes) / log(1024));
-    char* sizes[] = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+    char* Sizes[] = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
     double_t FinalSize = ((double_t)bytes / pow(1024, i));
 
-    double_t StringSize = (floor(log10(FinalSize)) + 1) + 3;
-    printf("DEBUG: StringSize %f", StringSize);
-    char* ReturnData = Malloc( (size_t)StringSize );
-    ReturnData[(size_t)StringSize-2] = 0;
-    ReturnData[(size_t)StringSize-1] = 0;
+    size_t StringSize = (size_t)((floor(log10(FinalSize)) + 1) + 3);
+    char* ReturnData = Malloc(StringSize + 1);
+    memset(ReturnData, 0, StringSize + 1);
 
-    sprintf(ReturnData, "%f %s", FinalSize, sizes[i]);
+    sprintf(ReturnData, "%zu %s", (size_t)round(FinalSize), Sizes[i]);
     return ReturnData;
 }
 
-void PrintAllocations(void) {
-    printf("%zu allocations made | %zu de-allocations made (heap: %s)\n", Allocations, DeAllocations, GetReadableBytes(Heap));
+void PrintAllocations(void)
+{
+    char* ReadableBytes = GetReadableBytes(Heap);
+    printf("%zu allocations made | %zu de-allocations made (heap size: %s)\n", Allocations, DeAllocations, ReadableBytes);
+    Free(ReadableBytes);
 }

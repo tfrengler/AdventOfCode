@@ -17,8 +17,6 @@ int main(void)
     int32_t Part1Answer = 0;
     StringArray *TestInput = File_ReadAllLines("Input/08.txt");
 
-    printf("%zu allocations made after File_ReadAllLines\n", GetAllocations());
-
     if (TestInput == 0x0) {
         exit(EXIT_FAILURE);
     }
@@ -53,8 +51,6 @@ int main(void)
         Nodes[NodeInsertIndex] = NewNode;
         NodeInsertIndex++;
     }
-
-    printf("%zu allocations made after parsing nodes\n", GetAllocations());
 
     int32_t NextNodeIndex = StartNodeIndex;
     int32_t NextInstructionIndex = 0;
