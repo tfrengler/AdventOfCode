@@ -382,6 +382,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
     if (Index == 0) {
         fclose(fileHandle);
+        Free(FileContents);
         return String_Empty();
     }
 
@@ -401,7 +402,6 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
     String *ReturnData = String_Make(FileContents, FinalSizeWithTerminator - 1);
     Free(FileContents);
-    FileContents = 0;
 
     return ReturnData;
 }

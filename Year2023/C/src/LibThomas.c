@@ -72,7 +72,7 @@ char* GetReadableBytes(size_t bytes) {
     double_t FinalSize = ((double_t)bytes / pow(1024, i));
 
     size_t StringSize = (size_t)((floor(log10(FinalSize)) + 1) + 3);
-    char* ReturnData = Malloc(StringSize + 1);
+    char* ReturnData = malloc(StringSize + 1);
     memset(ReturnData, 0, StringSize + 1);
 
     sprintf(ReturnData, "%zu %s", (size_t)round(FinalSize), Sizes[i]);
@@ -83,5 +83,5 @@ void PrintAllocations(void)
 {
     char* ReadableBytes = GetReadableBytes(Heap);
     printf("%zu allocations made | %zu de-allocations made (heap size: %s)\n", Allocations, DeAllocations, ReadableBytes);
-    Free(ReadableBytes);
+    free(ReadableBytes);
 }

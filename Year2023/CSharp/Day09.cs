@@ -60,6 +60,7 @@ namespace AdventOfCode.Year2023
                     HistoryValue += Sequences[Index][^1];
                 }
 
+                Console.WriteLine($"Row {OuterIndex}: {HistoryValue} | {Input[OuterIndex][^1]}");
                 HistoryValue += Input[OuterIndex][^1];
                 PartAnswer += HistoryValue;
                 Sequences.Clear();
