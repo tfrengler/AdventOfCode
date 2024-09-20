@@ -479,7 +479,7 @@ IntegerArray *i64Array_Make(int32_t size, const int64_t *values)
  *
  * In all cases output will be 0 upon return EXCEPT if output is NULL (since that would be dereferencing a null pointer)
  */
-bool StringToInt(const char *input, int32_t length, int* output)
+bool StringToInt(const char *input, int32_t length, int32_t* output)
 {
     if (output == NULL) {
         DEBUG_PRINT("StringToInt: output is null", NULL);
@@ -584,5 +584,18 @@ bool StringToInt(const char *input, int32_t length, int* output)
         InputIndex++;
     }
 
+    return true;
+}
+
+bool LongToInt(int64_t input, int32_t *output)
+{
+    *output = 0;
+    
+    if (input > INT_MAX || input < INT_MIN) {
+        DEBUG_PRINT("Input over/under-flows int32: %zu", input);
+        return false;
+    }
+
+    *output = (int32_t)input;
     return true;
 }
