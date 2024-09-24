@@ -1,12 +1,10 @@
 ﻿#define TRACE
 #define DEBUG
 
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.IO;
 
 namespace AdventOfCode.Year2023
@@ -35,6 +33,7 @@ namespace AdventOfCode.Year2023
 
         private readonly char[] Maze;
         private readonly int StartPosition = 0;
+        private int StepsInPath = 0;
 
         public Day10()
         {
@@ -73,12 +72,12 @@ namespace AdventOfCode.Year2023
 
         private const int MazeWidth = 140;
         private const int MazeHeight = 140;
-        private List<int> Visited = new();
 
         [TestCase(TestName = "Day10_1")]
         public void Part01()
         {
             TestContext.Out.WriteLine($"Found start position at {StartPosition}");
+            List<int> PathIndices = new();
 
             Span<int> PossibleDirections = stackalloc int[2];
             int PreviousPosition = StartPosition;
@@ -91,7 +90,7 @@ namespace AdventOfCode.Year2023
             {
                 var NextPosition = PossibleDirections[0];
 
-                if (Maze[NextPosition] == '.' || NextPosition == PreviousPosition || Visited.Contains(NextPosition))
+                if (Maze[NextPosition] == '.' || NextPosition == PreviousPosition)
                 {
                     NextPosition = PossibleDirections[1];
                     if (NextPosition == PreviousPosition)
@@ -100,10 +99,10 @@ namespace AdventOfCode.Year2023
                         break;
                     }
                 }
+                PathIndices.Add(NextPosition);
 
                 PreviousPosition = CurrentPosition;
                 CurrentPosition = NextPosition;
-                // Visited.Add(CurrentPosition);
                 char NextChar = Maze[NextPosition];
                 StepsTaken++;
 
@@ -141,16 +140,260 @@ namespace AdventOfCode.Year2023
                         break;
                 }
 
-                if (StepsTaken == 100_000_000)
+                if (StepsTaken == 1_000_000)
                 {
                     TestContext.Out.WriteLine("WARNING: Steps taken limit reached, aborting");
                     break;
                 }
             }
 
+            StepsInPath = StepsTaken;
+            ExportCleanMaze(PathIndices);
+
             int PartAnswer = StepsTaken / 2;
             TestContext.Out.WriteLine("Part 1 answer: " + PartAnswer);
             Debug.Assert(PartAnswer == 6649);
+        }
+
+        private void ExportCleanMaze(IEnumerable<int> indices)
+        {
+            char[] MazeCopy = new char[Maze.Length];
+            Array.Fill(MazeCopy, '.');
+
+            foreach (int PathIndex in indices)
+            {
+                MazeCopy[PathIndex] = Maze[PathIndex];
+            }
+
+            MazeCopy[StartPosition] = 'J';
+
+            using (FileStream OutputFile = File.Create("C:/Temp/AoC_CleanMaze.txt"))
+            {
+                using (var OutputStream = new StreamWriter(OutputFile))
+                {
+                    for (int Index = 0; Index < MazeWidth; Index++)
+                    {
+                        int StartWriteIndex = Index * MazeWidth;
+                        OutputStream.WriteLine(MazeCopy, StartWriteIndex, MazeWidth);
+                    }
+                }
+            }
+
+            int NewWidth = MazeWidth * 3;
+            int NewSize = NewWidth * NewWidth;
+            char[] ExpandedMaze = new char[NewSize];
+            int ExpandedMazeIndex = -3;
+
+            for(int Index = 0; Index < MazeCopy.Length; Index++)
+            {
+                ExpandedMazeIndex += 3;
+
+                if (MazeCopy[Index] == '.')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '.';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == '7')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '#';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '#';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '#';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == 'L')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '#';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == 'J')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '#';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '#';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '#';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == 'F')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '#';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '.';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == '|')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '.';
+                    continue;
+                }
+
+                if (MazeCopy[Index] == '-')
+                {
+                    ExpandedMaze[ExpandedMazeIndex] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + NewWidth + 2] = '.';
+
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2)] = '.';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 1] = '#';
+                    ExpandedMaze[ExpandedMazeIndex + (NewWidth * 2) + 2] = '.';
+                    continue;
+                }
+            }
+
+            using (FileStream OutputFile = File.Create("C:/Temp/AoC_ExpandedMaze.txt"))
+            {
+                using (var OutputStream = new StreamWriter(OutputFile))
+                {
+                    for (int Index = 0; Index < NewWidth; Index++)
+                    {
+                        int StartWriteIndex = Index * NewWidth;
+                        OutputStream.WriteLine(ExpandedMaze, StartWriteIndex, NewWidth);
+                    }
+                }
+            }
+        }
+
+        //[TestCase(TestName = "Day10_2")]
+        public void Part02()
+        {
+            /*var IndicesQueue = new Queue<uint>(MazeHeight * MazeWidth);
+            IndicesQueue.Enqueue(0);
+            List<uint> Visited = new();
+
+            while(IndicesQueue.Count > 0)
+            {
+                var Next = IndicesQueue.Dequeue();
+                if (Visited.Contains(Next))
+                {
+                    continue;
+                }
+                Visited.Add(Next);
+
+                if (Next % MazeWidth != (MazeWidth - 1))
+                {
+                    uint East = Next + 1;
+                    if (Maze[East] == '.')
+                    {
+                        IndicesQueue.Enqueue(East);
+                    }
+                }
+
+                if (Next >= MazeWidth)
+                {
+                    uint North = Next - MazeWidth;
+                    if (Maze[North] == '.' && !IndicesQueue.Contains(North))
+                    {
+                        IndicesQueue.Enqueue(North);
+                    }
+                }
+
+                if (Next % MazeWidth != 0)
+                {
+                    uint West = Next - 1;
+                    if (Maze[West] == '.')
+                    {
+                        IndicesQueue.Enqueue(West);
+                    }
+                }
+
+                if (Next < (MazeWidth * MazeWidth) - MazeWidth)
+                {
+                    uint South = 0;
+                    try
+                    {
+                        South = Next + MazeWidth;
+                        if (Maze[South] == '.')
+                        {
+                            IndicesQueue.Enqueue(South);
+                        }
+                    }
+                    catch(Exception)
+                    {
+                        throw new System.OverflowException($"Overflow getting south. Next: {Next} | South: {South}");
+                    }
+                }
+            }*/
+
+            /*foreach (uint PathIndex in Visited)
+            {
+                Maze[PathIndex] = '*';
+            }
+
+            using (FileStream OutputFile = File.Create("C:/Temp/AoCTemp2.txt"))
+            {
+                using (var OutputStream = new StreamWriter(OutputFile))
+                {
+                    for(int Index = 0; Index < MazeHeight; Index++)
+                    {
+                        int StartWriteIndex = Index * MazeHeight;
+                        OutputStream.WriteLine(Maze, StartWriteIndex, 140);
+                    }
+                }
+            }
+
+            int PartAnswer = Maze.Length - Visited.Count - StepsInPath;
+            TestContext.Out.WriteLine($"Outside the loop: " + PartAnswer);*/
         }
     }
 }
