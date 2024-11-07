@@ -2,6 +2,7 @@
 cflagsBase 			:= -std=c17 -Wall -Wextra -Wconversion -Wshadow-all -Wundef -Wunreachable-code -Wuninitialized -Wold-style-cast -Wno-error=unused-variable -Wfloat-equal -pedantic-errors -Wtype-limits -Wno-unused-function -Wno-sign-conversion -Wdouble-promotion -Wformat=2 -Wformat-pedantic -Wfor-loop-analysis -pthread
 cflags.debug 		:= ${cflagsBase} -fsanitize=undefined -fsanitize=address -fsanitize-trap -fno-omit-frame-pointer -fno-common -g3 -O0
 cflags.release 		:= ${cflagsBase} -O2
+cflags.test 		:= -std=c17 -g3 -O0
 
 BUILD 				:= debug
 CC					:= clang
@@ -19,7 +20,7 @@ all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08 Day09
 
 Debug: $(OBJ_DIR)Debug.o $(LIBS)
 	@echo "Linking and creating binary for $@"
-	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
+	@$(CC) ${CFLAGS} -o $(BUILD_DIR)$@_$(BUILD).exe $^
 
 Day01: $(OBJ_DIR)Day01.o $(LIBS)
 	@echo "Linking and creating binary for $@"
@@ -60,6 +61,10 @@ Day09: $(OBJ_DIR)Day09.o $(LIBS)
 clean:
 	@echo "Cleaning build- and object dir"
 	@-rm $(BUILD_DIR)*.* $(OBJ_DIR)*.*
+
+clean_libs:
+	@echo "Cleaning libs"
+	@-rm ${LIBS}
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@echo "(re)compiling object file from $<"

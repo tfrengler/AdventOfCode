@@ -44,6 +44,7 @@
 
 // NOTE: Only useful for stack allocated arrays. Note that strings will be one extra due to the null terminator!
 #define arrayCount(x) (sizeof(x) / sizeof(*x))
+typedef uint8_t byte;
 
 #if DEBUG()
 #define DEBUG_PRINT(f_, ...) printf((f_), __VA_ARGS__)

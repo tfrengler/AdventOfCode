@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "LibThomas.h"
 
 typedef struct _Node {
     char *Name;
@@ -101,7 +100,7 @@ int main(void)
     }
 
     printf("Part 1 answer: %i\n", Part1Answer);
-    PrintAllocations();
+    // PrintAllocations();
 
     return EXIT_SUCCESS;
 }

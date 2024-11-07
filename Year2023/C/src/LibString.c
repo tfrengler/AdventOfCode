@@ -360,7 +360,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
         if (NextChar == EOF) break;
 
         if ((NextChar & ~127) > 0) {
-            char ErrorMessage[100];
+            char ErrorMessage[30];
             sprintf(ErrorMessage, "Index, %i, Char: %i", Index, NextChar);
             Fatal(strcat("Error reading all text from file as character was not a valid ASCI char: ", ErrorMessage));
         }
@@ -392,6 +392,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     if (FinalSizeWithTerminator > FileSize) {
         FileContents = realloc(FileContents, FinalSizeWithTerminator);
 #if DEBUG()
+        printf("DEBUG | File_ReadAllText: re-allocating file content due to difference (predicted: %zi | actual: %i)\n", FileSize, FinalSizeWithTerminator);
         if (FileContents == NULL) {
             fclose(fileHandle);
             Fatal("Error reading text file contents. Cannot allocate memory");
