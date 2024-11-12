@@ -42,7 +42,7 @@ IntegerArray* i32Array_Make(int32_t size, const int32_t *values);
 IntegerArray* u64Array_Make(int32_t size, const uint64_t *values);
 IntegerArray* i64Array_Make(int32_t size, const int64_t *values);
 
-void IntegerArray_Free(IntegerArray *input);
+void IntegerArray_Free(IntegerArray *input, bool freeContent);
 
 uint8_t u8Array_Max(const IntegerArray *input);
 int8_t i8Array_Max(const IntegerArray *input);

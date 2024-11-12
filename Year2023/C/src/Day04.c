@@ -91,7 +91,7 @@ int main(void)
     printf("Part 2 answer: %i\n", Part02Answer);
     assert(Part02Answer == 9997537);
 
-    IntegerArray_Free(AllCards);
+    IntegerArray_Free(AllCards, false);
 
     return EXIT_SUCCESS;
 }

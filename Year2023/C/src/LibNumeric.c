@@ -309,6 +309,13 @@ uint8_t u8Array_Min(const IntegerArray *input)
 
 /* ********************** Numeric array functions ********************/
 
+/**
+ * @brief  Creates (allocates) a new integer array
+ * @param  size: The size of the array (amount of elements it should be able to hold)
+ * @param  type: The numeric type (width) of the elements it holds
+ * @param  values: Optional. The values it should wrap around. Will be memcopied to the return array
+ * @retval An IntegerArray with enough memory allocated to hold 'size' amount of numbers
+ */
 static IntegerArray *IntegerArray_Make(int32_t size, IntegerType type, const void *values)
 {
     IntegerArray *ReturnData = Malloc(sizeof(*ReturnData));
@@ -381,37 +388,64 @@ static IntegerArray *IntegerArray_Make(int32_t size, IntegerType type, const voi
     return ReturnData;
 }
 
-void IntegerArray_Free(IntegerArray *input)
+void IntegerArray_Free(IntegerArray *input, bool freeContent)
 {
 #if DEBUG()
     assert(input != NULL);
 #endif
 
-    switch (input->Type) {
-    case U8:
-        if (input->u8Data != NULL) Free(input->u8Data);
-        break;
-    case I8:
-        if (input->i8Data != NULL) Free(input->i8Data);
-        break;
-    case U16:
-        if (input->u16Data != NULL) Free(input->u16Data);
-        break;
-    case I16:
-        if (input->u16Data != NULL) Free(input->u16Data);
-        break;
-    case U32:
-        if (input->u32Data != NULL) Free(input->u32Data);
-        break;
-    case I32:
-        if (input->i32Data != NULL) Free(input->i32Data);
-        break;
-    case U64:
-        if (input->u64Data != NULL) Free(input->u64Data);
-        break;
-    case I64:
-        if (input->i64Data != NULL) Free(input->i64Data);
-        break;
+    if (freeContent)
+    {
+        switch (input->Type) {
+        case U8:
+            if (input->u8Data != NULL) {
+                Free(input->u8Data);
+                input->u8Data = 0x0;
+            }
+            break;
+        case I8:
+            if (input->i8Data != NULL) {
+                Free(input->i8Data);
+                input->i8Data = 0x0;
+            }
+            break;
+        case U16:
+            if (input->u16Data != NULL) {
+                Free(input->u16Data);
+                input->u16Data = 0x0;
+            }
+            break;
+        case I16:
+            if (input->u16Data != NULL) {
+                Free(input->u16Data);
+                input->u16Data = 0x0;
+            }
+            break;
+        case U32:
+            if (input->u32Data != NULL) {
+                Free(input->u32Data);
+                input->u32Data = 0x0;
+            }
+            break;
+        case I32:
+            if (input->i32Data != NULL) {
+                Free(input->i32Data);
+                input->i32Data = 0x0;
+            }
+            break;
+        case U64:
+            if (input->u64Data != NULL) {
+                Free(input->u64Data);
+                input->u64Data = 0x0;
+            }
+            break;
+        case I64:
+            if (input->i64Data != NULL) {
+                Free(input->i64Data);
+                input->i64Data = 0x0;
+            }
+            break;
+        }
     }
 
     input->u8Data = 0;
@@ -590,7 +624,7 @@ bool StringToInt(const char *input, int32_t length, int32_t* output)
 bool LongToInt(int64_t input, int32_t *output)
 {
     *output = 0;
-    
+
     if (input > INT_MAX || input < INT_MIN) {
         DEBUG_PRINT("Input over/under-flows int32: %zu", input);
         return false;

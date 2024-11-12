@@ -131,7 +131,7 @@ int main(void)
         Free(Sequences[index]);
     }
     Free(Sequences);
-    PrintAllocations();
+    // PrintAllocations();
 
     exit(EXIT_SUCCESS);
 }
