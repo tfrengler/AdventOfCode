@@ -1,0 +1,52 @@
+{
+    "tasks": [
+        {
+            "label": "Clang - build",
+            "type": "shell",
+            "command": "clang",
+            "args": [
+                "--%",
+                "-std=c17",
+                "-Wall",
+                "-Wextra",
+                "-Wconversion",
+                "-Wshadow-all",
+                "-Wundef",
+                "-Wunreachable-code",
+                "-Wuninitialized",
+                "-Wold-style-cast",
+                "-Wno-error=unused-variable",
+                "-Wfloat-equal",
+                "-pedantic-errors",
+                "-Wtype-limits",
+                "-Wno-unused-function",
+                "-Wno-sign-conversion",
+                "-Wdouble-promotion",
+                "-Wformat=2",
+                "-Wformat-pedantic",
+                "-Wfor-loop-analysis",
+                "-fsanitize=undefined,address",
+                "-fsanitize-trap",
+                "-fno-omit-frame-pointer",
+                "-fno-common",
+                "-pthread",
+                "-g3",
+                "-O0",
+                "${file}",
+                "${workspaceFolder}/src/LibThomas.c",
+                "${workspaceFolder}/src/LibString.c",
+                "${workspaceFolder}/src/LibNumeric.c",
+                "-o",
+                "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
