@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace AdventOfCode.Year2023
 {
@@ -21,7 +23,7 @@ namespace AdventOfCode.Year2023
             }
         }
 
-        Galaxy[] StarMap;
+        Galaxy[] StarMap = [];
 
         string[] TestInput =
         [
@@ -35,25 +37,13 @@ namespace AdventOfCode.Year2023
             "..........",
             ".......#..",
             "#...#.....",
-            /*
-            "....#........",
-            ".........#...",
-            "#............",
-            ".............",
-            ".............",
-            "........#....",
-            ".#...........",
-            "............#",
-            ".............",
-            ".............",
-            ".........#...",
-            "#....#.......",*/
         ];
 
         public void SetUp()
         {
-            //string[] FileContent = File.ReadAllLines("Input/11.txt");
-            //TestInput = FileContent;
+            string[] FileContent = File.ReadAllLines("Input/11.txt");
+            TestInput = FileContent;
+
             var StarMapInterim = new List<Galaxy>();
             int yExpansionFactor = 0;
 
@@ -77,7 +67,10 @@ namespace AdventOfCode.Year2023
                     yExpansionFactor++;
                 }
             }
+            int xExpansions = 0;
             // X-axis expansion
+            StarMap = StarMapInterim.ToArray();
+
             for (int x = 0; x < TestInput[0].Length; x++)
             {
                 int EmptyCount = 0;
@@ -90,18 +83,50 @@ namespace AdventOfCode.Year2023
                 }
 
                 if (EmptyCount != TestInput.Length) continue;
+                xExpansions++;
 
                 for (int galaxyIndex = 0; galaxyIndex < StarMapInterim.Count; galaxyIndex++)
                 {
                     Galaxy currentGalaxy = StarMapInterim[galaxyIndex];
                     if (currentGalaxy.X > x)
                     {
-                        StarMapInterim[galaxyIndex] = new Galaxy(currentGalaxy.X + 1, currentGalaxy.Y);
+                        var CopyGalaxy = StarMap[galaxyIndex];
+                        var NewGalaxy = new Galaxy(CopyGalaxy.X + 1, CopyGalaxy.Y);
+                        StarMap[galaxyIndex] = NewGalaxy;
                     }
+
+                }
+            }
+        }
+
+        void VisualizeStarMap(int xWidth, int yWidth)
+        {
+            char[,] Map = new char[yWidth, xWidth];
+            for(int index1 = 0; index1 < Map.GetLength(0); index1++)
+            {
+                for (int index2 = 0; index2 < Map.GetLength(1); index2++)
+                {
+                    Map[index1, index2] = '.';
                 }
             }
 
-            StarMap = StarMapInterim.ToArray();
+            for (int galaxyIndex = 0; galaxyIndex < StarMap.Length; galaxyIndex++)
+            {
+                Galaxy currentGalaxy = StarMap[galaxyIndex];
+                Map[currentGalaxy.Y, currentGalaxy.X] = '#';
+            }
+
+            var Output = new StringBuilder();
+            for (int index1 = 0; index1 < Map.GetLength(0); index1++)
+            {
+                for (int index2 = 0; index2 < Map.GetLength(1); index2++)
+                {
+                    Output.Append(Map[index1, index2]);
+                }
+                Output.AppendLine();
+            }
+
+            Console.WriteLine(Output.ToString());
         }
 
         static int CalculateManhattanDistance(int X1, int Y1, int X2, int Y2)
@@ -130,6 +155,7 @@ namespace AdventOfCode.Year2023
             }
 
             TestContext.Out.WriteLine($"Part 01 answer (based on {Pairs} pairs): " + Sum);
+            Trace.Assert(Sum == 9233514);
         }
     }
 }
