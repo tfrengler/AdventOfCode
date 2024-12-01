@@ -33,6 +33,9 @@ void *Malloc(size_t size)
         exit(EXIT_FAILURE);
     }
 
+#if DEBUG()
+    memset(ReturnData, 0, size);
+#endif
     Allocations++;
     Heap += size;
 

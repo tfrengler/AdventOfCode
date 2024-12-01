@@ -17,7 +17,7 @@ DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
 BUILD_TARGET		:=
 -include $(DEPENDENCY_FILES)
 
-all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08 Day09 Day10
+all: Day01 Day02 Day03 Day04 Day05 Day06 Day07 Day08 Day09 Day10 Day11
 
 Debug: $(OBJ_DIR)Debug.o $(LIBS)
 	@echo "Linking and creating binary for $@ ($(BUILD_DIR)$@_$(BUILD).exe)"
@@ -60,6 +60,10 @@ Day09: $(OBJ_DIR)Day09.o $(LIBS)
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 
 Day10: $(OBJ_DIR)Day10.o $(LIBS)
+	@echo "Linking and creating binary for $@ ($(BUILD_DIR)$@_$(BUILD).exe)"
+	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
+
+Day11: $(OBJ_DIR)Day11.o $(LIBS)
 	@echo "Linking and creating binary for $@ ($(BUILD_DIR)$@_$(BUILD).exe)"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@_$(BUILD).exe $^
 
