@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <time.h>
 
 // Enables extra checks, such as NULL checks after each malloc, asserts on function parameters etc.
 #define DEBUG() 1
@@ -62,5 +63,6 @@ void *Malloc(size_t size);
 size_t GetAllocations(void);
 void PrintAllocations(void);
 size_t GetDeAllocations(void);
+void PrintTimeDiffInMS(clock_t start, clock_t end);
 
 #endif

@@ -1,4 +1,5 @@
 #include <corecrt.h>
+#include <time.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -87,4 +88,10 @@ void PrintAllocations(void)
     char* ReadableBytes = GetReadableBytes(Heap);
     printf("%zu allocations made | %zu de-allocations made (heap size: %s)\n", Allocations, DeAllocations, ReadableBytes);
     free(ReadableBytes);
+}
+
+void PrintTimeDiffInMS(clock_t start, clock_t end)
+{
+    double TimeTaken = ((double)end - start) / CLOCKS_PER_SEC * 1000;
+    printf("Time taken: %.4f ms\n", TimeTaken);
 }
