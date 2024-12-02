@@ -39,8 +39,7 @@ void Setup(void)
 
 void Part01(void)
 {
-    clock_t start, end;
-    start = clock();
+    TimerStart();
 
     qsort(Left->i32Data, Left->Size, sizeof(int32_t), compareInts);
     qsort(Right->i32Data, Right->Size, sizeof(int32_t), compareInts);
@@ -50,17 +49,16 @@ void Part01(void)
         Part01Answer += abs(Left->i32Data[index] - Right->i32Data[index]);
     }
 
-    end = clock();
-    PrintTimeDiffInMS(start, end);
+    TimerStop();
+    PrintTimer();
     printf("Part 01 answer: %i\n", Part01Answer);
     assert(Part01Answer == 1197984);
 }
 
 void Part02(void)
 {
-    clock_t start, end;
     int32_t PartAnswer = 0;
-    start = clock();
+    TimerStart();
 
     for (int32_t indexOuter = 0; indexOuter < Left->Size; indexOuter++) {
 
@@ -78,8 +76,8 @@ void Part02(void)
         PartAnswer += Accumulator;
     }
 
-    end = clock();
-    PrintTimeDiffInMS(start, end);
+    TimerStop();
+    PrintTimer();
     printf("Part 02 answer: %i\n", PartAnswer);
     assert(PartAnswer == 23387399);
 }

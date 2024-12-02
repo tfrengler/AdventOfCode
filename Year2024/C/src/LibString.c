@@ -257,7 +257,7 @@ String *String_Trim(const String *input)
  * @brief  Parses a string and splits it into an array of strings based on a delimiter.
  * @param   inputString: The string to split into other strings.
  * @param   delimiter: The character to split the string on which is omitted from the strings after the split. Not allowed to be a null-character.
- * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If input->Size is 0 then NULL is returned.
+ * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If inputString->Size is 0 then NULL is returned.
  */
 StringArray *String_Split(const String *inputString, char delimiter)
 {

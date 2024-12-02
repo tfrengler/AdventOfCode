@@ -63,6 +63,8 @@ void *Malloc(size_t size);
 size_t GetAllocations(void);
 void PrintAllocations(void);
 size_t GetDeAllocations(void);
-void PrintTimeDiffInMS(clock_t start, clock_t end);
+void TimerStart(void);
+void TimerStop(void);
+void PrintTimer(void);
 
 #endif

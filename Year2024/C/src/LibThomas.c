@@ -1,11 +1,8 @@
-#include <corecrt.h>
-#include <time.h>
 #include <math.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "LibThomas.h"
 
 #define DEBUG_ALLOCATION() 0
@@ -52,7 +49,14 @@ void *Malloc(size_t size)
  * @param   input: The pointer to free.
  * @retval  None.
  */
-void Free(void *ptr) {
+void Free(void *ptr)
+{
+#if DEBUG()
+    if (ptr == NULL) {
+        Fatal("Freeing a null-pointer");
+    }
+#endif
+
     free(ptr);
     ptr = 0x0;
     DeAllocations++;
@@ -90,8 +94,23 @@ void PrintAllocations(void)
     free(ReadableBytes);
 }
 
-void PrintTimeDiffInMS(clock_t start, clock_t end)
+static struct timespec start;
+static struct timespec end;
+
+void TimerStart(void)
 {
-    double TimeTaken = ((double)end - start) / CLOCKS_PER_SEC * 1000;
-    printf("Time taken: %.4f ms\n", TimeTaken);
+    clock_gettime(CLOCK_MONOTONIC, &start);
+}
+
+void TimerStop(void)
+{
+    clock_gettime(CLOCK_MONOTONIC, &end);
+}
+
+void PrintTimer(void)
+{
+    printf(
+        "Time taken: %.5f seconds\n",
+        ((double)end.tv_sec + 1.0e-9*end.tv_nsec) -
+        ((double)start.tv_sec + 1.0e-9*start.tv_nsec));
 }
