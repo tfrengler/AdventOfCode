@@ -114,8 +114,12 @@ int main(void)
     Part01();
     Part02();
 
-    StringArray_Free(Input, true);
+    for(int32_t index = 0; index < Input->Count; index++)
+    {
+        Free(Reports[index].i32Data);
+    }
     Free(Reports);
+    StringArray_Free(Input, true);
 
     // PrintAllocations();
     return EXIT_SUCCESS;
