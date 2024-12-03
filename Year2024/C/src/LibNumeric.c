@@ -494,6 +494,47 @@ IntegerArray *i64Array_Make(int32_t size, const int64_t *values)
 }
 
 /**
+ * @brief  Returns a copy of an array with a number removed from a specific index.
+ * @param  input: The array to removed a number from. Must not be null.
+ * @param  index: The index of the number to omit from the returned array. Must be greater than 0 and less than input->Size.
+ * @retval An IntegerArray that is a copy of input with the number removed from the index that was given.
+ */
+IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index)
+{
+#if DEBUG()
+    assert(input != NULL);
+    assert(input->Type == I32);
+#endif
+
+    if (index > (input->Size-1) || index < 0) {
+        Fatal("Index is greater than the size of the input array or less than 0");
+        return NULL;
+    }
+
+    if (input->Size == 1) {
+        return i32Array_Make(0, NULL);
+    }
+
+    int32_t NewArraySize = input->Size - 1;
+    int32_t NewArray[NewArraySize];
+    int32_t NewArrayIndex = 0;
+
+    for(int32_t arrayIndex = 0; arrayIndex < input->Size; arrayIndex++) {
+        if (arrayIndex == index) continue;
+        NewArray[NewArrayIndex] = input->i32Data[arrayIndex];
+        NewArrayIndex++;
+    }
+
+    IntegerArray* ReturnData = i32Array_Make(NewArraySize, NewArray);
+
+#if DEBUG()
+    assert(ReturnData != NULL);
+#endif
+
+    return ReturnData;
+}
+
+/**
  * @brief   Converts numbers founds in strings to 32-bit integers. Ignores leading whitespace, and will convert a sequence of contigous digits to an int until a non-digit character is found or until length is reached.
             Leading zeroes before the first number sequence - or between the negative sign and the first digit - are counted as non-digits.
             Examples:

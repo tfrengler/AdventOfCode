@@ -62,4 +62,6 @@ int32_t i32Array_Min(const IntegerArray *input);
 uint64_t u64Array_Min(const IntegerArray *input);
 int64_t i64Array_Min(const IntegerArray *input);
 
+IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index);
+
 #endif

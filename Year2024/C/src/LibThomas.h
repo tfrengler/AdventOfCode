@@ -47,6 +47,11 @@
 #define arrayCount(x) (sizeof(x) / sizeof(*x))
 typedef uint8_t byte;
 
+#define bitset(byte,nbit)   ((byte) |=  (1<<(nbit)))
+#define bitclear(byte,nbit) ((byte) &= ~(1<<(nbit)))
+#define bitflip(byte,nbit)  ((byte) ^=  (1<<(nbit)))
+#define bitcheck(byte,nbit) ((byte) &   (1<<(nbit)))
+
 #if DEBUG()
 #define DEBUG_PRINT(f_, ...) printf((f_), __VA_ARGS__)
 #else
