@@ -7,3 +7,7 @@ make day NR=01
 Write-Host -f Green "DAY 02:"
 make day NR=02
 ./build/day02_debug.exe
+
+Write-Host -f Green "DAY 03:"
+make day NR=03
+./build/day03_debug.exe

@@ -22,7 +22,7 @@ Debug: $(OBJ_DIR)Debug.o $(LIBS)
 	@$(CC) ${CFLAGS} -o $(BUILD_DIR)$@_$(BUILD).exe $^ $(LDFLAGS)
 
 day: $(OBJ_DIR)Day${NR}.o $(LIBS)
-	@echo "Linking and creating binary for $@ ($(BUILD_DIR)$@${NR}_$(BUILD).exe)"
+	@echo "${BUILD}-mode: Linking and creating binary for $@ ${NR}"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@${NR}_$(BUILD).exe $^
 
 .PHONY: clean
@@ -36,5 +36,5 @@ clean_libs:
 	@-rm ${LIBS}
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	@echo "(re)compiling object file $@ from source file $<"
+	@echo "(re)compiling object file - $@ - from source file: $<"
 	@$(CC) $(CFLAGS) -MMD -c $< -o $@

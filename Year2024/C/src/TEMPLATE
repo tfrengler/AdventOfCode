@@ -1,0 +1,52 @@
+#include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "LibThomas.h"
+#include "LibString.h"
+#include "LibNumeric.h"
+
+StringArray *Input = NULL;
+
+void Setup(void)
+{
+    Input = File_ReadAllLines("./Input/XXX.txt");
+    assert(Input != NULL);
+}
+
+void Part01(void)
+{
+    int32_t PartAnswer = 0;
+    TimerStart();
+
+    TimerStop();
+    PrintTimer();
+
+    printf("Part 01 answer: %i\n", PartAnswer);
+    assert(PartAnswer == -1);
+}
+
+void Part02(void)
+{
+    int32_t PartAnswer = 0;
+    TimerStart();
+
+    TimerStop();
+    PrintTimer();
+
+    printf("Part 02 answer: %i\n", PartAnswer);
+    assert(PartAnswer == -1);
+}
+
+int main(void)
+{
+    Setup();
+
+    Part01();
+    Part02();
+
+    StringArray_Free(Input, true);
+
+    PrintAllocations();
+    return EXIT_SUCCESS;
+}
