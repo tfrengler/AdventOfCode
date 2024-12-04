@@ -11,7 +11,7 @@ CFLAGS				:= ${cflags.${BUILD}}
 SRC_DIR				:= src/
 BUILD_DIR			:= build/
 OBJ_DIR				:= obj/
-LIBS				:= ${OBJ_DIR}LibThomas.o ${OBJ_DIR}LibString.o ${OBJ_DIR}LibNumeric.o
+LIBS				:= ${OBJ_DIR}LibThomas.o ${OBJ_DIR}LibString.o ${OBJ_DIR}LibNumeric.o ${OBJ_DIR}LibGrid.o
 SOURCE_FILES 		:= $(wildcard $(SRC_DIR)*.c)
 OBJECT_FILES		:= $(SOURCE_FILES:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 DEPENDENCY_FILES	:= $(OBJECT_FILES:.o=.d)
@@ -21,18 +21,23 @@ Debug: $(OBJ_DIR)Debug.o $(LIBS)
 	@echo "Linking and creating binary for $@ ($(BUILD_DIR)$@_$(BUILD).exe)"
 	@$(CC) ${CFLAGS} -o $(BUILD_DIR)$@_$(BUILD).exe $^ $(LDFLAGS)
 
-day: $(OBJ_DIR)Day${NR}.o $(LIBS)
-	@echo "${BUILD}-mode: Linking and creating binary for $@ ${NR}"
+Day: $(OBJ_DIR)Day${NR}.o $(LIBS)
+	@echo "${BUILD}-mode: Linking and creating binary for $@ ${NR} ($(BUILD_DIR)$@${NR}_$(BUILD).exe)"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@${NR}_$(BUILD).exe $^
 
 .PHONY: clean
 clean:
-	@echo "Cleaning build- and object dir"
+	@echo "Cleaning days only"
+	@-rm $(BUILD_DIR)*.* $(OBJ_DIR)Day*.*
+
+.PHONY: clean_all
+clean_all:
+	@echo "Cleaning everything"
 	@-rm $(BUILD_DIR)*.* $(OBJ_DIR)*.*
 
 .PHONY: clean_libs
 clean_libs:
-	@echo "Cleaning libs"
+	@echo "Cleaning libs only"
 	@-rm ${LIBS}
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c

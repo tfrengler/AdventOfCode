@@ -1,12 +1,13 @@
 #ifndef LIB_STRING_H
 #define LIB_STRING_H
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 /* The maximum size of a string as used by String-instances. */
-static const int32_t STRING_MAX_SIZE = 65535;
+static const int32_t STRING_MAX_SIZE = USHRT_MAX; // 65535
 
 /* Represents a wrapper around a C-string (char*) with a max size of 64kb. Content is the string and Size is the length without the null-terminator.*/
 typedef struct _String {

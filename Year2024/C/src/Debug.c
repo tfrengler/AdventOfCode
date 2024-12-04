@@ -1,24 +1,22 @@
-#define WIN32_LEAN_AND_MEAN
+#include "LibString.h"
+#include <stdint.h>
+#include <assert.h>
 #include <stdio.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include "LibGrid.h"
 
 int main(void)
 {
-    WSADATA wsaData;
+    StringArray *Input = File_ReadAllLines("./Input/Debug.txt");
+    assert(Input != NULL);
+    assert(Input->Count == 3);
 
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        puts( "WSAStartup failed.\n");
-        exit(1);
-    }
+    Grid_BoundaryCrossIsNotFatal();
+    GridPoint Start = { .Y = 0, .X = 0 };
+    GridPoint CrossSection[4] = {0};
 
-    if (LOBYTE(wsaData.wVersion) != 2 ||
-        HIBYTE(wsaData.wVersion) != 2)
-    {
-        puts("Version 2.2 of Winsock is not available.\n");
-        WSACleanup();
-        exit(2);
-    }
+    Grid_GetCross(Input, CrossSection, Start.X, Start.Y);
 
-    puts("SUCCESS!");
+    puts("--DONE--");
+
+    return 0;
 }

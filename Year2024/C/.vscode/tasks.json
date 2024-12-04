@@ -36,6 +36,7 @@
                 "${workspaceFolder}/src/LibThomas.c",
                 "${workspaceFolder}/src/LibString.c",
                 "${workspaceFolder}/src/LibNumeric.c",
+                "${workspaceFolder}/src/LibGrid.c",
                 "-o",
                 "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
             ],
