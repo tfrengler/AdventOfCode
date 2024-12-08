@@ -72,6 +72,22 @@ static bool _GetGridPoint(StringArray *input, GridPoint *output, int32_t x, int3
     return true;
 }
 
+/**
+ * @brief  Retrieves a value from a 2d grid of chars at a certain point in the grid.
+ * @note   If Grid_BoundaryCrossIsNotFatal has been called then an X and/or Y coordinate that falls
+ * outside of the grid does not cause the program to terminate.
+ * @param  input:  A pointer to the grid to retrieve the point from represented by a StringArray. May not be null.
+ * @param  output: A pointer to a GridPoint where the return values will be set. May not be null.
+                   If the point falls outside the grid then X and Y is set to -1, Value to \0 and IsValid to false.
+ * @param  x:      The X-coordinate in 'input' you want to retrieve the value from.
+ * @param  y:      The Y-coordinate in 'input' you want to retrieve the value from.
+ * @retval True if the point is within the grid and false if the point falls outside the grid.
+ */
+bool Grid_Get(StringArray* input, GridPoint* output, int32_t x, int32_t y)
+{
+    return _GetGridPoint(input, output, x, y);
+}
+
 /* ******************** NORTH - SOUTH - EAST - WEST ******************** */
 
 bool Grid_GetNorth(StringArray* input, GridPoint* output, int32_t x, int32_t y)
@@ -126,7 +142,18 @@ bool Grid_GetSouthWest(StringArray* input, GridPoint* output, int32_t x, int32_t
 
 /* ******************** SPECIALS ******************** */
 
-void Grid_GetCross(StringArray* input, GridPoint* result, int32_t x, int32_t y)
+/**
+ * @brief  Retrieves values around a point in the form of a cross/plus (N, E, S, W).
+ * @note   If Grid_BoundaryCrossIsNotFatal has been called then an X and/or Y coordinate that falls
+ * outside of the grid does not cause the program to terminate.
+ * @param  input:  A pointer to the grid to retrieve the data from represented by a StringArray. May not be null.
+ * @param  output: A pointer to a GridPoint-array of 4 items where the return values will be set. Index 0 is N and it goes clockwise. May not be null.
+                   If any point falls outside the grid then X and Y is set to -1, Value to \0 and IsValid to false.
+ * @param  x:      The X-coordinate in 'input' you want to retrieve the relative values from.
+ * @param  y:      The Y-coordinate in 'input' you want to retrieve the relative values from.
+ * @retval None
+ */
+void Grid_GetCross(StringArray* input, GridPoint result[static 4], int32_t x, int32_t y)
 {
 #if DEBUG()
     assert(input != NULL);
@@ -138,7 +165,18 @@ void Grid_GetCross(StringArray* input, GridPoint* result, int32_t x, int32_t y)
     Grid_GetWest(input, &result[3], x, y); // West
 }
 
-void Grid_GetStar(StringArray* input, GridPoint* result, int32_t x, int32_t y)
+/**
+ * @brief  Retrieves values around a point in the form of a star (diagonals = NW, NE, SE, SW).
+ * @note   If Grid_BoundaryCrossIsNotFatal has been called then an X and/or Y coordinate that falls
+ * outside of the grid does not cause the program to terminate.
+ * @param  input:  A pointer to the grid to retrieve the data from represented by a StringArray. May not be null.
+ * @param  output: A pointer to a GridPoint-array of 4 items where the return values will be set. Index 0 is NW and it goes clockwise. May not be null.
+                   If any point falls outside the grid then X and Y is set to -1, Value to \0 and IsValid to false.
+ * @param  x:      The X-coordinate in 'input' you want to retrieve the relative values from.
+ * @param  y:      The Y-coordinate in 'input' you want to retrieve the relative values from.
+ * @retval None
+ */
+void Grid_GetStar(StringArray* input, GridPoint result[static 4], int32_t x, int32_t y)
 {
 #if DEBUG()
     assert(input != NULL);
@@ -150,7 +188,18 @@ void Grid_GetStar(StringArray* input, GridPoint* result, int32_t x, int32_t y)
     Grid_GetSouthWest(input, &result[3], x, y); // SW
 }
 
-void Grid_GetBox(StringArray* input, GridPoint* result, int32_t x, int32_t y)
+/**
+ * @brief  Retrieves values around a point in the form of a box (N, NE, E, SE, S, SW, W, NW).
+ * @note   If Grid_BoundaryCrossIsNotFatal has been called then an X and/or Y coordinate that falls
+ * outside of the grid does not cause the program to terminate.
+ * @param  input:  A pointer to the grid to retrieve the data from represented by a StringArray. May not be null.
+ * @param  output: A pointer to a GridPoint-array of 8 items where the return values will be set. Index 0 is N and it goes clockwise. May not be null.
+                   If any point falls outside the grid then X and Y is set to -1, Value to \0 and IsValid to false.
+ * @param  x:      The X-coordinate in 'input' you want to retrieve the relative values from.
+ * @param  y:      The Y-coordinate in 'input' you want to retrieve the relative values from.
+ * @retval None
+ */
+void Grid_GetBox(StringArray* input, GridPoint result[static 8], int32_t x, int32_t y)
 {
 #if DEBUG()
     assert(input != NULL);
@@ -166,11 +215,21 @@ void Grid_GetBox(StringArray* input, GridPoint* result, int32_t x, int32_t y)
     Grid_GetNorthWest(input, &result[7], x, y); // NW
 }
 
+/**
+ * @brief  Marks crossing the boundary of the grid by any of the Grid_ functions as non-fatal meaning the process will be NOT be terminated.
+ *         How it affects the functionality is up to each function. Functions that return a single GridPoint will return a boolean to indicate
+ *         whether the boundary was crossed or not. Generally the offending GridPoint(s) returned from all functions will be marked as invalid.
+ * @retval None
+ */
 void Grid_BoundaryCrossIsNotFatal(void)
 {
     FatalBoundaryCross = false;
 }
 
+/**
+ * @brief  Marks crossing the boundary of the grid by any of the Grid_ functions as fatal meaning the process will be terminated.
+ * @retval None
+ */
 void Grid_BoundaryCrossIsFatal(void)
 {
     FatalBoundaryCross = true;

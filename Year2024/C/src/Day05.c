@@ -41,7 +41,7 @@ bool SequenceEquals(int32_t *sequenceA, int32_t *sequenceB, int32_t length)
     return true;
 }
 
-int CompareRules(void* first, void* second)
+int CompareRules(const void* first, const void* second)
 {
     int32_t First = *((int32_t *)first);
     int32_t Second = *((int32_t*)second);
@@ -112,13 +112,28 @@ void Part01(void)
     int32_t PartAnswer = 0;
     TimerStart();
 
+    for(int32_t index = 0; index < PageCount; index++)
+    {
+        IntegerArray Current = Pages[index];
+        int32_t CopiedValues[Current.Size];
+        memcpy(CopiedValues, Current.i32Data, Current.Size * sizeof(int32_t));
 
+        IntegerArray Sorted = Current;
+        Sorted.i32Data = CopiedValues;
+
+        qsort(Sorted.i32Data, Sorted.Size, sizeof(int32_t), CompareRules);
+
+        if (SequenceEquals(Sorted.i32Data, Current.i32Data, Sorted.Size))
+        {
+            PartAnswer += Current.i32Data[ Current.Size / 2 ];
+        }
+    }
 
     TimerStop();
     PrintTimer();
 
     printf("Part 01 answer: %i\n", PartAnswer);
-    assert(PartAnswer == -1);
+    assert(PartAnswer == 5452);
 }
 
 void Part02(void)
@@ -126,22 +141,44 @@ void Part02(void)
     int32_t PartAnswer = 0;
     TimerStart();
 
+    for(int32_t index = 0; index < PageCount; index++)
+    {
+        IntegerArray Current = Pages[index];
+        int32_t CopiedValues[Current.Size];
+        memcpy(CopiedValues, Current.i32Data, Current.Size * sizeof(int32_t));
+
+        IntegerArray Sorted = Current;
+        Sorted.i32Data = CopiedValues;
+
+        qsort(Sorted.i32Data, Sorted.Size, sizeof(int32_t), CompareRules);
+
+        if (!SequenceEquals(Sorted.i32Data, Current.i32Data, Sorted.Size))
+        {
+            PartAnswer += Sorted.i32Data[ Current.Size / 2 ];
+        }
+    }
+
     TimerStop();
     PrintTimer();
 
     printf("Part 02 answer: %i\n", PartAnswer);
-    assert(PartAnswer == -1);
+    assert(PartAnswer == 4598);
 }
 
 int main(void)
 {
     Setup();
 
-    // Part01();
-    // Part02();
+    Part01();
+    Part02();
 
     StringArray_Free(Input, true);
+    Free(Rules);
+    for(int32_t index = 0; index < PageCount; index++) {
+        Free(Pages[index].i32Data);
+    }
+    Free(Pages);
 
-    PrintAllocations();
+    // PrintAllocations();
     return EXIT_SUCCESS;
 }
