@@ -31,7 +31,9 @@ typedef struct _IntegerArray {
     };
 } IntegerArray;
 
-bool StringToInt(const char *input, int32_t length, int* output);
+bool StringToInt(const char *input, int32_t length, int32_t* output);
+bool StringToLong(const char *input, int32_t length, int64_t* output);
+bool LongToInt(int64_t input, int32_t *output);
 
 IntegerArray* u8Array_Make(int32_t size, const uint8_t *values);
 IntegerArray* i8Array_Make(int32_t size, const int8_t *values);

@@ -554,7 +554,7 @@ IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index)
  *
  * In all cases output will be 0 upon return EXCEPT if output is NULL (since that would be dereferencing a null pointer)
  */
-bool StringToInt(const char *input, int32_t length, int32_t* output)
+/*bool StringToInt(const char *input, int32_t length, int32_t* output)
 {
     if (output == NULL) {
         DEBUG_PRINT("StringToInt: output is null", NULL);
@@ -660,7 +660,7 @@ bool StringToInt(const char *input, int32_t length, int32_t* output)
     }
 
     return true;
-}
+}*/
 
 bool LongToInt(int64_t input, int32_t *output)
 {
@@ -672,5 +672,126 @@ bool LongToInt(int64_t input, int32_t *output)
     }
 
     *output = (int32_t)input;
+    return true;
+}
+
+
+bool StringToInt(const char *input, int32_t length, int32_t* output)
+{
+    int64_t Output = 0;
+    if (!StringToLong(input, length, &Output))
+    {
+        *output = 0;
+        return false;
+    }
+
+    return LongToInt(Output, output);
+}
+
+bool StringToLong(const char *input, int32_t length, int64_t* output)
+{
+    if (output == NULL) {
+        DEBUG_PRINT("StringToLong: output is null", NULL);
+        return false;
+    }
+
+    *output = 0;
+
+    if (input == NULL || length < 1) {
+        DEBUG_PRINT("StringToLong: input is null and/or length is less than 1\n", NULL);
+        return false;
+    }
+
+    bool IsNegative = false;
+    char NextCharacter;
+    int32_t InputIndex = 0;
+
+    // Pre-process until we find the first number or a negative sign
+    while (InputIndex < length) {
+        NextCharacter = input[InputIndex];
+
+        // Detect end of string regardless of length param
+        if (NextCharacter == '\0') {
+            DEBUG_PRINT("StringToLong: premature null terminator found in input (1)\n", NULL);
+            return false;
+        }
+        // Ignore leading whitespace
+        if ((NextCharacter < 14 && NextCharacter > 9) || NextCharacter == 32) {
+            InputIndex++;
+            continue;
+        }
+        // Break, because we have non-whitespace chars
+        break;
+    }
+
+    // Is the non-whitespace char a sign?
+    if (NextCharacter == '-') {
+        // If not at end of input as defined by length, peek and determine if we have leading zeroes after negative sign
+        if (InputIndex < length && input[InputIndex + 1] == '0') {
+            return true;
+        }
+        // Otherwise flag it and continue
+        IsNegative = true;
+        InputIndex++;
+    }
+
+    if (NextCharacter == '0') {
+        return true;
+    }
+
+    int32_t Digits = 0;
+
+    while (InputIndex < length) {
+        NextCharacter = input[InputIndex];
+
+        // Not a number anymore? Break, and return the number we have parsed so far...
+        if (NextCharacter < '0' || NextCharacter > '9') {
+            // ...unless it's a null terminator in which cases length is longer than input which is bad
+            if (NextCharacter == '\0') {
+                DEBUG_PRINT("StringToLong: premature null terminator found in input (2)\n", NULL);
+                *output = 0;
+                return false;
+            }
+            break;
+        }
+        // 9223372036854775807
+        Digits++;
+        // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a null terminator
+        if (Digits > 19) {
+            DEBUG_PRINT("StringToLong: max/min int over flow (max 19 digits)\n", NULL);
+            *output = 0;
+            return false;
+        }
+
+        *output *= 10; // Advance to next decimal
+        int32_t NextNumber = NextCharacter - '0'; // Convert char to int
+
+        // Deal with potential over- or underflow of max/min int value
+        if (Digits == 10) {
+            int64_t ValueSoFar = *output;
+            int64_t MaxBeforeOverflow;
+
+            if (IsNegative) {
+                MaxBeforeOverflow = (LONG_LONG_MIN - ValueSoFar) * -1;
+            } else {
+                MaxBeforeOverflow = LONG_LONG_MAX - ValueSoFar;
+            }
+
+            if (NextNumber > MaxBeforeOverflow) {
+                DEBUG_PRINT("StringToLong: max/min int overflow (calculation)\n", NULL);
+                *output = 0;
+                return false;
+            }
+        }
+
+        if (IsNegative) {
+            *output -= NextNumber;
+        } else {
+            *output += NextNumber;
+        }
+
+        InputIndex++;
+    }
+
     return true;
 }

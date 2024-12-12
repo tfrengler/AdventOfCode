@@ -37,3 +37,11 @@ make Day NR=04 BUILD=${BuildMode}
 Write-Host -f Green "DAY 05:"
 make Day NR=05 BUILD=${BuildMode}
 & "./build/Day05_${BuildMode}.exe"
+
+Write-Host -f Green "DAY 06:"
+make Day NR=06 BUILD=${BuildMode}
+& "./build/Day06_${BuildMode}.exe"
+
+Write-Host -f Green "DAY 07:"
+make Day NR=07 BUILD=${BuildMode}
+& "./build/Day07_${BuildMode}.exe"
