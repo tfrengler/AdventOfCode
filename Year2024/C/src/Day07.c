@@ -41,7 +41,7 @@ void Setup(void)
 
 bool Calculate(int64_t result, int64_t accumulator, int64_t numbers[], int32_t index, int32_t maxDepth)
 {
-    if (index >= maxDepth) return false;
+    if (index > maxDepth) return false;
 
     int64_t LocalResult = accumulator + numbers[index];
     if (LocalResult == result) return true;
@@ -57,46 +57,6 @@ bool Calculate(int64_t result, int64_t accumulator, int64_t numbers[], int32_t i
     if (LocalResult > result) return false;
 
     if (Calculate(result, LocalResult, numbers, index + 1, maxDepth))
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool Calculate2(int64_t result, int64_t accumulator, int64_t numbers[], int32_t index, int32_t maxDepth)
-{
-    if (index >= maxDepth) return false;
-
-    int64_t LocalResult = accumulator + numbers[index];
-    if (LocalResult == result) return true;
-    if (LocalResult > result) return false;
-
-    if (Calculate2(result, LocalResult, numbers, index + 1, maxDepth))
-    {
-        return true;
-    }
-
-    LocalResult = accumulator * numbers[index];
-    if (LocalResult == result) return true;
-    if (LocalResult > result) return false;
-
-    if (Calculate2(result, LocalResult, numbers, index + 1, maxDepth))
-    {
-        return true;
-    }
-
-    int64_t pow = 10;
-    while(accumulator >= pow)
-    {
-        pow *= 10;
-    }
-    LocalResult = numbers[index] * pow + accumulator;
-
-    if (LocalResult == result) return true;
-    if (LocalResult > result) return false;
-
-    if (Calculate2(result, LocalResult, numbers, index + 1, maxDepth))
     {
         return true;
     }
@@ -111,7 +71,7 @@ void Part01(void)
 
     for(int32_t index = 0; index < Input->Count; index++) {
         IntegerArray Current = InputData[index];
-        if (Calculate(Current.i64Data[0], 0, &Current.i64Data[1], 0, Current.Size - 1))
+        if (Calculate(Current.i64Data[0], 0, &Current.i64Data[1], 0, Current.Size - 2))
         {
             PartAnswer += Current.i64Data[0];
         }
@@ -122,6 +82,7 @@ void Part01(void)
 
     printf("Part 01 answer: %zu\n", PartAnswer);
     assert(PartAnswer == 6231007345478);
+    // assert(PartAnswer == 3749);
 }
 
 void Part02(void)
@@ -129,27 +90,18 @@ void Part02(void)
     int64_t PartAnswer = 0;
     TimerStart();
 
-    for(int32_t index = 0; index < Input->Count; index++) {
-        IntegerArray Current = InputData[index];
-        if (Calculate2(Current.i64Data[0], 0, &Current.i64Data[1], 0, Current.Size - 1))
-        {
-            PartAnswer += Current.i64Data[0];
-        }
-    }
-
     TimerStop();
     PrintTimer();
 
     printf("Part 02 answer: %zu\n", PartAnswer);
-    // assert(PartAnswer == -1);
+    // assert(PartAnswer == 333027885676693);
 }
 
 int main(void)
 {
     Setup();
 
-    // Part01();
-    Part02();
+    Part01();
 
     for(int32_t index = 0; index < Input->Count; index++) {
         Free(InputData[index].i64Data);
@@ -157,6 +109,6 @@ int main(void)
     Free(InputData);
     StringArray_Free(Input, true);
 
-    PrintAllocations();
+    // PrintAllocations();
     return EXIT_SUCCESS;
 }

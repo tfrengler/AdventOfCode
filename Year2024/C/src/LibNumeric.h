@@ -66,4 +66,11 @@ int64_t i64Array_Min(const IntegerArray *input);
 
 IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index);
 
+bool OverflowIntOnAdd(int32_t first, int32_t second);
+bool OverflowIntOnSub(int32_t first, int32_t second);
+bool OverflowIntOnMul(int32_t x, int32_t a);
+bool OverflowLongOnAdd(int64_t first, int64_t second);
+bool OverflowLongOnSub(int64_t first, int64_t second);
+bool OverflowLongOnMul(int64_t x, int64_t a);
+
 #endif

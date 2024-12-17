@@ -675,7 +675,6 @@ bool LongToInt(int64_t input, int32_t *output)
     return true;
 }
 
-
 bool StringToInt(const char *input, int32_t length, int32_t* output)
 {
     int64_t Output = 0;
@@ -794,4 +793,60 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
     }
 
     return true;
+}
+
+// INT overflow functions
+
+bool OverflowIntOnAdd(int32_t first, int32_t second)
+{
+    if (first > 0 && second > INT_MAX - first) return true; // `a + x` would overflow
+    if (first < 0 && second < INT_MIN - first) return true; // `a + x` would underflow
+    return false;
+}
+
+bool OverflowIntOnSub(int32_t first, int32_t second)
+{
+    if (first < 0 && second > INT_MAX + first) return true; // `a - x` would overflow
+    if (first > 0 && second < INT_MIN + first) return true; // `a - x` would underflow
+    return false;
+}
+
+bool OverflowIntOnMul(int32_t x, int32_t a)
+{
+    // There may be a need to check for -1 for two's complement machines.
+    // If one number is -1 and another is INT_MIN, multiplying them we get abs(INT_MIN) which is 1 higher than INT_MAX
+    if (a == -1 && x == INT_MIN) return true; // `a * x` can overflow
+    if (x == -1 && a == INT_MIN) return true; // `a * x` (or `a / x`) can overflow
+    // general case
+    if (x != 0 && a > INT_MAX / x) return true; // `a * x` would overflow
+    if (x != 0 && a < INT_MIN / x) return true; // `a * x` would underflow
+    return false;
+}
+
+// LONG overflow functions
+
+bool OverflowLongOnAdd(int64_t first, int64_t second)
+{
+    if (first > 0 && second > LONG_LONG_MAX - first) return true; // `a + x` would overflow
+    if (first < 0 && second < LONG_LONG_MIN - first) return true; // `a + x` would underflow
+    return false;
+}
+
+bool OverflowLongOnSub(int64_t first, int64_t second)
+{
+    if (first < 0 && second > LONG_LONG_MAX + first) return true; // `a - x` would overflow
+    if (first > 0 && second < LONG_LONG_MIN + first) return true; // `a - x` would underflow
+    return false;
+}
+
+bool OverflowLongOnMul(int64_t x, int64_t a)
+{
+    // There may be a need to check for -1 for two's complement machines.
+    // If one number is -1 and another is INT_MIN, multiplying them we get abs(INT_MIN) which is 1 higher than INT_MAX
+    if (a == -1 && x == LONG_LONG_MIN) return true; // `a * x` can overflow
+    if (x == -1 && a == LONG_LONG_MIN) return true; // `a * x` (or `a / x`) can overflow
+    // general case
+    if (x != 0 && a > LONG_LONG_MAX / x) return true; // `a * x` would overflow
+    if (x != 0 && a < LONG_LONG_MIN / x) return true; // `a * x` would underflow
+    return false;
 }

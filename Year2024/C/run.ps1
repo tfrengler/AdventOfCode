@@ -1,11 +1,5 @@
 $BuildMode  = "debug"
 
-# if ($args.Length -eq 0)
-# {
-#     # Write-Host -f Red "ERROR: Expected at least one cmdline-argument but found none"
-#     $BuildMode = "debug"
-# }
-
 if ($args -Contains "--release")
 {
     $BuildMode = "release"
@@ -18,30 +12,11 @@ if ($args -NotContains "--noclean")
     make clean_all
 }
 
-Write-Host -f Green "DAY 01:"
-make Day NR=01 BUILD=${BuildMode}
-& "./build/Day01_${BuildMode}.exe"
+$Days = "01", "02", "03", "04", "05", "06", "07"
 
-Write-Host -f Green "DAY 02:"
-make Day NR=02 BUILD=${BuildMode}
-& "./build/Day02_${BuildMode}.exe"
-
-Write-Host -f Green "DAY 03:"
-make Day NR=03 BUILD=${BuildMode}
-& "./build/Day03_${BuildMode}.exe"
-
-Write-Host -f Green "DAY 04:"
-make Day NR=04 BUILD=${BuildMode}
-& "./build/Day04_${BuildMode}.exe"
-
-Write-Host -f Green "DAY 05:"
-make Day NR=05 BUILD=${BuildMode}
-& "./build/Day05_${BuildMode}.exe"
-
-Write-Host -f Green "DAY 06:"
-make Day NR=06 BUILD=${BuildMode}
-& "./build/Day06_${BuildMode}.exe"
-
-Write-Host -f Green "DAY 07:"
-make Day NR=07 BUILD=${BuildMode}
-& "./build/Day07_${BuildMode}.exe"
+foreach ($day in $Days)
+{
+    Write-Host -f Green "DAY ${day}:"
+    make Day NR=${day} BUILD=${BuildMode}
+    & "./build/Day${day}_${BuildMode}.exe"
+}
