@@ -23,8 +23,7 @@
             fileIndex++;
             fileId++;
         }
-        writeOutput("<p>Files processed (count: #files.len()#)</p>");
-        cfflush();
+        variables.Output.WriteBlock("Files processed (count: #files.len()#)");
 
         // Creating the disk with the files and free space
         var disk = [];
@@ -40,8 +39,7 @@
             }
         }
 
-        writeOutput("<p>Disk created (size: #disk.len()#)</p>");
-        cfflush();
+        variables.Output.WriteBlock("Disk created (size: #disk.len()#)");
 
         // Part 1
         var freeIndex = 1;
@@ -54,46 +52,42 @@
             return -1;
         }
 
-        writeOutput("<p>Running...</p>");
-        cfflush();
+        variables.Output.WriteBlock("Running...");
+        var freeIndex = updateFreeIndex();
+        var Timer = new Components.Stopwatch().Start();
 
+        try {
+            for (var i = disk.len(); i != 0; i--) {
 
-        cftimer(label="Part 1 time taken", type="inline")
-        {
-            var freeIndex = updateFreeIndex();
+                if (!isStruct(disk[i])) {
+                    continue;
+                }
 
-            try {
-                for (var i = disk.len(); i != 0; i--) {
+                disk[freeIndex] = disk[i];
+                disk[i] = 0;
+                freeIndex = updateFreeIndex();
 
-                    if (!isStruct(disk[i])) {
-                        continue;
-                    }
-
-                    disk[freeIndex] = disk[i];
-                    disk[i] = 0;
-                    freeIndex = updateFreeIndex();
-
-                    if (freeIndex >= i || freeIndex == -1) {
-                        break;
-                    }
+                if (freeIndex >= i || freeIndex == -1) {
+                    break;
                 }
             }
-            catch (error) {
-                writeDump(label="catch: i", var=i);
-                writeDump(label="catch: freeIndex", var=freeIndex);
-                rethrow;
-            }
-
-            var partAnswer = 0;
-            for (var i = 1; i <= disk.len(); i++) {
-                if (!isStruct(disk[i])) continue;
-                partAnswer += (disk[i].id * (i - 1));
-            }
+        }
+        catch (error) {
+            writeDump(label="catch: i", var=i);
+            writeDump(label="catch: freeIndex", var=freeIndex);
+            rethrow;
         }
 
-        writeDump(label="Part 1 answer", var=partAnswer);
-        application.assert(partAnswer == 6331212425418, "Expected part answer to be 6331212425418 but it was #partAnswer#");
+        var partAnswer = 0;
+        for (var i = 1; i <= disk.len(); i++) {
+            if (!isStruct(disk[i])) continue;
+            partAnswer += (disk[i].id * (i - 1));
+        }
 
+        Timer.Stop();
+        variables.Output.WriteBlock("Time taken: #Timer.ElapsedMS()# ms");
+
+        application.assert(partAnswer == 6331212425418, "Expected part answer to be 6331212425418 but it was #partAnswer#");
         return partAnswer;
     </cfscript>
     </cffunction>
@@ -206,7 +200,7 @@
         writeOutput("</p>");
 
         // writeDump(label="Files", var=files);
-        writeDump(label="Part 2 answer", var=partAnswer);
+        // writeDump(label="Part 2 answer", var=partAnswer);
         application.assert(partAnswer == 6363268339304, "Expected part answer to be 6363268339304 but it was #partAnswer#");
         return partAnswer;
     </cfscript>

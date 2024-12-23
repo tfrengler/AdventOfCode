@@ -8,10 +8,24 @@
 <body>
 <cfscript>
 
-    day = "Day09";
-    test = createObject("component", "Days.#day#").init();
-    writeDump(test.Part02());
-    writeDump(var=variables, expand=false);
+    fileContent = fileRead(expandPath("Input") & "/Day10.txt");
+    // writeDump( asc(fileContent[53]));
+
+    columns = 1;
+    rows = 0;
+    for(i = 1; i < fileContent.len(); i++)
+    {
+        if (asc(fileContent[i]) == 13) columns++;
+    }
+
+    writeDump(columns);
+    writeDump(floor((fileContent.len() - columns) / columns));
+
+    // day = "Day09";
+    // test = createObject("component", "Days.#day#").init();
+    // writeDump(test);
+    // writeDump(test.Part01());
+    // writeDump(var=variables, expand=false);
 
     //test = directoryList(expandPath("Days"), false, "path", "Day*.cfc");
     // writeDump(test);
