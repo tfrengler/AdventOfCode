@@ -9,17 +9,9 @@
 <cfscript>
 
     fileContent = fileRead(expandPath("Input") & "/Day10.txt");
-    // writeDump( asc(fileContent[53]));
+    grid = new Components.Grid(fileContent);
 
-    columns = 1;
-    rows = 0;
-    for(i = 1; i < fileContent.len(); i++)
-    {
-        if (asc(fileContent[i]) == 13) columns++;
-    }
-
-    writeDump(columns);
-    writeDump(floor((fileContent.len() - columns) / columns));
+    writeDump(grid);
 
     // day = "Day09";
     // test = createObject("component", "Days.#day#").init();
