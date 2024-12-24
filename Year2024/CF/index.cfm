@@ -8,10 +8,13 @@
 <body>
 <cfscript>
 
-    fileContent = fileRead(expandPath("Input") & "/Day10.txt");
-    grid = new Components.Grid(fileContent);
+    // fileContent = fileRead(expandPath("Input") & "/Day10.txt");
+    // grid = new Components.Grid(fileContent);
+    // writeDump(grid);
 
-    writeDump(grid);
+    test = new Components.GridPoint();
+    test2 = new Components.GridPoint();
+    writeDump(test.ValueEquals(test2));
 
     // day = "Day09";
     // test = createObject("component", "Days.#day#").init();

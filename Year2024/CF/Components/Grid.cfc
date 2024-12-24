@@ -35,10 +35,99 @@
         </cfscript>
     </cffunction>
 
-    <!--- <cffunction access="public" name="WriteBlock" returntype="void" output="true">
-        <cfargument name="input" required="true" type="string" />
+    <cffunction access="public" name="GetPoint" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
         <cfscript>
 
         </cfscript>
-    </cffunction> --->
+    </cffunction>
+
+    <cffunction access="public" name="GetNorth" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetNorthEast" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetEast" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetSouthEast" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetSouth" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetSouthWest" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetWest" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetNorthWest" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetStar" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetCross" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="GetBox" returntype="GridPoint" output="false">
+        <cfargument name="X" required="true" type="numeric" />
+        <cfargument name="Y" required="true" type="numeric" />
+        <cfscript>
+
+        </cfscript>
+    </cffunction>
 </cfcomponent>
