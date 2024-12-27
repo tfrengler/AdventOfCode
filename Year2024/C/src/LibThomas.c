@@ -75,6 +75,7 @@ size_t GetDeAllocations(void) {
 }
 
 char* GetReadableBytes(size_t bytes) {
+    if (bytes == 0) return NULL;
     const int32_t i = (int32_t)floor(log((double_t)bytes) / log(1024));
     char* Sizes[] = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
     double_t FinalSize = ((double_t)bytes / pow(1024, i));
@@ -90,6 +91,11 @@ char* GetReadableBytes(size_t bytes) {
 void PrintAllocations(void)
 {
     char* ReadableBytes = GetReadableBytes(Heap);
+    if (ReadableBytes == NULL)
+    {
+        puts("No allocations made");
+        return;
+    }
     printf("%zu allocations made | %zu de-allocations made (heap size: %s)\n", Allocations, DeAllocations, ReadableBytes);
     free(ReadableBytes);
 }
