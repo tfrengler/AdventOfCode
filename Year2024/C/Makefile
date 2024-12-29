@@ -25,13 +25,13 @@ Day: $(OBJ_DIR)Day${NR}.o $(LIBS)
 	@echo "${BUILD}-mode: Linking and creating binary for $@ ${NR} ($(BUILD_DIR)$@${NR}_$(BUILD).exe)"
 	@$(CC) $(CFLAGS) -o $(BUILD_DIR)$@${NR}_$(BUILD).exe $^
 
-.PHONY: clean
-clean:
+.PHONY: clean_days
+clean_days:
 	@echo "Cleaning days only"
 	@-rm $(BUILD_DIR)*.* $(OBJ_DIR)Day*.*
 
-.PHONY: clean_all
-clean_all:
+.PHONY: clean
+clean:
 	@echo "Cleaning everything"
 	@-rm $(BUILD_DIR)*.* $(OBJ_DIR)*.*
 

@@ -15,6 +15,7 @@ typedef struct {
 
 Block *BlockList = NULL;
 int32_t BlockCount = 0;
+int32_t DiskSize = 0;
 
 void Setup(void)
 {
@@ -56,6 +57,10 @@ void Setup(void)
         BlockIndex++;
     }
 
+    for(int32_t i = 0; i < BlockCount; i++) {
+        DiskSize += BlockList[i].Size;
+    }
+
     String_Free(Input);
     // 00...111...2...333.44.5555.6666.777.888899
     // printf("Blockcount: %i\n", BlockCount);
@@ -64,14 +69,8 @@ void Setup(void)
 void Part01(void)
 {
     int64_t PartAnswer = 0;
-    int32_t DiskSize = 0;
     int32_t DiskIndex = 0;
-
-    for(int32_t i = 0; i < BlockCount; i++) {
-        DiskSize += BlockList[i].Size;
-    }
-
-    Block *Disk = Malloc(sizeof(Block) * DiskSize);
+    int32_t *Disk = Malloc(sizeof(int32_t) * DiskSize);
 
     // 00...111...2...333.44.5555.6666.777.888899
     for(int32_t i = 0; i < BlockCount; i++) {
@@ -79,7 +78,7 @@ void Part01(void)
 
         for(int32_t x = 0; x < CurrentBlock.Size; x++) {
 
-            Disk[DiskIndex] = CurrentBlock;
+            Disk[DiskIndex] = CurrentBlock.Id;
             DiskIndex++;
         }
     }
@@ -89,24 +88,27 @@ void Part01(void)
     // Before and after:
     // 00...111...2...333.44.5555.6666.777.888899
     // 0099811188827773336446555566..............
+    int32_t FreeblockIndex = 0;
     for(DiskIndex = (DiskSize-1); DiskIndex != -1; DiskIndex--) {
-        if (Disk[DiskIndex].Id == -1) continue;
+        int32_t Current = Disk[DiskIndex];
+        if (Current == -1) continue;
 
-        for(int32_t freeblockIndex = 0; freeblockIndex < DiskSize; freeblockIndex++) {
-            if (Disk[freeblockIndex].Id > -1) continue;
+        int32_t freeblockIndex = 0;
+        for(freeblockIndex = FreeblockIndex; freeblockIndex < DiskSize; freeblockIndex++) {
             if (freeblockIndex >= DiskIndex) break;
+            if (Disk[freeblockIndex] > -1) continue;
 
-            Disk[freeblockIndex].Id = Disk[DiskIndex].Id;
-            Disk[freeblockIndex].Position = freeblockIndex;
-            Disk[DiskIndex].Id = -1;
+            Disk[freeblockIndex] = Current;
+            Disk[DiskIndex] = -1;
+            FreeblockIndex = freeblockIndex;
 
             break;
         }
     }
 
     for(int32_t i = 0; i < DiskSize; i++) {
-        if (Disk[i].Id == -1) continue;
-        PartAnswer += Disk[i].Id * i;
+        if (Disk[i] == -1) continue;
+        PartAnswer += Disk[i] * i;
     }
 
     // Visualize disk map
@@ -129,14 +131,48 @@ void Part01(void)
 
 void Part02(void)
 {
-    int32_t PartAnswer = 0;
+    int64_t PartAnswer = 0;
+    int32_t FreeblockStartIndex = 0;
     TimerStart();
+
+    for(int32_t DiskIndex = (BlockCount-1); DiskIndex != -1; DiskIndex--) {
+        if (BlockList[DiskIndex].Id == -1) continue;
+        if (FreeblockStartIndex >= DiskIndex) break;
+
+        for(int32_t freeblockIndex = FreeblockStartIndex; freeblockIndex < BlockCount; freeblockIndex++) {
+            if (BlockList[freeblockIndex].Id > -1) continue;
+
+            Block CurrentFreeBlock = BlockList[freeblockIndex];
+            if (CurrentFreeBlock.Size < BlockList[DiskIndex].Size) continue;
+            if (freeblockIndex >= DiskIndex) break;
+
+            BlockList[DiskIndex].Position = CurrentFreeBlock.Position;
+            BlockList[freeblockIndex].Size -= BlockList[DiskIndex].Size;
+            BlockList[freeblockIndex].Position += BlockList[DiskIndex].Size;
+
+            if (CurrentFreeBlock.Size == 0) {
+                FreeblockStartIndex++;
+            }
+
+            break;
+        }
+    }
+
+    for(int32_t i = 0; i < BlockCount; i++) {
+        if (BlockList[i].Id == -1) continue;
+        int32_t PositionIncrement = BlockList[i].Size - 1;
+        while(PositionIncrement != -1)
+        {
+            PartAnswer += BlockList[i].Id * (BlockList[i].Position + PositionIncrement);
+            PositionIncrement--;
+        }
+    }
 
     TimerStop();
     PrintTimer();
 
-    printf("Part 02 answer: %i\n", PartAnswer);
-    // assert(PartAnswer == -1);
+    printf("Part 02 answer: %zu\n", PartAnswer);
+    assert(PartAnswer == 6363268339304);
 }
 
 int main(void)
@@ -144,9 +180,7 @@ int main(void)
     Setup();
 
     Part01();
-    // Part02();
-
-    // String_Free(Input);
+    Part02();
 
     Free(BlockList);
     PrintAllocations();

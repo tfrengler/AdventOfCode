@@ -9,10 +9,10 @@ Write-Host -f Yellow "BUILD MODE: ${BuildMode}"
 
 if ($args -NotContains "--noclean")
 {
-    make clean_all
+    make clean
 }
 
-$Days = "01", "02", "03", "04", "05", "06", "07"
+$Days = "01", "02", "03", "04", "05", "06", "07", "09"
 
 foreach ($day in $Days)
 {
