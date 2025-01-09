@@ -18,6 +18,20 @@
         </cfscript>
     </cffunction>
 
+    <cffunction access="public" name="WriteList" returntype="void" output="true">
+        <cfargument name="input" required="true" type="array" />
+        <cfscript>
+            if (variables.SuppressOutput) return;
+            writeOutput("<ul>");
+            for(var output in arguments.input)
+            {
+                writeOutput("<li>#output#</li>");
+            }
+            writeOutput("</ul>");
+            cfflush();
+        </cfscript>
+    </cffunction>
+
     <cffunction access="public" name="WriteLine" returntype="void" output="true">
         <cfargument name="input" required="true" type="string" />
         <cfscript>

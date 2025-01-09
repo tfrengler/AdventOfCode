@@ -25,9 +25,23 @@
         </cfscript>
     </cffunction>
 
+    <cffunction access="public" name="Restart" returntype="Stopwatch" output="false">
+        <cfscript>
+            variables.Begin = createObject("java", "java.lang.System").nanoTime();
+            variables.End = 0;
+            return this;
+        </cfscript>
+    </cffunction>
+
     <cffunction access="public" name="ElapsedMS" returntype="numeric" output="false">
         <cfscript>
             return (variables.End - variables.Begin) * 1.0E-6;
+        </cfscript>
+    </cffunction>
+
+    <cffunction access="public" name="ElapsedSeconds" returntype="numeric" output="false">
+        <cfscript>
+            return ElapsedMS() / 1000;
         </cfscript>
     </cffunction>
 
