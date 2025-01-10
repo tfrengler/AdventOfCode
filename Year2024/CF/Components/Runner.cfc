@@ -34,10 +34,12 @@
             variables.Output.WriteBlock("Running part #arguments.number#...");
 
             var result = 0;
+            var dayMethodToInvoke = "Part0#arguments.number#";
+
             for(var index = 1; index <= arguments.iterations; index++)
             {
                 stopwatch.Restart();
-                result = arguments.number == 1 ? variables.DayInstance.Part01() : variables.DayInstance.Part02();
+                result = invoke(variables.DayInstance, dayMethodToInvoke);
                 stopwatch.Stop();
                 executionTimes.append(stopwatch.ElapsedMS());
             }
