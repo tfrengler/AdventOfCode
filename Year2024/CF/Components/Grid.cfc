@@ -3,6 +3,7 @@
     <cfproperty name="Grid" type="array" getter="true" setter="false" >
     <cfproperty name="Width" type="numeric" getter="true" setter="false" >
     <cfproperty name="Height" type="numeric" getter="true" setter="false" >
+    <cfproperty name="BoundaryCrossIsFatal" type="boolean" getter="true" setter="true" >
 
     <cffunction access="public" name="Init" returntype="Grid" output="false">
         <cfargument name="inputString" required="true" type="string" />

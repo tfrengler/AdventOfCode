@@ -2,11 +2,13 @@
 
     <cffunction access="public" name="Init" returntype="Day09" output="false">
         <cfscript>
-            return super.Init("Day09");
+            var ReturnData = super.Init("Day09");
+            variables.Output.SetSuppressOutput(true);
+            return ReturnData;
         </cfscript>
     </cffunction>
 
-    <cffunction access="public" name="Part01" returntype="numeric" output="true">
+    <cffunction access="public" name="Part01" returntype="numeric" output="false">
     <cfscript>
         var files = [];
         var fileIndex = 1;
@@ -92,8 +94,9 @@
     </cfscript>
     </cffunction>
 
-    <cffunction access="public" name="Part02" returntype="numeric" output="true">
+    <cffunction access="public" name="Part02" returntype="numeric" output="false">
     <cfscript>
+        // variables.Input = "2333133121414131402";
         var exampleDiskMap      = "00...111...2...333.44.5555.6666.777.888899";
         var exampleSolutions    = "00992111777.44.333....5555.6666.....8888..";
         var files = [];
@@ -101,7 +104,6 @@
         var diskIndex = 1;
         var fileId = 0;
 
-        // variables.Input = "2333133121414131402";
         // variables.Input = "1313165";
         /* = 169
         0...1...2......33333
@@ -129,78 +131,54 @@
                 position: diskIndex,
                 size: freeblocksCount
             };
+
             freeBlocks.append(newFreeBlock);
             diskIndex = diskIndex + newFreeBlock.size;
         }
 
-        writeOutput("<p>Files and freeblocks processed (files: #files.len()#, free blocks: #freeBlocks.len()#)</p>");
-        cfflush();
-        // abort;
+        for (var i = files.len(); i != 0; i--) {
 
-        writeOutput("<p>Running...</p>");
-        cfflush();
+            var currentFile = files[i];
+            var fileSize = currentFile.size;
 
-        cftimer(label="Part time taken", type="inline")
-        {
-            for (var i = files.len(); i != 0; i--) {
-                var currentFile = files[i];
-                var sizeToMatch = currentFile.size;
+            for (var x = 1; !(x > freeBlocks.len()); x++) {
 
-                // writeOutput("<p>Find freeblock for file #currentFile.id# at position #currentFile.position# with size #sizeToMatch#</p>");
-                for (var x = 1; !(x > freeBlocks.len()); x++) {
-
-                    var freeBlock = freeBlocks[x];
-                    if (freeBlock.position >= currentFile.position) {
-                        // writeOutput("<p>Freeblock position (#freeBlock.position#) exceeds file position, cannot move file</p>");
-                        break;
-                    }
-
-                    if (freeBlock.size < sizeToMatch) {
-                        // writeOutput("<p>Freeblock size less file size (#freeBlock.size#), cannot move file</p>");
-                        continue;
-                    }
-
-                    // writeOutput("<p>SUCCESS: Found freeblock at position #freeBlock.position# with size #freeBlock.size#</p>");
-
-                    currentFile.position = freeBlock.position;
-                    if (freeBlock.size == sizeToMatch) {
-                        // writeOutput("<p>Freeblock was exact size</p>");
-                        freeBlock.position = 0;
-                        freeBlock.size = 0;
-                        break;
-                    }
-
-                    // writeOutput("<p>File size was less than freeblock size, adjusting size and position. Was = size : #freeBlock.size# | position: #freeBlock.position#.</p>");
-                    freeBlock.size -= sizeToMatch;
-                    freeBlock.position += sizeToMatch;
-                    // writeOutput("<p>After = size #freeBlock.size# | position: #freeBlock.position#</p>");
+                var freeBlock = freeBlocks[x];
+                if (freeBlock.position >= currentFile.position) {
                     break;
                 }
-            }
-        }
 
-        writeOutput("<p>");
-        cftimer(label="Sorting files and calculating answer", type="inline")
-        {
-            arraySort(files, (item1, item2) => {
-                if (item2.position < item1.position) return 1;
-                if (item2.position > item1.position) return -1;
-                return 0;
-            });
-
-            var partAnswer = 0;
-
-            for (var i = 1; i <= files.len(); i++) {
-                var currentFile = files[i];
-                for (var x = 0; x < currentFile.size; x++) {
-                    partAnswer += currentFile.id * ((currentFile.position-1) + x);
+                if (freeBlock.size < fileSize) {
+                    continue;
                 }
+
+                currentFile.position = freeBlock.position;
+                freeBlock.size -= fileSize;
+                freeBlock.position += fileSize;
+
+                if (freeBlock.size == 0) {
+                    arrayDeleteAt(freeBlocks, x);
+                }
+
+                break;
             }
         }
-        writeOutput("</p>");
 
-        // writeDump(label="Files", var=files);
-        // writeDump(label="Part 2 answer", var=partAnswer);
+        var partAnswer = 0;
+
+        arraySort(files, (item1, item2) => {
+            if (item2.position < item1.position) return 1;
+            if (item2.position > item1.position) return -1;
+            return 0;
+        });
+
+        for (var i = 1; i <= files.len(); i++) {
+            var currentFile = files[i];
+            for (var x = 0; x < currentFile.size; x++) {
+                partAnswer += currentFile.id * ((currentFile.position-1) + x);
+            }
+        }
+
         application.assert(partAnswer == 6363268339304, "Expected part answer to be 6363268339304 but it was #partAnswer#");
         return partAnswer;
     </cfscript>
