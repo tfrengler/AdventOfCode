@@ -40,6 +40,7 @@ void HashTable_InsertString(char* key, char value[]) {
 }
 
 void HashTable_InsertI32(char* key, int32_t value) {
+    #pragma clang diagnostic ignored "-Wint-to-pointer-cast"
     HashTable_Insert(key, (intptr_t*)value);
 }
 
@@ -79,6 +80,7 @@ void HashTable_Insert(char* key, void* value)
 }
 
 int32_t HashTable_FindI32(char* key) {
+    #pragma clang diagnostic ignored "-Wvoid-pointer-to-int-cast"
     return (int32_t)HashTable_Find(key);
 }
 
