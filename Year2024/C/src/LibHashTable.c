@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "LibHashTable.h"
-#include "LibThomas.h"
+#include "LibMem.h"
 
 typedef struct {
     HashItem* Items;
@@ -71,7 +71,7 @@ void HashTable_Insert(char* key, void* value)
             continue;
         }
 
-        Current->Next = Malloc(sizeof(HashItem));
+        Current->Next = MemRequest(sizeof(HashItem));
         Current->Next->Key = key;
         Current->Next->Value = value;
 
@@ -130,7 +130,7 @@ void HashTable_Teardown(void) {
         while(Current != NULL) {
             void* Temp = Current;
             Current = Current->Next;
-            Free(Temp);
+            MemFree(Temp);
         }
     }
 

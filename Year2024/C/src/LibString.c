@@ -11,6 +11,7 @@
 #include <string.h>
 #include "LibThomas.h"
 #include "LibString.h"
+#include "LibMem.h"
 
 /* ***********************************************************
  * ********************** STRING FUNCTIONS ********************
@@ -164,7 +165,7 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
 }
 
 /**
- * @brief  Creates a heap-allocated instance of String around a char*. The original string is copied so it is safe to Free() afterwards.
+ * @brief  Creates a heap-allocated instance of String around a char*. The original string is copied so it is safe to MemFree() afterwards.
  * @param  content: The string (including the null-terminator) to wrap the return struct around. Is mem-copied to retval->Content.
  * @param  size: The size of the string MINUS the null-terminator. Must be greater than 0 and content[size] is expected to be '\0'.
  * @retval A pointer to the newly created String wrapped around the C-string.
@@ -177,13 +178,13 @@ String *String_Make(const char *content, int32_t size)
     assert(content[size] == '\0');
 #endif
 
-    String *ReturnData = Malloc(sizeof(struct _String));
+    String *ReturnData = MemRequest(sizeof(struct _String));
 
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
 
-    ReturnData->Content = Malloc(size + 1);
+    ReturnData->Content = MemRequest(size + 1);
 
 #if DEBUG()
     assert(ReturnData->Content != NULL);
@@ -201,7 +202,7 @@ String *String_Make(const char *content, int32_t size)
  */
 String *String_Empty(void)
 {
-    String *ReturnData = Malloc(sizeof(struct _String));
+    String *ReturnData = MemRequest(sizeof(struct _String));
 #if DEBUG()
     assert(ReturnData != NULL);
 #endif
@@ -279,8 +280,8 @@ StringArray *String_Split(const String *inputString, char delimiter)
         }
     }
 
-    StringArray *ReturnData = Malloc(sizeof *ReturnData);
-    ReturnData->Contents = Malloc(sizeof(**ReturnData->Contents) * LineCount);
+    StringArray *ReturnData = MemRequest(sizeof *ReturnData);
+    ReturnData->Contents = MemRequest(sizeof(**ReturnData->Contents) * LineCount);
 
     ReturnData->Count = LineCount;
 
@@ -348,7 +349,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     int64_t FileSize = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    char *FileContents = Malloc(FileSize + 1);
+    char *FileContents = MemRequest(FileSize + 1);
     int32_t Index = 0;
 
 #if DEBUG()
@@ -382,7 +383,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
     if (Index == 0) {
         fclose(fileHandle);
-        Free(FileContents);
+        MemFree(FileContents);
         return String_Empty();
     }
 
@@ -402,7 +403,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     }
 
     String *ReturnData = String_Make(FileContents, FinalSizeWithTerminator - 1);
-    Free(FileContents);
+    MemFree(FileContents);
 
     return ReturnData;
 }
@@ -413,11 +414,11 @@ StringArray *StringArray_Make(String **contents, const int32_t size)
         Fatal("Error making string array. Contents were NULL or size was less than 1");
     }
 
-    StringArray *ReturnData = Malloc(sizeof(StringArray));
+    StringArray *ReturnData = MemRequest(sizeof(StringArray));
 #if DEBUG()
     assert(ReturnData != 0x0);
 #endif
-    ReturnData->Contents = Malloc(size * sizeof(String));
+    ReturnData->Contents = MemRequest(size * sizeof(String));
 #if DEBUG()
     assert(ReturnData->Contents != 0x0);
 #endif
@@ -445,8 +446,8 @@ StringArray *File_ReadAllLines(const char *fileNameAndPath)
 }
 
 /**
- * @brief   De-allocates (frees) a String-instance.
- * @param   input: The instance to free. Cannot be NULL.
+ * @brief   De-allocates (MemFrees) a String-instance.
+ * @param   input: The instance to MemFree. Cannot be NULL.
  * @retval  None.
  */
 void String_Free(String *input)
@@ -456,26 +457,26 @@ void String_Free(String *input)
 #endif
 
     if (input->Content != NULL) {
-        Free(input->Content);
+        MemFree(input->Content);
     }
-    Free(input);
+    MemFree(input);
     input = 0x0;
 }
 
 /**
- * @brief   De-allocates (frees) a StringArray-instance.
- * @param   input: The instance to free. Cannot be NULL.
- * @param   freeContent: If true then all String-instances in Content are looped over and free'd along with the Content itself. If false then only input itself is freed.
+ * @brief   De-allocates (MemFrees) a StringArray-instance.
+ * @param   input: The instance to MemFree. Cannot be NULL.
+ * @param   MemFreeContent: If true then all String-instances in Content are looped over and MemFree'd along with the Content itself. If false then only input itself is MemFreed.
  * @retval  None.
  */
-void StringArray_Free(StringArray *input, bool freeContent)
+void StringArray_MemFree(StringArray *input, bool MemFreeContent)
 {
 #if DEBUG()
     assert(input != NULL);
-    if (freeContent) assert(input->Contents != NULL);
+    if (MemFreeContent) assert(input->Contents != NULL);
 #endif
 
-    if (freeContent) {
+    if (MemFreeContent) {
         for (int32_t Index = 0; Index < input->Count; Index++) {
             String *Current = input->Contents[Index];
 #if DEBUG()
@@ -483,9 +484,9 @@ void StringArray_Free(StringArray *input, bool freeContent)
 #endif
             String_Free(Current);
         }
-        Free(input->Contents);
+        MemFree(input->Contents);
     }
 
-    Free(input);
+    MemFree(input);
     input = 0x0;
 }

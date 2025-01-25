@@ -62,14 +62,9 @@ typedef uint8_t byte;
 
 void Fatal(const char *message);
 
-void Free(void* ptr);
-void *Malloc(size_t size);
-
-size_t GetAllocations(void);
-void PrintAllocations(void);
-size_t GetDeAllocations(void);
 void TimerStart(void);
 void TimerStop(void);
 void PrintTimer(void);
+char* GetReadableBytes(size_t bytes);
 
 #endif

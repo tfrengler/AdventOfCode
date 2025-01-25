@@ -11,7 +11,7 @@
 #include "limits.h"
 #include "LibThomas.h"
 #include "LibNumeric.h"
-
+#include "LibMem.h"
 
 /************************** int32 functions **************************/
 
@@ -162,8 +162,8 @@ i64Array* i64Array_CopyM(const i64Array *input) {
     assert(input->Data != nullptr);
 #endif
 
-    i64Array* ReturnData = Malloc(sizeof(i64Array));
-    int64_t* Data = Malloc(input->Size * sizeof(int64_t));
+    i64Array* ReturnData = MemRequest(sizeof(i64Array));
+    int64_t* Data = MemRequest(input->Size * sizeof(int64_t));
 
     ReturnData->Capacity = input->Size;
     ReturnData->Data = Data;
@@ -220,7 +220,7 @@ i64Array *i64Array_RemoveAt(const i64Array* input, size_t index)
     }
 
     if (input->Size == 1) {
-        i64Array *ReturnData = Malloc(sizeof(i64Array));
+        i64Array *ReturnData = MemRequest(sizeof(i64Array));
         ReturnData->Size = 0;
         ReturnData->Capacity = 0;
         ReturnData->Data = nullptr;
@@ -228,7 +228,7 @@ i64Array *i64Array_RemoveAt(const i64Array* input, size_t index)
     }
 
     size_t NewArraySize = input->Size - 1;
-    int64_t *NewArray = Malloc(NewArraySize * sizeof(int64_t));
+    int64_t *NewArray = MemRequest(NewArraySize * sizeof(int64_t));
     int64_t NewArrayIndex = 0;
 
     for(size_t arrayIndex = 0; arrayIndex < input->Size; arrayIndex++) {
@@ -237,7 +237,7 @@ i64Array *i64Array_RemoveAt(const i64Array* input, size_t index)
         NewArrayIndex++;
     }
 
-    i64Array *ReturnData = Malloc(sizeof(i64Array));
+    i64Array *ReturnData = MemRequest(sizeof(i64Array));
     ReturnData->Size = NewArraySize;
     ReturnData->Capacity = NewArraySize;
     ReturnData->Data = NewArray;

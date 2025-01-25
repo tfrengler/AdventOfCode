@@ -38,6 +38,7 @@
                 "${workspaceFolder}/src/LibNumeric.c",
                 "${workspaceFolder}/src/LibGrid.c",
                 "${workspaceFolder}/src/LibHashTable.c",
+                "${workspaceFolder}/src/LibMem.c",
                 "-o",
                 "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
             ],
