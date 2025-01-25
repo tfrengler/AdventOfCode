@@ -1,7 +1,6 @@
 #ifndef LIB_HASHTABLE_H
 #define LIB_HASHTABLE_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct _HashItem {

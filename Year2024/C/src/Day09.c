@@ -183,6 +183,6 @@ int main(void)
     Part02();
 
     Free(BlockList);
-    PrintAllocations();
+    // PrintAllocations();
     return EXIT_SUCCESS;
 }

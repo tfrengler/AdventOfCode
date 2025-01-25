@@ -12,97 +12,63 @@
 #include "LibThomas.h"
 #include "LibNumeric.h"
 
-/* ***********************************************************
- * ********************** NUMBER FUNCTIONS ********************
- * ***********************************************************/
-
-/**
- * @brief   Compares an array of numbers against one another.
- * @param   array       : Pointer to the start of the array.
- * @param   arraySize   : The amount of elements in the array.
- * @param   objectSize  : The size of the objects in the array.
- * @param   compare     : Pointer to a function that can compare two numbers, returning true when comparing p1 against p2.
- * @retval  A void pointer that can be cast to an integer type (uint8_t,int8_t,int16_t,uint16_t,int32_t,uint32_t,int64_t,uint64_t).
- */
-static const void *ArrayNumberCompare(const void *array, size_t arraySize, int32_t objectSize, bool (*compare)(const void *p1, const void *p2))
-{
-#if DEBUG()
-    assert(array != NULL);
-    assert(arraySize > 0);
-    assert(objectSize > 0);
-    assert(compare != NULL);
-#endif
-
-    #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"
-    const uint8_t *ByteArray = array;
-    const void *ReturnData;
-
-    if (compare((void*)ByteArray[0], (void*)ByteArray[objectSize])) {
-        ReturnData = (void*)ByteArray[0];
-    } else {
-        ReturnData = (void*)ByteArray[objectSize];
-    }
-
-    for (size_t Index = 2; Index < arraySize; Index++) {
-        if (compare((void*)ByteArray[Index * objectSize], (void*)ReturnData)) {
-            ReturnData = (void*)ByteArray[Index * objectSize];
-        }
-    }
-
-    return ReturnData;
-}
 
 /************************** int32 functions **************************/
 
-static bool i32Max(const void *n1, const void *n2)
+
+int64_t i64Array_Max(const i64Array *input)
 {
-    #pragma clang diagnostic ignored "-Wvoid-pointer-to-int-cast"
-    return (int32_t)n1 > (int32_t)n2;
+#if DEBUG()
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+#endif
+
+    if (input-> Size < 2) {
+        return 0;
+    }
+
+    int64_t ReturnData = 0;
+
+    for(size_t index = 0; index < input->Size; index++) {
+        if (input->Data[index] > ReturnData) {
+            ReturnData = input->Data[index];
+        }
+    }
+
+    return ReturnData;
 }
 
-static bool i32Min(const void *n1, const void *n2)
+int64_t i64Array_Min(const i64Array *input)
 {
-    #pragma clang diagnostic ignored "-Wvoid-pointer-to-int-cast"
-    return (int32_t)n1 < (int32_t)n2;
+#if DEBUG()
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+#endif
+
+    if (input-> Size < 2) {
+        return 0;
+    }
+
+    int64_t ReturnData = INT64_MAX;
+
+    for(size_t index = 0; index < input->Size; index++) {
+        if (input->Data[index] < ReturnData) {
+            ReturnData = input->Data[index];
+        }
+    }
+
+    return ReturnData;
 }
 
-static bool u32Max(const void *n1, const void *n2)
+bool i64Array_Equal(const i64Array *first, const i64Array *second)
 {
-    #pragma clang diagnostic ignored "-Wvoid-pointer-to-int-cast"
-    return (uint32_t)n1 > (uint32_t)n2;
-}
+#if DEBUG()
+    assert(first != nullptr);
+    assert(first->Data != nullptr);
+    assert(second != nullptr);
+    assert(second->Data != nullptr);
+#endif
 
-static bool u32Min(const void *n1, const void *n2)
-{
-    #pragma clang diagnostic ignored "-Wvoid-pointer-to-int-cast"
-    return (uint32_t)n1 < (uint32_t)n2;
-}
-
-int32_t i32Array_Max(const i32Array *input)
-{
-    const void *ReturnData = ArrayNumberCompare(input->Data, input->Size, sizeof(int32_t), &i32Max);
-    return (int32_t)ReturnData;
-}
-
-int32_t i32Array_Min(const i32Array *input)
-{
-    const void *ReturnData = ArrayNumberCompare(input->Data, input->Size, sizeof(int32_t), &i32Min);
-    return (int32_t)ReturnData;
-}
-
-uint32_t u32Array_Max(const u32Array *input)
-{
-    const void *ReturnData = ArrayNumberCompare(input->Data, input->Size, sizeof(uint32_t), &u32Max);
-    return (uint32_t)ReturnData;
-}
-
-uint32_t u32Array_Min(const u32Array *input)
-{
-    const void *ReturnData = ArrayNumberCompare(input->Data, input->Size, sizeof(uint32_t), &u32Min);
-    return (uint32_t)ReturnData;
-}
-
-bool i32Array_Equal(const i32Array *first, const i32Array *second) {
     if (first->Size != second->Size) {
         return false;
     }
@@ -116,35 +82,26 @@ bool i32Array_Equal(const i32Array *first, const i32Array *second) {
     return true;
 }
 
-bool u32Array_Equal(const u32Array *first, const u32Array *second) {
-    if (first->Size != second->Size) {
-        return false;
-    }
-
-    for(size_t index = 0; index < first->Size; index++) {
-        if (first->Data[index] != second->Data[index]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-int32_t i32Array_Sum(const i32Array *input) {
+int64_t i64Array_Sum(const i64Array *input) {
 #if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
 #endif
 
     if (input->Size == 0) {
         return 0;
     }
 
-    int32_t ReturnData = 0;
-    for(size_t index = 0; index < input->Size; index++) {
-        int32_t NextNumber = input->Data[index];
+    if (input->Size == 1) {
+        return input->Data[0];
+    }
 
-        if (NextNumber > INT32_MAX - ReturnData) {
-            return INT32_MAX;
+    int64_t ReturnData = 0;
+    for(size_t index = 0; index < input->Size; index++) {
+        int64_t NextNumber = input->Data[index];
+        // Guard against overflow which is undefined behaviour
+        if (NextNumber > (INT64_MAX - ReturnData)) {
+            return INT64_MAX;
         }
 
         ReturnData += NextNumber;
@@ -153,78 +110,15 @@ int32_t i32Array_Sum(const i32Array *input) {
     return ReturnData;
 }
 
-uint32_t u32Array_Sum(const u32Array *input) {
-#if DEBUG()
-    assert(input != NULL);
-#endif
-
-    if (input->Size == 0) {
-        return 0;
-    }
-
-    uint32_t ReturnData = 0;
-    for(size_t index = 0; index < input->Size; index++) {
-        uint32_t NextNumber = input->Data[index];
-
-        if (NextNumber > UINT32_MAX - ReturnData) {
-            return UINT32_MAX;
-        }
-
-        ReturnData += NextNumber;
-    }
-
-    return ReturnData;
-}
-
-uint32_t u32Array_Average(const u32Array *input) {
-#if DEBUG()
-    assert(input != NULL);
-#endif
-
-    if (input->Size == 0) {
-        return 0;
-    }
-
-    uint32_t Sum = 0;
-    for(size_t index = 0; index < input->Size; index++) {
-        uint32_t NextNumber = input->Data[index];
-
-        if (NextNumber > UINT32_MAX - Sum) {
-            return 0;
-        }
-
-        Sum += NextNumber;
-    }
-
+int64_t i64Array_Average(const i64Array *input) {
+    int64_t Sum = i64Array_Sum(input);
     return Sum / input->Size;
 }
 
-int32_t i32Array_Average(const i32Array *input) {
+int64_t i64Array_Median(const i64Array *input) {
 #if DEBUG()
-    assert(input != NULL);
-#endif
-
-    if (input->Size == 0) {
-        return 0;
-    }
-
-    int32_t Sum = 0;
-    for(size_t index = 0; index < input->Size; index++) {
-        int32_t NextNumber = input->Data[index];
-
-        if (NextNumber > INT32_MAX - Sum) {
-            return 0;
-        }
-
-        Sum += input->Data[index];
-    }
-
-    return Sum / input->Size;
-}
-
-int32_t i32Array_Median(const i32Array *input) {
-#if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
 #endif
 
     if (input->Size == 0) {
@@ -239,75 +133,117 @@ int32_t i32Array_Median(const i32Array *input) {
         return input->Data[input->Size / 2];
     }
 
-    int32_t Num1 = input->Data[input->Size / 2];
-    int32_t Num2 = input->Data[(input->Size / 2) - 1];
+    int64_t Num1 = input->Data[input->Size / 2];
+    int64_t Num2 = input->Data[(input->Size / 2) - 1];
 
     return (Num1 + Num2) / 2;
 }
 
-uint32_t u32Array_Median(const u32Array *input) {
+i64Array* i64Array_Copy(const i64Array *input, i64Array *output) {
 #if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+    assert(output != nullptr);
+    assert(output->Data != nullptr);
+    assert(output->Capacity >= input->Size);
 #endif
 
-    if (input->Size == 0) {
-        return 0;
+    for(size_t index = 0; index < input->Size; index++) {
+        output->Data[index] = input->Data[index];
     }
 
-    if (input->Size == 1) {
-        return input->Data[0];
-    }
+    output->Size = input->Size;
+    return output;
+}
 
-    if (input->Size % 2 != 0) {
-        return input->Data[input->Size / 2];
-    }
+i64Array* i64Array_CopyM(const i64Array *input) {
+#if DEBUG()
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+#endif
 
-    uint32_t Num1 = input->Data[input->Size / 2];
-    uint32_t Num2 = input->Data[(input->Size / 2) - 1];
+    i64Array* ReturnData = Malloc(sizeof(i64Array));
+    int64_t* Data = Malloc(input->Size * sizeof(int64_t));
 
-    return (Num1 + Num2) / 2;
+    ReturnData->Capacity = input->Size;
+    ReturnData->Data = Data;
+
+    return i64Array_Copy(input, ReturnData);
+}
+
+static int32_t i64SortAsc(const void *n1, const void *n2) {
+    if (*(int64_t*)n1 > *(int64_t*)n2) return 1;
+    if (*(int64_t*)n1 < *(int64_t*)n2) return -1;
+    return 0;
+}
+
+static int32_t i64SortDesc(const void *n1, const void *n2) {
+    if (*(int64_t*)n1 < *(int64_t*)n2) return 1;
+    if (*(int64_t*)n1 > *(int64_t*)n2) return -1;
+    return 0;
+}
+
+void i64Array_SortAsc(i64Array *input) {
+#if DEBUG()
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+#endif
+
+    qsort(input->Data, input->Size, sizeof(int64_t), &i64SortAsc);
+}
+
+void i64Array_SortDesc(i64Array *input) {
+#if DEBUG()
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
+#endif
+
+    qsort(input->Data, input->Size, sizeof(int64_t), &i64SortDesc);
 }
 
 /**
  * @brief  Returns a copy of an array with a number removed from a specific index.
- * @param  input: The array to removed a number from. Must not be null.
+ * @param  input: The array to removed a number from. Must not be nullptr.
  * @param  index: The index of the number to omit from the returned array. Must be greater than 0 and less than input->Size.
  * @retval An IntegerArray that is a copy of input with the number removed from the index that was given.
  */
-/*IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index)
+i64Array *i64Array_RemoveAt(const i64Array* input, size_t index)
 {
 #if DEBUG()
-    assert(input != NULL);
-    assert(input->Type == I32);
+    assert(input != nullptr);
+    assert(input->Data != nullptr);
 #endif
 
-    if (index > (input->Size-1) || index < 0) {
-        Fatal("Index is greater than the size of the input array or less than 0");
-        return NULL;
+    if (index > (input->Size-1)) {
+        Fatal("Index is greater than the size of the input array");
+        return nullptr;
     }
 
     if (input->Size == 1) {
-        return i32Array_Make(0, NULL);
+        i64Array *ReturnData = Malloc(sizeof(i64Array));
+        ReturnData->Size = 0;
+        ReturnData->Capacity = 0;
+        ReturnData->Data = nullptr;
+        return ReturnData;
     }
 
-    int32_t NewArraySize = input->Size - 1;
-    int32_t NewArray[NewArraySize];
-    int32_t NewArrayIndex = 0;
+    size_t NewArraySize = input->Size - 1;
+    int64_t *NewArray = Malloc(NewArraySize * sizeof(int64_t));
+    int64_t NewArrayIndex = 0;
 
-    for(int32_t arrayIndex = 0; arrayIndex < input->Size; arrayIndex++) {
+    for(size_t arrayIndex = 0; arrayIndex < input->Size; arrayIndex++) {
         if (arrayIndex == index) continue;
-        NewArray[NewArrayIndex] = input->i32Data[arrayIndex];
+        NewArray[NewArrayIndex] = input->Data[arrayIndex];
         NewArrayIndex++;
     }
 
-    IntegerArray* ReturnData = i32Array_Make(NewArraySize, NewArray);
-
-#if DEBUG()
-    assert(ReturnData != NULL);
-#endif
+    i64Array *ReturnData = Malloc(sizeof(i64Array));
+    ReturnData->Size = NewArraySize;
+    ReturnData->Capacity = NewArraySize;
+    ReturnData->Data = NewArray;
 
     return ReturnData;
-}*/
+}
 
 bool LongToInt(int64_t input, int32_t *output)
 {
@@ -343,28 +279,28 @@ bool StringToInt(const char *input, int32_t length, int32_t* output)
             - "-456x7", "-456 7". "-456" or "  -456" returns true with output = -456
             - "9223372036854775807" and "-9223372036854775808" returns false with output = 0 (int under/overflow by calculation)
             - "92233720368547758070" and "-92233720368547758080" returns false with output = 0 (max int overflow by too many contigous digits)
- * @param  *input: The string with potential numbers in them you want to parse. Not allowed to be NULL or false is returned.
- * @param  length: The max amount of characters to process in the input. Typically the length of input (minus null terminator) but can be less. Must be at least 1 or false is returned.
- * @param  output: A pointer to a long where the parsed number will be stored in. Will be initialized to 0. Must not be NULL or false is returned.
+ * @param  *input: The string with potential numbers in them you want to parse. Not allowed to be nullptr or false is returned.
+ * @param  length: The max amount of characters to process in the input. Typically the length of input (minus nullptr terminator) but can be less. Must be at least 1 or false is returned.
+ * @param  output: A pointer to a long where the parsed number will be stored in. Will be initialized to 0. Must not be nullptr or false is returned.
  * @retval True if parsing succeeded, or false if parsing failed due to an error. True does not mean a number was found, just that no errors happened. False can mean multiple things:
- * - input or output was NULL
+ * - input or output was nullptr
  * - length was was less than 1
  * - a number was found but it under- or overflowed the max value of a 32-bit int
- * - a null terminator character was found in input before length was reached
+ * - a nullptr terminator character was found in input before length was reached
  *
- * In all cases output will be 0 upon return EXCEPT if output is NULL (since that would be dereferencing a null pointer)
+ * In all cases output will be 0 upon return EXCEPT if output is nullptr (since that would be dereferencing a nullptr pointer)
  */
 bool StringToLong(const char *input, int32_t length, int64_t* output)
 {
-    if (output == NULL) {
-        DEBUG_PRINT("StringToLong: output is null", NULL);
+    if (output == nullptr) {
+        DEBUG_PRINT("StringToLong: output is nullptr", NULL);
         return false;
     }
 
     *output = 0;
 
-    if (input == NULL || length < 1) {
-        DEBUG_PRINT("StringToLong: input is null and/or length is less than 1\n", NULL);
+    if (input == nullptr || length < 1) {
+        DEBUG_PRINT("StringToLong: input is nullptr and/or length is less than 1\n", NULL);
         return false;
     }
 
@@ -378,7 +314,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
 
         // Detect end of string regardless of length param
         if (NextCharacter == '\0') {
-            DEBUG_PRINT("StringToLong: premature null terminator found in input (1)\n", NULL);
+            DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (1)\n", NULL);
             return false;
         }
         // Ignore leading whitespace
@@ -412,9 +348,9 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
 
         // Not a number anymore? Break, and return the number we have parsed so far...
         if (NextCharacter < '0' || NextCharacter > '9') {
-            // ...unless it's a null terminator in which cases length is longer than input which is bad
+            // ...unless it's a nullptr terminator in which cases length is longer than input which is bad
             if (NextCharacter == '\0') {
-                DEBUG_PRINT("StringToLong: premature null terminator found in input (2)\n", NULL);
+                DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (2)\n", NULL);
                 *output = 0;
                 return false;
             }
@@ -422,7 +358,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
         }
         // 9223372036854775807
         Digits++;
-        // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a null terminator
+        // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a nullptr terminator
         if (Digits > 19) {
             DEBUG_PRINT("StringToLong: max/min int over flow (max 19 digits)\n", NULL);
             *output = 0;

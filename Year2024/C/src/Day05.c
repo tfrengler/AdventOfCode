@@ -8,7 +8,7 @@
 #include "LibString.h"
 #include "LibNumeric.h"
 
-StringArray *Input = NULL;
+StringArray *Input = nullptr;
 
 typedef struct {
     int32_t First;
@@ -17,8 +17,8 @@ typedef struct {
 
 int32_t RuleCount = 0;
 int32_t PageCount = 0;
-IntPair *Rules = NULL;
-IntegerArray *Pages = NULL;
+IntPair *Rules = nullptr;
+i64Array *Pages = nullptr;
 
 bool RulesContain(int32_t first, int32_t second)
 {
@@ -31,9 +31,9 @@ bool RulesContain(int32_t first, int32_t second)
     return false;
 }
 
-bool SequenceEquals(int32_t *sequenceA, int32_t *sequenceB, int32_t length)
+bool SequenceEquals(int64_t *sequenceA, int64_t *sequenceB, size_t length)
 {
-    for (int32_t index = 0; index < length; index++) {
+    for (size_t index = 0; index < length; index++) {
         if (sequenceA[index] != sequenceB[index]) {
             return false;
         }
@@ -67,7 +67,7 @@ void Setup(void)
 
     Rules = Malloc(sizeof(IntPair) * RuleCount);
     PageCount = Input->Count - StartIndexPages;
-    Pages = Malloc(sizeof(IntegerArray) * PageCount);
+    Pages = Malloc(sizeof(i64Array) * PageCount);
 
     for (int32_t inputIndex = 0; inputIndex < StartIndexPages - 1; inputIndex++) {
         String *CurrentLine = Input->Contents[inputIndex];
@@ -85,7 +85,7 @@ void Setup(void)
 
     for (int32_t inputIndex = StartIndexPages; inputIndex < Input->Count; inputIndex++) {
         int32_t IntegerPairs = (int32_t)ceil((double)Input->Contents[inputIndex]->Size / 3);
-        int32_t *Values = Malloc(sizeof(int32_t) * IntegerPairs);
+        int64_t *Values = Malloc(sizeof(int64_t) * IntegerPairs);
         int32_t ValueIndex = 0;
 
         for (int32_t index = 0; index < Input->Contents[inputIndex]->Size; index += 3) {
@@ -96,8 +96,7 @@ void Setup(void)
         }
 
         Pages[PageIndex].Size = IntegerPairs;
-        Pages[PageIndex].Type = I32;
-        Pages[PageIndex].i32Data = Values;
+        Pages[PageIndex].Data = Values;
         PageIndex++;
     }
 
@@ -114,18 +113,18 @@ void Part01(void)
 
     for(int32_t index = 0; index < PageCount; index++)
     {
-        IntegerArray Current = Pages[index];
-        int32_t CopiedValues[Current.Size];
-        memcpy(CopiedValues, Current.i32Data, Current.Size * sizeof(int32_t));
+        i64Array Current = Pages[index];
+        int64_t CopiedValues[Current.Size];
+        memcpy(CopiedValues, Current.Data, Current.Size * sizeof(int64_t));
 
-        IntegerArray Sorted = Current;
-        Sorted.i32Data = CopiedValues;
+        i64Array Sorted = Current;
+        Sorted.Data = CopiedValues;
 
-        qsort(Sorted.i32Data, Sorted.Size, sizeof(int32_t), CompareRules);
+        qsort(Sorted.Data, Sorted.Size, sizeof(int64_t), CompareRules);
 
-        if (SequenceEquals(Sorted.i32Data, Current.i32Data, Sorted.Size))
+        if (SequenceEquals(Sorted.Data, Current.Data, Sorted.Size))
         {
-            PartAnswer += Current.i32Data[ Current.Size / 2 ];
+            PartAnswer += Current.Data[ Current.Size / 2 ];
         }
     }
 
@@ -143,18 +142,18 @@ void Part02(void)
 
     for(int32_t index = 0; index < PageCount; index++)
     {
-        IntegerArray Current = Pages[index];
-        int32_t CopiedValues[Current.Size];
-        memcpy(CopiedValues, Current.i32Data, Current.Size * sizeof(int32_t));
+        i64Array Current = Pages[index];
+        int64_t CopiedValues[Current.Size];
+        memcpy(CopiedValues, Current.Data, Current.Size * sizeof(int64_t));
 
-        IntegerArray Sorted = Current;
-        Sorted.i32Data = CopiedValues;
+        i64Array Sorted = Current;
+        Sorted.Data = CopiedValues;
 
-        qsort(Sorted.i32Data, Sorted.Size, sizeof(int32_t), CompareRules);
+        qsort(Sorted.Data, Sorted.Size, sizeof(int64_t), CompareRules);
 
-        if (!SequenceEquals(Sorted.i32Data, Current.i32Data, Sorted.Size))
+        if (!SequenceEquals(Sorted.Data, Current.Data, Sorted.Size))
         {
-            PartAnswer += Sorted.i32Data[ Current.Size / 2 ];
+            PartAnswer += Sorted.Data[ Current.Size / 2 ];
         }
     }
 
@@ -175,7 +174,7 @@ int main(void)
     StringArray_Free(Input, true);
     Free(Rules);
     for(int32_t index = 0; index < PageCount; index++) {
-        Free(Pages[index].i32Data);
+        Free(Pages[index].Data);
     }
     Free(Pages);
 

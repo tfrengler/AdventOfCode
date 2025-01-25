@@ -5,22 +5,22 @@
 #include "LibString.h"
 #include "LibNumeric.h"
 
-IntegerArray *Reports = NULL;
+i64Array *Reports = NULL;
 StringArray *Input = NULL;
 
 const byte SafeAndLinear = 0x01;
 
-byte IsSafeAndLinear(IntegerArray* input)
+byte IsSafeAndLinear(i64Array* input)
 {
     byte ReturnData = 0;
-    int32_t Decreasing = 0;
-    int32_t Increasing = 0;
-    int32_t Pairs = (input->Size - 1);
+    size_t Decreasing = 0;
+    size_t Increasing = 0;
+    size_t Pairs = (input->Size - 1);
 
-    for (int32_t index = 0; index < Pairs; index++) {
-        int32_t First = input->i32Data[index];
-        int32_t Second = input->i32Data[index + 1];
-        int32_t Difference = abs(Second - First);
+    for (size_t index = 0; index < Pairs; index++) {
+        int64_t First = input->Data[index];
+        int64_t Second = input->Data[index + 1];
+        int64_t Difference = llabs(Second - First);
 
         if (Difference > 3 || Difference < 1) {
             bitset(ReturnData, 7);
@@ -48,7 +48,7 @@ void Setup(void)
     assert(Input != NULL);
     assert(Input->Count == 1000);
 
-    Reports = Malloc(sizeof(IntegerArray) * Input->Count);
+    Reports = Malloc(sizeof(i64Array) * Input->Count);
 
     for (int32_t index = 0; index < Input->Count; index++)
     {
@@ -56,11 +56,11 @@ void Setup(void)
         assert(NumberParts != NULL);
         assert(NumberParts->Count > 0);
 
-        int32_t CurrentReportNumbers[NumberParts->Count];
+        int64_t *CurrentReportNumbers = Malloc(NumberParts->Count * sizeof(int64_t));
 
         for (int32_t numberIndex = 0; numberIndex < NumberParts->Count; numberIndex++)
         {
-            bool Success = StringToInt(
+            bool Success = StringToLong(
                 NumberParts->Contents[numberIndex]->Content,
                 NumberParts->Contents[numberIndex]->Size,
                 &CurrentReportNumbers[numberIndex]);
@@ -68,11 +68,9 @@ void Setup(void)
             assert(Success == true);
         }
 
-        IntegerArray *CurrentReport = i32Array_Make(NumberParts->Count, CurrentReportNumbers);
-        assert(CurrentReport != NULL);
-        Reports[index] = *CurrentReport;
+        i64Array CurrentReport = { .Size = NumberParts->Count, .Data = CurrentReportNumbers };
+        Reports[index] = CurrentReport;
 
-        IntegerArray_Free(CurrentReport, false);
         StringArray_Free(NumberParts, true);
     }
 
@@ -87,7 +85,7 @@ void Part01(void)
     TimerStart();
 
     for (int32_t reportsIndex = 0; reportsIndex < Input->Count; reportsIndex++) {
-        IntegerArray Current = Reports[reportsIndex];
+        i64Array Current = Reports[reportsIndex];
 
         byte Result = IsSafeAndLinear(&Current);
 
@@ -108,7 +106,7 @@ void Part02(void)
     TimerStart();
 
     for (int32_t reportsIndex = 0; reportsIndex < Input->Count; reportsIndex++) {
-        IntegerArray Current = Reports[reportsIndex];
+        i64Array Current = Reports[reportsIndex];
 
         byte Result = IsSafeAndLinear(&Current);
 
@@ -117,11 +115,12 @@ void Part02(void)
             continue;
         }
 
-        for (int32_t outerIndex = 0; outerIndex < Current.Size; outerIndex++) {
-            IntegerArray* Copy = i32Array_RemoveAt(&Current, outerIndex);
+        for (size_t outerIndex = 0; outerIndex < Current.Size; outerIndex++) {
+            i64Array* Copy = i64Array_RemoveAt(&Current, outerIndex);
 
             Result = IsSafeAndLinear(Copy);
-            IntegerArray_Free(Copy, true);
+            Free(Copy->Data);
+            Free(Copy);
 
             if (Result == SafeAndLinear) {
                 PartAnswer++;
@@ -145,7 +144,7 @@ int main(void)
 
     for(int32_t index = 0; index < Input->Count; index++)
     {
-        Free(Reports[index].i32Data);
+        Free(Reports[index].Data);
     }
     Free(Reports);
     StringArray_Free(Input, true);

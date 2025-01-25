@@ -53,38 +53,22 @@ typedef struct _i64Array {
     int64_t *Data;
 } i64Array;
 
-int32_t i32Array_Max(const i32Array *input);
-uint32_t u32Array_Max(const u32Array *input);
-int32_t i32Array_Min(const i32Array *input);
-uint32_t u32Array_Min(const u32Array *input);
-bool i32Array_Equal(const i32Array *first, const i32Array *second);
-bool u32Array_Equal(const u32Array *first, const u32Array *second);
-int32_t i32Array_Sum(const i32Array *input);
-uint32_t u32Array_Sum(const u32Array *input);
-uint32_t u32Array_Average(const u32Array *input);
-int32_t i32Array_Average(const i32Array *input);
-int32_t i32Array_Median(const i32Array *input);
-uint32_t u32Array_Median(const u32Array *input);
-
 int64_t i64Array_Max(const i64Array *input);
-uint64_t u64Array_Max(const u64Array *input);
 int64_t i64Array_Min(const i64Array *input);
-uint64_t u64Array_Min(const u64Array *input);
 bool i64Array_Equal(const i64Array *first, const i64Array *second);
-bool u64Array_Equal(const u64Array *first, const u64Array *second);
 int64_t i64Array_Sum(const i64Array *input);
-uint64_t u64Array_Sum(const u64Array *input);
-uint64_t u64Array_Average(const u64Array *input);
 int64_t i64Array_Average(const i64Array *input);
 int64_t i64Array_Median(const i64Array *input);
-uint64_t u64Array_Median(const u64Array *input);
+i64Array* i64Array_Copy(const i64Array *input, i64Array *output);
+i64Array* i64Array_CopyM(const i64Array *input);
+void i64Array_SortAsc(i64Array *input);
+void i64Array_SortDesc(i64Array *input);
+i64Array *i64Array_RemoveAt(const i64Array* input, size_t index);
 
 bool StringToInt(const char *input, int32_t length, int32_t* output);
 bool StringToLong(const char *input, int32_t length, int64_t* output);
 bool LongToInt(int64_t input, int32_t *output);
 
-
-// IntegerArray *i32Array_RemoveAt(const IntegerArray* input, int32_t index);
 
 bool OverflowIntOnAdd(int32_t first, int32_t second);
 bool OverflowIntOnSub(int32_t first, int32_t second);

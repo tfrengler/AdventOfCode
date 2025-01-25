@@ -6,33 +6,29 @@
 #include "LibString.h"
 #include "LibNumeric.h"
 
-IntegerArray *Left = NULL;
-IntegerArray *Right = NULL;
+i64Array Left = {0};
+i64Array Right = {0};
 StringArray *Input = NULL;
-
-int compareInts(const void *first, const void *second)
-{
-    int32_t First = *(const int32_t *)first;
-    int32_t Second = *(const int32_t *)second;
-
-    if (First < Second) return -1;
-    if (First > Second) return 1;
-    return 0;
-}
 
 void Setup(void)
 {
     Input = File_ReadAllLines("./Input/01.txt");
     assert(Input != NULL);
 
-    Left = i32Array_Make(Input->Count, NULL);
-    Right = i32Array_Make(Input->Count, NULL);
+    int64_t* LeftData = Malloc(Input->Count * sizeof(int64_t));
+    int64_t* RightData = Malloc(Input->Count * sizeof(int64_t));
+    Left.Size = Input->Count;
+    Left.Capacity = Input->Count;
+    Left.Data = LeftData;
+    Right.Size = Input->Count;
+    Right.Capacity = Input->Count;
+    Right.Data = RightData;
 
     for (int32_t index = 0; index < Input->Count; index++)
     {
-        bool Success = StringToInt(Input->Contents[index]->Content, 5, &Left->i32Data[index]);
+        bool Success = StringToLong(Input->Contents[index]->Content, 5, &Left.Data[index]);
         assert(Success == true);
-        Success = StringToInt(&Input->Contents[index]->Content[8], 5, &Right->i32Data[index]);
+        Success = StringToLong(&Input->Contents[index]->Content[8], 5, &Right.Data[index]);
         assert(Success == true);
     }
 }
@@ -41,12 +37,12 @@ void Part01(void)
 {
     TimerStart();
 
-    qsort(Left->i32Data, Left->Size, sizeof(int32_t), compareInts);
-    qsort(Right->i32Data, Right->Size, sizeof(int32_t), compareInts);
+    i64Array_SortDesc(&Left);
+    i64Array_SortDesc(&Right);
 
     int32_t Part01Answer = 0;
     for (int32_t index = 0; index < Input->Count; index++) {
-        Part01Answer += abs(Left->i32Data[index] - Right->i32Data[index]);
+        Part01Answer += llabs(Left.Data[index] - Right.Data[index]);
     }
 
     TimerStop();
@@ -60,19 +56,19 @@ void Part02(void)
     int32_t PartAnswer = 0;
     TimerStart();
 
-    for (int32_t indexOuter = 0; indexOuter < Left->Size; indexOuter++) {
+    for (size_t indexOuter = 0; indexOuter < Left.Size; indexOuter++) {
 
-        int32_t CurrentLeft = Left->i32Data[indexOuter];
+        int64_t CurrentLeft = Left.Data[indexOuter];
         int32_t OccurenceFactor = 0;
 
-        for (int32_t indexInner = 0; indexInner < Left->Size; indexInner++) {
-            int32_t CurrentRight = Right->i32Data[indexInner];
+        for (size_t indexInner = 0; indexInner < Left.Size; indexInner++) {
+            int64_t CurrentRight = Right.Data[indexInner];
             if (CurrentRight == CurrentLeft) {
                 OccurenceFactor++;
             }
         }
 
-        int32_t Accumulator = CurrentLeft * OccurenceFactor;
+        int64_t Accumulator = CurrentLeft * OccurenceFactor;
         PartAnswer += Accumulator;
     }
 
@@ -85,15 +81,15 @@ void Part02(void)
 int main(void)
 {
     Setup();
-    assert(Left != NULL);
-    assert(Right != NULL);
+    assert(Left.Data != NULL);
+    assert(Right.Data != NULL);
 
     Part01();
     Part02();
 
     StringArray_Free(Input, true);
-    IntegerArray_Free(Left, true);
-    IntegerArray_Free(Right, true);
+    Free(Left.Data);
+    Free(Right.Data);
 
     // PrintAllocations();
     return EXIT_SUCCESS;
