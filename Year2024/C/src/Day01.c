@@ -5,18 +5,20 @@
 #include "LibThomas.h"
 #include "LibString.h"
 #include "LibNumeric.h"
+#include "LibMem.h"
 
 i64Array Left = {0};
 i64Array Right = {0};
-StringArray *Input = NULL;
+StringArray *Input = nullptr;
 
 void Setup(void)
 {
+    MemArena_Init(1024 * 1024);
     Input = File_ReadAllLines("./Input/01.txt");
-    assert(Input != NULL);
+    assert(Input != nullptr);
 
-    int64_t* LeftData = Malloc(Input->Count * sizeof(int64_t));
-    int64_t* RightData = Malloc(Input->Count * sizeof(int64_t));
+    int64_t* LeftData = MemRequest(Input->Count * sizeof(int64_t));
+    int64_t* RightData = MemRequest(Input->Count * sizeof(int64_t));
     Left.Size = Input->Count;
     Left.Capacity = Input->Count;
     Left.Data = LeftData;
@@ -81,15 +83,15 @@ void Part02(void)
 int main(void)
 {
     Setup();
-    assert(Left.Data != NULL);
-    assert(Right.Data != NULL);
+    assert(Left.Data != nullptr);
+    assert(Right.Data != nullptr);
 
     Part01();
     Part02();
 
     StringArray_Free(Input, true);
-    Free(Left.Data);
-    Free(Right.Data);
+    MemFree(Left.Data);
+    MemFree(Right.Data);
 
     // PrintAllocations();
     return EXIT_SUCCESS;

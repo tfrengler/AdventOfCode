@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#define DEBUG_ALLOCATION() 1
+#define DEBUG_ALLOCATION() 0
 
 void MemArena_Init(size_t size);
 void MemArena_Teardown(void);

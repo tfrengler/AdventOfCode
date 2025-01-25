@@ -26,7 +26,7 @@
  */
 bool String_Contains(const String *input, const String *pattern, bool caseInsensitive) {
 #if DEBUG()
-    if (input == NULL || pattern == NULL) Fatal("String_Contains: argument 'input' or 'pattern' is NULL");
+    if (input == nullptr || pattern == nullptr) Fatal("String_Contains: argument 'input' or 'pattern' is nullptr");
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -70,7 +70,7 @@ bool String_Contains(const String *input, const String *pattern, bool caseInsens
  */
 bool String_EndsWith(const String *input, const String *pattern, bool caseInsensitive) {
 #if DEBUG()
-    if (input == NULL || pattern == NULL) Fatal("String_EndsWith: argument 'input' or 'pattern' is NULL");
+    if (input == nullptr || pattern == nullptr) Fatal("String_EndsWith: argument 'input' or 'pattern' is nullptr");
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -104,8 +104,8 @@ bool String_EndsWith(const String *input, const String *pattern, bool caseInsens
 bool String_StartsWith(const String *input, const String *pattern, bool caseInsensitive)
 {
 #if DEBUG()
-    assert(input != NULL);
-    assert(pattern != NULL);
+    assert(input != nullptr);
+    assert(pattern != nullptr);
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -138,8 +138,8 @@ bool String_StartsWith(const String *input, const String *pattern, bool caseInse
 bool String_Equals(const String *original, const String *compare, bool caseInsensitive)
 {
 #if DEBUG()
-    assert(original != NULL);
-    assert(compare != NULL);
+    assert(original != nullptr);
+    assert(compare != nullptr);
     assert(caseInsensitive == false || caseInsensitive == true);
 #endif
 
@@ -173,7 +173,7 @@ bool String_Equals(const String *original, const String *compare, bool caseInsen
 String *String_Make(const char *content, int32_t size)
 {
 #if DEBUG()
-    assert(content != NULL);
+    assert(content != nullptr);
     assert(size > 0);
     assert(content[size] == '\0');
 #endif
@@ -181,13 +181,13 @@ String *String_Make(const char *content, int32_t size)
     String *ReturnData = MemRequest(sizeof(struct _String));
 
 #if DEBUG()
-    assert(ReturnData != NULL);
+    assert(ReturnData != nullptr);
 #endif
 
     ReturnData->Content = MemRequest(size + 1);
 
 #if DEBUG()
-    assert(ReturnData->Content != NULL);
+    assert(ReturnData->Content != nullptr);
 #endif
 
     memcpy(ReturnData->Content, content, size + 1);
@@ -204,10 +204,10 @@ String *String_Empty(void)
 {
     String *ReturnData = MemRequest(sizeof(struct _String));
 #if DEBUG()
-    assert(ReturnData != NULL);
+    assert(ReturnData != nullptr);
 #endif
     ReturnData->Size = 0;
-    ReturnData->Content = 0x0;
+    ReturnData->Content = nullptr;
     return ReturnData;
 }
 
@@ -219,7 +219,7 @@ String *String_Empty(void)
 String *String_Trim(const String *input)
 {
 #if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
 #endif
 
     if (input->Size == 0) {
@@ -258,17 +258,17 @@ String *String_Trim(const String *input)
  * @brief  Parses a string and splits it into an array of strings based on a delimiter.
  * @param   inputString: The string to split into other strings.
  * @param   delimiter: The character to split the string on which is omitted from the strings after the split. Not allowed to be a null-character.
- * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If inputString->Size is 0 then NULL is returned.
+ * @retval  A StringArray representing all the lines of text split by - but not including - the delimiter. If inputString->Size is 0 then nullptr is returned.
  */
 StringArray *String_Split(const String *inputString, char delimiter)
 {
 #if DEBUG()
-    assert(inputString != NULL);
+    assert(inputString != nullptr);
     assert(delimiter != '\0');
 #endif
 
     if (inputString->Size == 0) {
-        return NULL;
+        return nullptr;
     }
 
     int32_t LineCount = 1;
@@ -333,16 +333,16 @@ StringArray *String_Split(const String *inputString, char delimiter)
 
 /**
  * @brief  Opens a text file, reads all the content, closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
- * @param  fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
+ * @param  fileNameAndPath: The full name and path of the file to open. nullptr is returned if the file could not be opened.
  * @retval A String-instance representing the contents of the file.
  */
 String *File_ReadAllText(const char *fileNameAndPath)
 {
     FILE *fileHandle = fopen(fileNameAndPath, "r");
 
-    if (fileHandle == NULL) {
+    if (fileHandle == nullptr) {
         printf("Unable to read all text from file: %s\n", fileNameAndPath);
-        return NULL;
+        return nullptr;
     }
 
     fseek(fileHandle, 0, SEEK_END);
@@ -353,7 +353,7 @@ String *File_ReadAllText(const char *fileNameAndPath)
     int32_t Index = 0;
 
 #if DEBUG()
-    assert(FileContents != NULL);
+    assert(FileContents != nullptr);
 #endif
 
     while (1) {
@@ -394,10 +394,10 @@ String *File_ReadAllText(const char *fileNameAndPath)
         FileContents = realloc(FileContents, FinalSizeWithTerminator);
 #if DEBUG()
         printf("DEBUG | File_ReadAllText: re-allocating file content due to difference (predicted: %zi | actual: %i)\n", FileSize, FinalSizeWithTerminator);
-        if (FileContents == NULL) {
+        if (FileContents == nullptr) {
             fclose(fileHandle);
             Fatal("Error reading text file contents. Cannot allocate memory");
-            return NULL;
+            return nullptr;
         }
 #endif
     }
@@ -410,17 +410,17 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
 StringArray *StringArray_Make(String **contents, const int32_t size)
 {
-    if (contents == 0x0 || size < 1) {
-        Fatal("Error making string array. Contents were NULL or size was less than 1");
+    if (contents == nullptr || size < 1) {
+        Fatal("Error making string array. Contents were nullptr or size was less than 1");
     }
 
     StringArray *ReturnData = MemRequest(sizeof(StringArray));
 #if DEBUG()
-    assert(ReturnData != 0x0);
+    assert(ReturnData != nullptr);
 #endif
     ReturnData->Contents = MemRequest(size * sizeof(String));
 #if DEBUG()
-    assert(ReturnData->Contents != 0x0);
+    assert(ReturnData->Contents != nullptr);
 #endif
 
     ReturnData->Count = size;
@@ -431,13 +431,13 @@ StringArray *StringArray_Make(String **contents, const int32_t size)
 
 /**
  * @brief  Opens a text file, reads all the content, parses it into lines (based on \n), closes the file and returns the content. Terminates program if text file contains non-ASCI characters.
- * @param   fileNameAndPath: The full name and path of the file to open. NULL is returned if the file could not be opened.
+ * @param   fileNameAndPath: The full name and path of the file to open. nullptr is returned if the file could not be opened.
  * @retval  A StringArray representing all the lines of text in the text-file.
  */
 StringArray *File_ReadAllLines(const char *fileNameAndPath)
 {
     String *StringData = File_ReadAllText(fileNameAndPath);
-    if (StringData == NULL) return NULL;
+    if (StringData == nullptr) return nullptr;
 
     StringArray *ReturnData = String_Split(StringData, '\n');
     String_Free(StringData);
@@ -447,40 +447,40 @@ StringArray *File_ReadAllLines(const char *fileNameAndPath)
 
 /**
  * @brief   De-allocates (MemFrees) a String-instance.
- * @param   input: The instance to MemFree. Cannot be NULL.
+ * @param   input: The instance to MemFree. Cannot be nullptr.
  * @retval  None.
  */
 void String_Free(String *input)
 {
 #if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
 #endif
 
-    if (input->Content != NULL) {
+    if (input->Content != nullptr) {
         MemFree(input->Content);
     }
     MemFree(input);
-    input = 0x0;
+    input = nullptr;
 }
 
 /**
  * @brief   De-allocates (MemFrees) a StringArray-instance.
- * @param   input: The instance to MemFree. Cannot be NULL.
+ * @param   input: The instance to MemFree. Cannot be nullptr.
  * @param   MemFreeContent: If true then all String-instances in Content are looped over and MemFree'd along with the Content itself. If false then only input itself is MemFreed.
  * @retval  None.
  */
-void StringArray_MemFree(StringArray *input, bool MemFreeContent)
+void StringArray_Free(StringArray *input, bool MemFreeContent)
 {
 #if DEBUG()
-    assert(input != NULL);
-    if (MemFreeContent) assert(input->Contents != NULL);
+    assert(input != nullptr);
+    if (MemFreeContent) assert(input->Contents != nullptr);
 #endif
 
     if (MemFreeContent) {
         for (int32_t Index = 0; Index < input->Count; Index++) {
             String *Current = input->Contents[Index];
 #if DEBUG()
-        assert(Current != NULL);
+        assert(Current != nullptr);
 #endif
             String_Free(Current);
         }
@@ -488,5 +488,5 @@ void StringArray_MemFree(StringArray *input, bool MemFreeContent)
     }
 
     MemFree(input);
-    input = 0x0;
+    input = nullptr;
 }

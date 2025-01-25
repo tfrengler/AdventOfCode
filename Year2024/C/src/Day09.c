@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
 // #include "LibNumeric.h"
@@ -33,7 +34,7 @@ void Setup(void)
         BlockCount++;
     }
 
-    BlockList = Malloc(sizeof(*BlockList) * BlockCount);
+    BlockList = MemRequest(sizeof(*BlockList) * BlockCount);
 
     int32_t BlockIndex = 0;
     int32_t Position = 0;
@@ -70,7 +71,7 @@ void Part01(void)
 {
     int64_t PartAnswer = 0;
     int32_t DiskIndex = 0;
-    int32_t *Disk = Malloc(sizeof(int32_t) * DiskSize);
+    int32_t *Disk = MemRequest(sizeof(int32_t) * DiskSize);
 
     // 00...111...2...333.44.5555.6666.777.888899
     for(int32_t i = 0; i < BlockCount; i++) {
@@ -124,7 +125,7 @@ void Part01(void)
     TimerStop();
     PrintTimer();
 
-    Free(Disk);
+    MemFree(Disk);
     printf("Part 01 answer: %zu\n", PartAnswer);
     assert(PartAnswer == 6331212425418);
 }
@@ -182,7 +183,7 @@ int main(void)
     Part01();
     Part02();
 
-    Free(BlockList);
+    MemFree(BlockList);
     // PrintAllocations();
     return EXIT_SUCCESS;
 }

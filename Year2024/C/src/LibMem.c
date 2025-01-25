@@ -1,43 +1,63 @@
 #include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "LibMem.h"
 #include "LibThomas.h"
 
-static void* MemStart = nullptr;
-static void* MemCurrent = nullptr;
+static uint8_t* MemStart = nullptr;
+static size_t Offset = 0;
 static size_t ArenaSize = 0;
 static size_t ArenaRemaining = 0;
 
 static size_t Allocations = 0;
 static size_t DeAllocations = 0;
 static size_t Heap = 0;
+static size_t Alignment = 8; // Hardcoded 8 byte alignment because we assume we're always on 64-bit systems
 
 void* MemArena_Request(size_t bytes) {
     if (bytes > ArenaRemaining) {
-        printf("FATAL: Requested %s but %s remains in the arena", GetReadableBytes(bytes), GetReadableBytes(ArenaRemaining));
+        printf("FATAL: Requested %zu bytes but %s remains in the arena", bytes, GetReadableBytes(ArenaRemaining));
         exit(EXIT_FAILURE);
     }
 #if DEBUG_ALLOCATION()
-    printf("Requested memory from arena: %s\n", GetReadableBytes(bytes));
+    printf("Requested %zu bytes of memory from arena\n", bytes);
 #endif
 
-    MemCurrent = ((char*)MemCurrent + bytes + 1);
+    uintptr_t ThePointer = (uintptr_t)&MemStart[Offset];
+    uintptr_t ModuloResult = ThePointer % Alignment;
     ArenaRemaining -= bytes;
     Heap += bytes;
 
+    if (ModuloResult != 0) {
+        size_t Adjustment = Alignment - ModuloResult;
 #if DEBUG_ALLOCATION()
-    printf("Advancing pointer to %p (%s remaining)\n", MemCurrent, GetReadableBytes(ArenaRemaining));
+    printf("WARNING: Address not aligned, adjusting by %zu bytes\n", Adjustment);
 #endif
-    return MemCurrent;
+        ThePointer += Adjustment;
+        ArenaRemaining -= Adjustment;
+        Heap += Adjustment;
+    }
+
+    Offset += (bytes + ModuloResult);
+    void *ReturnData = (void*)ThePointer;
+
+    memset(ReturnData, 0, bytes);
+
+#if DEBUG_ALLOCATION()
+    printf("Returning pointer to %zu (%s remaining)\n", (uintptr_t)ReturnData, GetReadableBytes(ArenaRemaining));
+#endif
+
+    return ReturnData;
 }
 
 void MemArena_Teardown(void) {
 #if DEBUG_ALLOCATION()
     puts("Tearing down memory arena");
 #endif
+    if (MemStart == nullptr) return;
     free(MemStart);
 }
 
@@ -126,13 +146,13 @@ void PrintAllocations(void)
     free(ReadableBytes);
 }
 
+// https://www.gingerbill.org/article/2019/02/08/memory-allocation-strategies-002/
 void MemArena_Init(size_t size) {
 #if DEBUG_ALLOCATION()
     printf("Initializing memory arena with size of %s\n", GetReadableBytes(size));
 #endif
 
     MemStart = malloc(size);
-    MemCurrent = MemStart;
     assert(MemStart != nullptr);
 
     ArenaSize = size;
@@ -141,6 +161,6 @@ void MemArena_Init(size_t size) {
     _Free = &memFreeNoop;
 
 #if DEBUG_ALLOCATION()
-    printf("Done, start address is at: %p\n", MemStart);
+    printf("Done, start address is at: %zu\n", (uintptr_t)MemStart);
 #endif
 }

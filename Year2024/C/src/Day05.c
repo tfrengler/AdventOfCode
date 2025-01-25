@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
 #include "LibNumeric.h"
@@ -65,9 +66,9 @@ void Setup(void)
         }
     }
 
-    Rules = Malloc(sizeof(IntPair) * RuleCount);
+    Rules = MemRequest(sizeof(IntPair) * RuleCount);
     PageCount = Input->Count - StartIndexPages;
-    Pages = Malloc(sizeof(i64Array) * PageCount);
+    Pages = MemRequest(sizeof(i64Array) * PageCount);
 
     for (int32_t inputIndex = 0; inputIndex < StartIndexPages - 1; inputIndex++) {
         String *CurrentLine = Input->Contents[inputIndex];
@@ -85,7 +86,7 @@ void Setup(void)
 
     for (int32_t inputIndex = StartIndexPages; inputIndex < Input->Count; inputIndex++) {
         int32_t IntegerPairs = (int32_t)ceil((double)Input->Contents[inputIndex]->Size / 3);
-        int64_t *Values = Malloc(sizeof(int64_t) * IntegerPairs);
+        int64_t *Values = MemRequest(sizeof(int64_t) * IntegerPairs);
         int32_t ValueIndex = 0;
 
         for (int32_t index = 0; index < Input->Contents[inputIndex]->Size; index += 3) {
@@ -172,11 +173,11 @@ int main(void)
     Part02();
 
     StringArray_Free(Input, true);
-    Free(Rules);
+    MemFree(Rules);
     for(int32_t index = 0; index < PageCount; index++) {
-        Free(Pages[index].Data);
+        MemFree(Pages[index].Data);
     }
-    Free(Pages);
+    MemFree(Pages);
 
     // PrintAllocations();
     return EXIT_SUCCESS;

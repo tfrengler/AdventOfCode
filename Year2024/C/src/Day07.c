@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
 #include "LibNumeric.h"
@@ -14,14 +15,14 @@ void Setup(void)
     Input = File_ReadAllLines("./Input/07.txt");
     assert(Input != nullptr);
 
-    InputData = Malloc(sizeof(i64Array) * Input->Count);
+    InputData = MemRequest(sizeof(i64Array) * Input->Count);
 
     for(int32_t lineIndex = 0; lineIndex < Input->Count; lineIndex++) {
         String *CurrentLine = Input->Contents[lineIndex];
 
         StringArray *NumbersAsStrings = String_Split(CurrentLine, ' ');
         InputData[lineIndex].Size = NumbersAsStrings->Count;
-        InputData[lineIndex].Data = Malloc(sizeof(int64_t) * NumbersAsStrings->Count);
+        InputData[lineIndex].Data = MemRequest(sizeof(int64_t) * NumbersAsStrings->Count);
 
         for(int32_t numberIndex = 0; numberIndex < NumbersAsStrings->Count; numberIndex++) {
             String *CurrentNumber = NumbersAsStrings->Contents[numberIndex];
@@ -102,9 +103,9 @@ int main(void)
     Part01();
 
     for(int32_t index = 0; index < Input->Count; index++) {
-        Free(InputData[index].Data);
+        MemFree(InputData[index].Data);
     }
-    Free(InputData);
+    MemFree(InputData);
     StringArray_Free(Input, true);
 
     // PrintAllocations();

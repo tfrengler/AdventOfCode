@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
 #include "LibNumeric.h"
@@ -48,7 +49,7 @@ void Setup(void)
     assert(Input != NULL);
     assert(Input->Count == 1000);
 
-    Reports = Malloc(sizeof(i64Array) * Input->Count);
+    Reports = MemRequest(sizeof(i64Array) * Input->Count);
 
     for (int32_t index = 0; index < Input->Count; index++)
     {
@@ -56,7 +57,7 @@ void Setup(void)
         assert(NumberParts != NULL);
         assert(NumberParts->Count > 0);
 
-        int64_t *CurrentReportNumbers = Malloc(NumberParts->Count * sizeof(int64_t));
+        int64_t *CurrentReportNumbers = MemRequest(NumberParts->Count * sizeof(int64_t));
 
         for (int32_t numberIndex = 0; numberIndex < NumberParts->Count; numberIndex++)
         {
@@ -119,8 +120,8 @@ void Part02(void)
             i64Array* Copy = i64Array_RemoveAt(&Current, outerIndex);
 
             Result = IsSafeAndLinear(Copy);
-            Free(Copy->Data);
-            Free(Copy);
+            MemFree(Copy->Data);
+            MemFree(Copy);
 
             if (Result == SafeAndLinear) {
                 PartAnswer++;
@@ -144,9 +145,9 @@ int main(void)
 
     for(int32_t index = 0; index < Input->Count; index++)
     {
-        Free(Reports[index].Data);
+        MemFree(Reports[index].Data);
     }
-    Free(Reports);
+    MemFree(Reports);
     StringArray_Free(Input, true);
 
     // PrintAllocations();
