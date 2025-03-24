@@ -27,7 +27,7 @@ uint32_t Fnv1aHash(uint8_t *input, size_t length)
 }
 
 void HashTable_Init(HashItem backingBuffer[], size_t size) {
-    assert(backingBuffer != NULL);
+    assert(backingBuffer != nullptr);
     assert(size > 0);
     memset(backingBuffer, 0, size * sizeof(HashItem));
 
@@ -53,11 +53,11 @@ void HashTable_Insert(char* key, void* value)
     uint32_t HashCode = Fnv1aHash((uint8_t*)key, strlen(key));
     uint32_t Index = HashCode % TheTable.Size;
 
-    if (TheTable.Items[Index].Key == NULL) {
+    if (TheTable.Items[Index].Key == nullptr) {
 
         TheTable.Items[Index].Key = key;
         TheTable.Items[Index].Value = value;
-        TheTable.Items[Index].Next = NULL;
+        TheTable.Items[Index].Next = nullptr;
 
         return;
     }
@@ -66,7 +66,7 @@ void HashTable_Insert(char* key, void* value)
 
     while(1) {
 
-        if (Current->Next != NULL) {
+        if (Current->Next != nullptr) {
             Current = Current->Next;
             continue;
         }
@@ -93,8 +93,8 @@ void* HashTable_Find(char* key)
     uint32_t HashCode = Fnv1aHash((uint8_t*)key, strlen(key));
     uint32_t Index = HashCode % TheTable.Size;
 
-    if (TheTable.Items[Index].Key == NULL) {
-        return NULL;
+    if (TheTable.Items[Index].Key == nullptr) {
+        return nullptr;
     }
 
     if (TheTable.Items[Index].Key == key) {
@@ -104,8 +104,8 @@ void* HashTable_Find(char* key)
     HashItem *Next = TheTable.Items[Index].Next;
     while(1) {
 
-        if (Next == NULL) {
-            return NULL;
+        if (Next == nullptr) {
+            return nullptr;
         }
 
         if (Next->Key == key) {
@@ -121,13 +121,13 @@ void HashTable_Teardown(void) {
     for(size_t index = 0; index < TheTable.Size; index++) {
         HashItem *Current = &TheTable.Items[index];
 
-        if (Current == NULL) {
+        if (Current == nullptr) {
             continue;
         }
 
         Current = Current->Next;
 
-        while(Current != NULL) {
+        while(Current != nullptr) {
             void* Temp = Current;
             Current = Current->Next;
             MemFree(Temp);

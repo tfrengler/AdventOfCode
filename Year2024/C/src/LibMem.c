@@ -101,7 +101,9 @@ void memFree(void *ptr)
     DeAllocations++;
 }
 
-// #pragma clang diagnostic ignored "-Wunused-parameter"
+#if !DEBUG_ALLOCATION()
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#endif
 void memFreeNoop(void* ptr) {
     #if DEBUG_ALLOCATION()
         printf("Freeing %p is a no-op\n", ptr);
@@ -130,7 +132,7 @@ size_t GetDeAllocations(void) {
 void PrintAllocations(void)
 {
     char* ReadableBytes = GetReadableBytes(Heap);
-    if (ReadableBytes == NULL)
+    if (ReadableBytes == nullptr)
     {
         puts("No allocations made");
         return;
