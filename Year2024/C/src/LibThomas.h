@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <time.h>
 
-// Enables extra checks, such as NULL checks after each malloc, asserts on function parameters etc.
+// Enables extra checks, such as nullptr checks after each malloc, asserts on function parameters etc.
 #define DEBUG() 1
 
 // To set up use vscode with the following extensions:
@@ -43,7 +43,7 @@
 	-O0
 */
 
-// NOTE: Only useful for stack allocated arrays. Note that strings will be one extra due to the null terminator!
+// NOTE: Only useful for stack allocated arrays. Note that strings will be one extra due to the nullptr terminator!
 #define arrayCount(x) (sizeof(x) / sizeof(*x))
 typedef uint8_t byte;
 

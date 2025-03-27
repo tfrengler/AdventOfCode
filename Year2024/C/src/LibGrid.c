@@ -25,7 +25,7 @@ static bool FatalBoundaryCross = true;
 static bool _IsBoundaryCrossed(StringArray* input, int32_t x, int32_t y)
 {
 #if DEBUG()
-    assert(input != NULL);
+    assert(input != nullptr);
 #endif
 
     // char* ErrorMessageTemplate = "X (-2147483648) is outside the bounds of the grid (height = -2147483647)";
@@ -38,7 +38,7 @@ static bool _IsBoundaryCrossed(StringArray* input, int32_t x, int32_t y)
     }
 
 #if DEBUG()
-    assert(input->Contents[y] != NULL);
+    assert(input->Contents[y] != nullptr);
 #endif
 
     if (x > (input->Contents[y]->Size-1) || x < 0) {
@@ -156,8 +156,8 @@ bool Grid_GetSouthWest(StringArray* input, GridPoint* output, int32_t x, int32_t
 void Grid_GetCross(StringArray* input, GridPoint result[static 4], int32_t x, int32_t y)
 {
 #if DEBUG()
-    assert(input != NULL);
-    assert(result != NULL);
+    assert(input != nullptr);
+    assert(result != nullptr);
 #endif
     Grid_GetNorth(input, &result[0], x, y); // North
     Grid_GetEast(input, &result[1], x, y); // East
@@ -179,8 +179,8 @@ void Grid_GetCross(StringArray* input, GridPoint result[static 4], int32_t x, in
 void Grid_GetStar(StringArray* input, GridPoint result[static 4], int32_t x, int32_t y)
 {
 #if DEBUG()
-    assert(input != NULL);
-    assert(result != NULL);
+    assert(input != nullptr);
+    assert(result != nullptr);
 #endif
     Grid_GetNorthWest(input, &result[0], x, y); // NW
     Grid_GetNorthEast(input, &result[1], x, y); // NE
@@ -202,8 +202,8 @@ void Grid_GetStar(StringArray* input, GridPoint result[static 4], int32_t x, int
 void Grid_GetBox(StringArray* input, GridPoint result[static 8], int32_t x, int32_t y)
 {
 #if DEBUG()
-    assert(input != NULL);
-    assert(result != NULL);
+    assert(input != nullptr);
+    assert(result != nullptr);
 #endif
     Grid_GetNorth(input, &result[0], x, y); // N
     Grid_GetNorthEast(input, &result[1], x, y); // NE

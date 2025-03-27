@@ -7,7 +7,7 @@
 #include "LibString.h"
 
 #define VISITED_BUFFER_COUNT 10000
-StringArray *Input = NULL;
+StringArray *Input = nullptr;
 GridPoint StartPosition = {0};
 GridPoint Visited[VISITED_BUFFER_COUNT] = {0};
 int32_t VisitIndex = 0;
@@ -20,7 +20,7 @@ typedef struct {
 void Setup(void)
 {
     Input = File_ReadAllLines("./Input/06.txt");
-    assert(Input != NULL);
+    assert(Input != nullptr);
 
     for (int32_t yIndex = 0; yIndex < Input->Count; yIndex++) {
         String *Current = Input->Contents[yIndex];

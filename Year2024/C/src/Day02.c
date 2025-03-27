@@ -6,8 +6,8 @@
 #include "LibString.h"
 #include "LibNumeric.h"
 
-i64Array *Reports = NULL;
-StringArray *Input = NULL;
+i64Array *Reports = nullptr;
+StringArray *Input = nullptr;
 
 const byte SafeAndLinear = 0x01;
 
@@ -46,7 +46,7 @@ void Setup(void)
     TimerStart();
 
     Input = File_ReadAllLines("./Input/02.txt");
-    assert(Input != NULL);
+    assert(Input != nullptr);
     assert(Input->Count == 1000);
 
     Reports = MemRequest(sizeof(i64Array) * Input->Count);
@@ -54,7 +54,7 @@ void Setup(void)
     for (int32_t index = 0; index < Input->Count; index++)
     {
         StringArray *NumberParts = String_Split(Input->Contents[index], ' ');
-        assert(NumberParts != NULL);
+        assert(NumberParts != nullptr);
         assert(NumberParts->Count > 0);
 
         int64_t *CurrentReportNumbers = MemRequest(NumberParts->Count * sizeof(int64_t));

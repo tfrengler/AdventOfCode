@@ -55,12 +55,12 @@ void Setup(void)
 {
     TimerStart();
     Input = File_ReadAllLines("./Input/05.txt");
-    assert(Input != NULL);
+    assert(Input != nullptr);
 
     int32_t StartIndexPages = 0;
 
     for (int32_t inputIndex = 0; inputIndex < Input->Count; inputIndex++) {
-        if (Input->Contents[inputIndex]->Content == NULL) {
+        if (Input->Contents[inputIndex]->Content == nullptr) {
             StartIndexPages = inputIndex + 1;
             RuleCount = inputIndex + 1;
         }

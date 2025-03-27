@@ -6,14 +6,14 @@
 #include "LibThomas.h"
 #include "LibString.h"
 
-String *Input = NULL;
+String *Input = nullptr;
 
 void Setup(void)
 {
     Input = File_ReadAllText("./Input/03.txt");
     // Input = String_Make("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))", 71);
     // Input = String_Make("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))", 73);
-    assert(Input != NULL);
+    assert(Input != nullptr);
 }
 
 void Part01(void)

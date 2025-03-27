@@ -15,7 +15,6 @@
 
 /************************** int32 functions **************************/
 
-
 int64_t i64Array_Max(const i64Array *input)
 {
 #if DEBUG()
@@ -293,14 +292,14 @@ bool StringToInt(const char *input, int32_t length, int32_t* output)
 bool StringToLong(const char *input, int32_t length, int64_t* output)
 {
     if (output == nullptr) {
-        DEBUG_PRINT("StringToLong: output is nullptr", NULL);
+        DEBUG_PRINT("StringToLong: output is nullptr", nullptr);
         return false;
     }
 
     *output = 0;
 
     if (input == nullptr || length < 1) {
-        DEBUG_PRINT("StringToLong: input is nullptr and/or length is less than 1\n", NULL);
+        DEBUG_PRINT("StringToLong: input is nullptr and/or length is less than 1\n", nullptr);
         return false;
     }
 
@@ -314,7 +313,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
 
         // Detect end of string regardless of length param
         if (NextCharacter == '\0') {
-            DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (1)\n", NULL);
+            DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (1)\n", nullptr);
             return false;
         }
         // Ignore leading whitespace
@@ -350,7 +349,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
         if (NextCharacter < '0' || NextCharacter > '9') {
             // ...unless it's a nullptr terminator in which cases length is longer than input which is bad
             if (NextCharacter == '\0') {
-                DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (2)\n", NULL);
+                DEBUG_PRINT("StringToLong: premature nullptr terminator found in input (2)\n", nullptr);
                 *output = 0;
                 return false;
             }
@@ -360,7 +359,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
         Digits++;
         // Overflow, we now have 11 digits and there's 10 in the max or min int value OR we have a nullptr terminator
         if (Digits > 19) {
-            DEBUG_PRINT("StringToLong: max/min int over flow (max 19 digits)\n", NULL);
+            DEBUG_PRINT("StringToLong: max/min int over flow (max 19 digits)\n", nullptr);
             *output = 0;
             return false;
         }
@@ -380,7 +379,7 @@ bool StringToLong(const char *input, int32_t length, int64_t* output)
             }
 
             if (NextNumber > MaxBeforeOverflow) {
-                DEBUG_PRINT("StringToLong: max/min int overflow (calculation)\n", NULL);
+                DEBUG_PRINT("StringToLong: max/min int overflow (calculation)\n", nullptr);
                 *output = 0;
                 return false;
             }

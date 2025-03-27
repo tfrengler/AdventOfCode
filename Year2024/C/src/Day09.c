@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
@@ -14,7 +13,7 @@ typedef struct {
     int32_t Id; // -1 indicates free block
 } Block;
 
-Block *BlockList = NULL;
+Block *BlockList = nullptr;
 int32_t BlockCount = 0;
 int32_t DiskSize = 0;
 

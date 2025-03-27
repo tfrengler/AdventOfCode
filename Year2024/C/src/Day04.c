@@ -5,14 +5,14 @@
 #include "LibString.h"
 #include "LibGrid.h"
 
-StringArray *Input = NULL;
+StringArray *Input = nullptr;
 // Grid function pointers mapped in the order that matches the results gotten from Grid_GetBox
 bool (*GridFunctions[8])(StringArray* input, GridPoint* output, int32_t x, int32_t y);
 
 void Setup(void)
 {
     Input = File_ReadAllLines("./Input/04.txt");
-    assert(Input != NULL);
+    assert(Input != nullptr);
     Grid_BoundaryCrossIsNotFatal();
 
     GridFunctions[0] = Grid_GetNorth;
