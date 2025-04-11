@@ -9,8 +9,6 @@ const Elements = Object.freeze({
     Iterations: () => document.querySelector("[name='Iterations']")
 });
 
-// U+231B
-
 window.onload = function () {
     Elements.Execute().addEventListener("click", OnExecute);
 }
@@ -19,20 +17,20 @@ const OnExecute = async function () {
     console.log("OnExecute START");
 
     Elements.Execute().disabled = true;
-    // Elements.Execute().value = "EXECUTE &#x231B";
+    Elements.Execute().value = "EXECUTE ⏳";
     Elements.Output().innerHTML = "";
 
     const RequestURL = "Runner.cfm"
     + `?Iterations=${ Elements.Iterations().value }`
-    + `&Day=${ Elements.DayChoice().value }`
+    + `&Day=${ Elements.DayChoice()?.value }`
     + `&Part1=${ Elements.DayPart1().checked }`
-    + `&Part2=${ Elements.DayPart1().checked }`;
+    + `&Part2=${ Elements.DayPart2().checked }`;
 
     const data = await fetch(RequestURL)
         .then(response => response.text());
 
     Elements.Execute().disabled = false;
-    // Elements.Execute().value = "EXECUTE";
+    Elements.Execute().value = "EXECUTE";
     Elements.Output().innerHTML = data;
 
     console.log("OnExecute END");
