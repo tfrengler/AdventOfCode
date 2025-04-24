@@ -29,6 +29,5 @@ void Grid_GetBox(StringArray* input, GridPoint result[static 8], int32_t x, int3
 
 void Grid_BoundaryCrossIsNotFatal(void);
 void Grid_BoundaryCrossIsFatal(void);
-void SetBoundaries(int32_t width, int32_t height);
 
 #endif
