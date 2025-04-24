@@ -12,6 +12,7 @@ typedef struct _Trailhead
 {
     int32_t Row;
     int32_t Column;
+    int32_t Number;
 } Trailhead;
 
 StringArray *Input = nullptr;
@@ -25,6 +26,34 @@ void Setup(void)
     assert(Input != nullptr);
 
     Grid_BoundaryCrossIsNotFatal();
+}
+
+void EnumerateTrail(Trailhead trailhead, int32_t *score) {
+
+    GridPoint TrailPoints[4] = {0};
+    Grid_GetCross(
+        Input,
+        TrailPoints,
+        trailhead.Column,
+        trailhead.Row);
+
+    for(int32_t index = 0; index < 4; index++) {
+        if (!TrailPoints[index].IsValid) continue;
+
+        int32_t NextNumber = TrailPoints[index].Value - '0';
+        if (trailhead.Number == 8 && NextNumber == 9) {
+            // Is a full trail
+            (*score)++;
+            return;
+        }
+
+        if (NextNumber - trailhead.Number == 1) {
+            EnumerateTrail(
+                (Trailhead){ .Number = NextNumber, .Row = TrailPoints[index].Y, TrailPoints[index].X },
+                score
+            );
+        }
+    }
 }
 
 void Part01(void)
@@ -46,34 +75,21 @@ void Part01(void)
                 TrailHeads[TrailHeadIndex] = (Trailhead){ .Row = rowIndex, .Column = columnIndex };
                 TrailHeadIndex++;
             }
-
         }
     }
 
-    TrailheadCount = TrailHeadIndex + 1;
+    TrailheadCount = TrailHeadIndex;
     TrailHeadIndex = 0;
-    int32_t NextNumber = 1;
-    GridPoint TrailPoints[4] = {0};
 
     for(; TrailHeadIndex < TrailheadCount; TrailHeadIndex++) {
-        Grid_GetCross(Input, TrailPoints, TrailHeads[TrailHeadIndex].Row, TrailHeads[TrailHeadIndex].Column);
-
-        if (TrailPoints[0].IsValid && TrailPoints[0].Value - '0' == NextNumber) {
-
-        }
-        if (TrailPoints[1].IsValid && TrailPoints[1].Value - '0' == NextNumber) {
-
-        }
-        if (TrailPoints[2].IsValid && TrailPoints[2].Value - '0' == NextNumber) {
-
-        }
-        if (TrailPoints[3].IsValid && TrailPoints[3].Value - '0' == NextNumber) {
-
-        }
+        int32_t Score = 0;
+        EnumerateTrail(TrailHeads[TrailHeadIndex], &Score);
+        printf("Trailhead %zu score is: %d\n", TrailHeadIndex, Score);
+        PartAnswer += Score;
     }
 
     // int32_t NextNumber = NextCharacter - '0'; // Convert char to int
-    printf("Trailheads: %zu\n", arrayCount(TrailHeads));
+    // printf("Trailheads: %zu\n", arrayCount(TrailHeads));
 
     TimerStop();
     PrintTimer();
