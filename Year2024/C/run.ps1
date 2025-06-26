@@ -12,7 +12,7 @@ if ($args -NotContains "--noclean")
     make clean
 }
 
-$Days = "01", "02", "03", "04", "05", "06", "07", "09"
+$Days = "01", "02", "03", "04", "05", "06", "07", "09", "10"
 
 foreach ($day in $Days)
 {

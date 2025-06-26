@@ -2,16 +2,15 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
-#include "LibNumeric.h"
-#include "LibMem.h"
+// #include "LibNumeric.h"
 
 StringArray *Input = NULL;
 
 void Setup(void)
 {
-    MemArena_Init(1024 * 1024 * 1);
     Input = File_ReadAllLines("./Input/XXX.txt");
     assert(Input != NULL);
 }
