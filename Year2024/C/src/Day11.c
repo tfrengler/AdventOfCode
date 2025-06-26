@@ -5,14 +5,34 @@
 #include "LibMem.h"
 #include "LibThomas.h"
 #include "LibString.h"
-// #include "LibNumeric.h"
+#include "LibNumeric.h"
 
-StringArray *Input = NULL;
+String *Input = nullptr;
+i32Array *ParsedInput = nullptr;
 
 void Setup(void)
 {
-    Input = File_ReadAllLines("./Input/XXX.txt");
-    assert(Input != NULL);
+    MemArena_Init(1024 * 1024 * 1);
+    Input = File_ReadAllText("./Input/11.txt");
+    assert(Input != nullptr);
+
+    ParsedInput = MemRequest(sizeof(*ParsedInput) * 8);
+    int32_t outputIndex = 0;
+    int32_t from = 0;
+
+    for(int32_t index = 0; index < Input->Size; index++) {
+
+        if (Input->Content[index] == ' ' || index == (Input->Size - 1)) {
+
+            if (!StringToInt(&Input->Content[from], index - from, &ParsedInput->Data[outputIndex])) {
+                Fatal("Failed to convert input to integer???");
+            }
+
+            from = index+1;
+            outputIndex++;
+        }
+
+    }
 }
 
 void Part01(void)
@@ -44,9 +64,9 @@ int main(void)
     Setup();
 
     Part01();
-    Part02();
+    // Part02();
 
-    StringArray_Free(Input, true);
+    String_Free(Input);
 
     PrintAllocations();
     return EXIT_SUCCESS;
