@@ -347,7 +347,18 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
     fseek(fileHandle, 0, SEEK_END);
     int64_t FileSize = ftell(fileHandle);
+
+#if DEBUG()
+    if (FileSize == -1L) {
+        Fatal("File_ReadAllText: failed to determine filesize using ftell");
+    }
+#endif
+
     fseek(fileHandle, 0, SEEK_SET);
+
+    if (FileSize == 0) {
+        return String_Empty();
+    }
 
     char *FileContents = MemRequest(FileSize + 1);
     int32_t Index = 0;
@@ -358,7 +369,10 @@ String *File_ReadAllText(const char *fileNameAndPath)
 
     while (1) {
         int32_t NextChar = fgetc(fileHandle);
-        if (NextChar == EOF) break;
+
+        if (NextChar == EOF) {
+            break;
+        }
 
         if ((NextChar & ~127) > 0) {
             char ErrorMessage[30];
@@ -370,39 +384,23 @@ String *File_ReadAllText(const char *fileNameAndPath)
         Index++;
 
         if (Index > STRING_MAX_SIZE) {
+            fclose(fileHandle);
             Fatal("Text file content larger than max size string");
         }
     }
 
 #if DEBUG()
-    int CloseStatus = fclose(fileHandle);
-    if (CloseStatus == -1) Fatal("Error closing file after reading");
+    if (fclose(fileHandle) == -1)
+    {
+        Fatal("File_ReadAllText: error closing file after reading");
+    }
 #else
     fclose(fileHandle);
 #endif
 
-    if (Index == 0) {
-        fclose(fileHandle);
-        MemFree(FileContents);
-        return String_Empty();
-    }
-
     FileContents[Index] = '\0';
-    uint16_t FinalSizeWithTerminator = (uint16_t)Index + 1;
 
-    if (FinalSizeWithTerminator > FileSize) {
-        FileContents = realloc(FileContents, FinalSizeWithTerminator);
-#if DEBUG()
-        printf("DEBUG | File_ReadAllText: re-allocating file content due to difference (predicted: %zi | actual: %i)\n", FileSize, FinalSizeWithTerminator);
-        if (FileContents == nullptr) {
-            fclose(fileHandle);
-            Fatal("Error reading text file contents. Cannot allocate memory");
-            return nullptr;
-        }
-#endif
-    }
-
-    String *ReturnData = String_Make(FileContents, FinalSizeWithTerminator - 1);
+    String *ReturnData = String_Make(FileContents, (int32_t)FileSize);
     MemFree(FileContents);
 
     return ReturnData;
