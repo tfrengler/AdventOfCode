@@ -36,8 +36,11 @@ typedef struct _u32Array {
 } u32Array;
 
 typedef struct _i32Array {
+    // Max amount of values the array can contain.
     size_t Capacity;
+    // The current size of the array (ie. how many values does it contain)
     size_t Size;
+    // Pointer to the first value in the array
     int32_t *Data;
 } i32Array;
 

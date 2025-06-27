@@ -15,9 +15,9 @@ static size_t ArenaRemaining = 0;
 static size_t Allocations = 0;
 static size_t DeAllocations = 0;
 static size_t Heap = 0;
-static size_t Alignment = 8; // Hardcoded 8 byte alignment because we assume we're always on 64-bit systems
+static size_t Alignment = alignof(max_align_t);
 
-void* MemArena_Request(size_t bytes) {
+void* MemArena_Request(const size_t bytes) {
     if (bytes > ArenaRemaining) {
         printf("FATAL: Requested %zu bytes but %s remains in the arena", bytes, GetReadableBytes(ArenaRemaining));
         exit(EXIT_FAILURE);
@@ -149,9 +149,9 @@ void PrintAllocations(void)
 }
 
 // https://www.gingerbill.org/article/2019/02/08/memory-allocation-strategies-002/
-void MemArena_Init(size_t size) {
+void MemArena_Init(const size_t size) {
 #if DEBUG_ALLOCATION()
-    printf("Initializing memory arena with size of %s\n", GetReadableBytes(size));
+    printf("Initializing memory arena with size of %s and alignment of %zu\n", GetReadableBytes(size), Alignment);
 #endif
 
     MemStart = malloc(size);

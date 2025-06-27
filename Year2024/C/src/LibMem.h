@@ -5,10 +5,10 @@
 
 #define DEBUG_ALLOCATION() 0
 
-void MemArena_Init(size_t size);
+void MemArena_Init(const size_t size);
 void MemArena_Teardown(void);
 void MemFree(void* ptr);
-void *MemRequest(size_t size);
+void *MemRequest(const size_t size);
 size_t GetAllocations(void);
 void PrintAllocations(void);
 size_t GetDeAllocations(void);
