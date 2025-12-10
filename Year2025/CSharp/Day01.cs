@@ -20,18 +20,6 @@ public sealed class Day01: Day
     {
         string[] rotations = _inputAsLines;
         Debug.Assert(rotations.Length == 4462);
-        //string[] rotations = [
-        //    "L68",
-        //    "L30",
-        //    "R48",
-        //    "L5",
-        //    "R60",
-        //    "L55",
-        //    "L1",
-        //    "L99",
-        //    "R14",
-        //    "L82"
-        //];
 
         int dial = 50;
         int timesRotationHitZero = 0;
@@ -79,36 +67,46 @@ public sealed class Day01: Day
         Debug.Assert(rotations.Length == 4462);
 
         int dial = 50;
-        int timesRotationHitZero = 0;
+        int result = 0;
 
         foreach (string currentRotation in rotations)
         {
             //Console.WriteLine($"Dial starts at {dial}");
 
             int rotationAmount = Convert.ToInt32(currentRotation[1..]);
-            int raw = 0;
-
-            // LEFT
-            if (currentRotation[0] == 'L')
+            for (int i = 1; i <= rotationAmount; i++)
             {
-                raw = dial - rotationAmount;
-            }
-            // RIGHT
-            else if (currentRotation[0] == 'R')
-            {
-                raw = dial + rotationAmount;
-            }
+                if (currentRotation[0] == 'L')
+                {
+                    if (dial == 0)
+                    {
+                        dial = 99;
 
-            dial = raw % 100;
-            if (raw == 0) timesRotationHitZero++;
-            timesRotationHitZero += Math.Abs(rotationAmount / 100);
-
-            Debug.Assert(dial < 100);
-            if (dial == 0) timesRotationHitZero++;
-            //Console.WriteLine($"Dial rotated {rotationAmount} to the {currentRotation[0]} and ended up at {dial}");
+                    }
+                    else
+                    {
+                        dial = dial - 1;
+                    }
+                }
+                else
+                {
+                    if (dial == 99)
+                    {
+                        dial = 0;
+                    }
+                    else
+                    {
+                        dial = dial + 1;
+                    }
+                }
+                if (dial == 0)
+                {
+                    result++;
+                }
+            }
         }
 
-        Console.WriteLine("Result: " + timesRotationHitZero);
+        Console.WriteLine("Result: " + result);
         //Debug.Assert(timesRotationHitZero == 6379, "Expected result to be 6379");
     }
 }
