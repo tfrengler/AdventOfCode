@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2025.lib;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
@@ -76,18 +77,6 @@ public sealed class Day01: Day
     {
         string[] rotations = _inputAsLines;
         Debug.Assert(rotations.Length == 4462);
-        //string[] rotations = [
-        //    "L68",
-        //    "L30",
-        //    "R48",
-        //    "L5",
-        //    "R60",
-        //    "L55",
-        //    "L1",
-        //    "L99",
-        //    "R14",
-        //    "L82"
-        //];
 
         int dial = 50;
         int timesRotationHitZero = 0;
@@ -97,38 +86,22 @@ public sealed class Day01: Day
             //Console.WriteLine($"Dial starts at {dial}");
 
             int rotationAmount = Convert.ToInt32(currentRotation[1..]);
-            int rotationAmountUnclamped = rotationAmount;
-            if (rotationAmount > 100) rotationAmount %= 100;
+            int raw = 0;
 
-            timesRotationHitZero += Math.Abs(rotationAmountUnclamped / 100);
-
+            // LEFT
             if (currentRotation[0] == 'L')
             {
-                int subtractResult = dial - rotationAmount;
-                if (subtractResult < 0) timesRotationHitZero++;
-                dial = subtractResult < 0 ? 100 - Math.Abs(subtractResult) : subtractResult;
+                raw = dial - rotationAmount;
             }
+            // RIGHT
             else if (currentRotation[0] == 'R')
             {
-                int addResult = dial + rotationAmount;
-                if (addResult == 100)
-                {
-                    dial = 0;
-                }
-                else if (addResult > 100)
-                {
-                    dial = 0 + (addResult - 100);
-                    timesRotationHitZero++;
-                }
-                else
-                {
-                    dial = addResult;
-                }
+                raw = dial + rotationAmount;
             }
-            else
-            {
-                throw new Exception("Wait what?");
-            }
+
+            dial = raw % 100;
+            if (raw == 0) timesRotationHitZero++;
+            timesRotationHitZero += Math.Abs(rotationAmount / 100);
 
             Debug.Assert(dial < 100);
             if (dial == 0) timesRotationHitZero++;
