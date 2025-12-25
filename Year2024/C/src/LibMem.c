@@ -15,7 +15,7 @@ static size_t ArenaRemaining = 0;
 static size_t Allocations = 0;
 static size_t DeAllocations = 0;
 static size_t Heap = 0;
-static size_t Alignment = alignof(max_align_t);
+static size_t Alignment = _Alignof(void*);
 
 void* MemArena_Request(const size_t bytes) {
     if (bytes > ArenaRemaining) {

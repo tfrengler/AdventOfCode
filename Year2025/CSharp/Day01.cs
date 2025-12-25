@@ -1,5 +1,4 @@
 ﻿using AdventOfCode2025.lib;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
@@ -26,8 +25,6 @@ public sealed class Day01: Day
 
         foreach(string currentRotation in rotations)
         {
-            //Console.WriteLine($"Dial starts at {dial}");
-
             int rotationAmount = Convert.ToInt32(currentRotation[1..]);
             if (rotationAmount > 100) rotationAmount = rotationAmount % 100;
             
@@ -53,11 +50,9 @@ public sealed class Day01: Day
 
             Debug.Assert(dial < 100);
             if (dial == 0) timesRotationHitZero++;
-            //Console.WriteLine($"Dial rotated {rotationAmount} to the {currentRotation[0]} and ended up at {dial}");
         }
 
-        Console.WriteLine("Result: " + timesRotationHitZero);
-        Debug.Assert(timesRotationHitZero == 1076, "Expected result to be 1076");
+        AssertPartAnswer(1076, timesRotationHitZero);
     }
 
     [TestCase]
@@ -71,8 +66,6 @@ public sealed class Day01: Day
 
         foreach (string currentRotation in rotations)
         {
-            //Console.WriteLine($"Dial starts at {dial}");
-
             int rotationAmount = Convert.ToInt32(currentRotation[1..]);
             for (int i = 1; i <= rotationAmount; i++)
             {
@@ -106,7 +99,6 @@ public sealed class Day01: Day
             }
         }
 
-        Console.WriteLine("Result: " + result);
-        //Debug.Assert(timesRotationHitZero == 6379, "Expected result to be 6379");
+        AssertPartAnswer(6379, result);
     }
 }

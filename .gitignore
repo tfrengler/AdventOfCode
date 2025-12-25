@@ -401,3 +401,5 @@ FodyWeavers.xsd
 # Custom
 [Dd]ebug.*
 **/[Ii]nput/*.txt
+.clangd
+.zed/

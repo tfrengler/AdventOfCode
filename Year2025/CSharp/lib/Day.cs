@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace AdventOfCode2025.lib
@@ -29,6 +31,12 @@ namespace AdventOfCode2025.lib
         {
             _inputAsString = File.ReadAllText(_inputFile.FullName);
             return _inputAsString;
+        }
+
+        protected void AssertPartAnswer(long expected, long actual)
+        {
+            Console.WriteLine("Part answer is: " + actual);
+            Assert.That(actual, Is.EqualTo(expected), "Part answer was not correct");
         }
     }
 }

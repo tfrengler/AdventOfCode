@@ -1,55 +1,55 @@
 {
-    "tasks": [
-        {
-            "label": "Clang - build",
-            "type": "shell",
-            "command": "clang",
-            "args": [
-                "--%",
-                "-std=c23",
-                "-Wall",
-                "-Wextra",
-                "-Wconversion",
-                "-Wshadow-all",
-                "-Wundef",
-                "-Wunreachable-code",
-                "-Wuninitialized",
-                "-Wold-style-cast",
-                "-Wno-error=unused-variable",
-                "-Wfloat-equal",
-                "-pedantic-errors",
-                "-Wtype-limits",
-                "-Wno-unused-function",
-                "-Wno-sign-conversion",
-                "-Wdouble-promotion",
-                "-Wformat=2",
-                "-Wformat-pedantic",
-                "-Wfor-loop-analysis",
-                "-fsanitize=undefined,address",
-                "-fsanitize-trap",
-                "-fno-omit-frame-pointer",
-                "-fno-common",
-                "-pthread",
-                "-g3",
-                "-O0",
-                "${file}",
-                "${workspaceFolder}/src/LibThomas.c",
-                "${workspaceFolder}/src/LibString.c",
-                "${workspaceFolder}/src/LibNumeric.c",
-                "${workspaceFolder}/src/LibGrid.c",
-                "${workspaceFolder}/src/LibHashTable.c",
-                "${workspaceFolder}/src/LibMem.c",
-                "-o",
-                "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-    ],
-    "version": "2.0.0"
+  "tasks": [
+    {
+      "label": "Clang - build",
+      "type": "shell",
+      "command": "clang",
+      "args": [
+        "--%",
+        "-std=c23",
+        "-Wall",
+        "-Wextra",
+        "-Wconversion",
+        "-Wshadow-all",
+        "-Wundef",
+        "-Wunreachable-code",
+        "-Wuninitialized",
+        "-Wold-style-cast",
+        "-Wno-error=unused-variable",
+        "-Wfloat-equal",
+        "-pedantic-errors",
+        "-Wtype-limits",
+        "-Wno-unused-function",
+        "-Wno-sign-conversion",
+        "-Wdouble-promotion",
+        "-Wformat=2",
+        "-Wformat-pedantic",
+        "-Wfor-loop-analysis",
+        "-fsanitize=undefined,address",
+        "-fsanitize-trap",
+        "-fno-omit-frame-pointer",
+        "-fno-common",
+        "-pthread",
+        "-g3",
+        "-O0",
+        "${file}",
+        "$ZED_WORKTREE_ROOT/src/LibThomas.c",
+        "$ZED_WORKTREE_ROOT/src/LibString.c",
+        "$ZED_WORKTREE_ROOT/src/LibNumeric.c",
+        "$ZED_WORKTREE_ROOT/src/LibGrid.c",
+        "$ZED_WORKTREE_ROOT/src/LibHashTable.c",
+        "$ZED_WORKTREE_ROOT/src/LibMem.c",
+        "-o",
+        "$ZED_WORKTREE_ROOT/build/$ZED_STEM.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ],
+  "version": "2.0.0"
 }
