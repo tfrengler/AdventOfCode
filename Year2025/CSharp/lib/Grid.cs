@@ -13,6 +13,7 @@ namespace AdventOfCode2025.lib
 
         public int Width { get; }
         public int Height { get; }
+        public int Size => Width * Height;
         public bool BoundaryCrossingIsFatal { get; set; } = true;
 
         public Grid(string gridData, int width, int height)
@@ -38,14 +39,15 @@ namespace AdventOfCode2025.lib
 
         public GridPoint GetPoint(GridPoint point) => GetPoint(point.X, point.Y);
 
-        public void SetPoint(GridPoint point, char newValue) => SetPoint(point.X, point.Y, newValue);
+        public GridPoint SetPoint(GridPoint point, char newValue) => SetPoint(point.X, point.Y, newValue);
 
-        public void SetPoint(int x, int y, char newValue)
+        public GridPoint SetPoint(int x, int y, char newValue)
         {
             int index = CalculateIndexFromPoint(x, y);
-            if (index == -1) return;
+            if (index == -1) return GridPoint.Invalid;
 
             _gridData[index] = newValue;
+            return new(newValue, x, y);
         }
 
         public GridPoint GetPoint(int x, int y)
@@ -142,6 +144,16 @@ namespace AdventOfCode2025.lib
             returnData[2] = GetRelativePoint(input.X, input.Y, GridDirection.S);
             returnData[3] = GetRelativePoint(input.X, input.Y, GridDirection.W);
 
+            return returnData;
+        }
+
+        public List<GridPoint> ToList()
+        {
+            List<GridPoint> returnData = [];
+            foreach(var point in EnumerateGrid())
+            {
+                returnData.Add(point);
+            }
             return returnData;
         }
 

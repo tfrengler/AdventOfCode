@@ -78,71 +78,38 @@ public sealed class Day05 : Day
     {
         long result = 0;
 
-        //_freshIdRanges.Sort((first, second) =>
-        //{
-        //    if (first.Item1 == second.Item1) return 0;
-        //    if (first.Item1 > second.Item1) return 1;
-        //    return -1;
-        //});
-
-        _freshIdRanges = _freshIdRanges
-            .OrderBy(x => x.Item1)
-            .ThenBy(x => x.Item2)
-            .ToList();
+        _freshIdRanges.Sort((first, second) =>
+        {
+            if (first.Item1 == second.Item1) return 0;
+            if (first.Item1 > second.Item1) return 1;
+            return -1;
+        });
 
         List<Tuple<long, long>> mergedRanges = [];
+        (long currentStart, long currentEnd) = _freshIdRanges[0];
 
-        for (int outerIndex = 0; outerIndex < _freshIdRanges.Count; outerIndex++)
+        for (int index = 1; index < _freshIdRanges.Count; index++)
         {
-            (long start, long end) = _freshIdRanges[outerIndex];
-            // Last one? Nothing to compare to so just add it
-            if (outerIndex + 1 == _freshIdRanges.Count)
+            (long startNext, long endNext) = _freshIdRanges[index];
+
+            if (startNext <= currentEnd)
             {
-                mergedRanges.Add(new(start, end));
-                break;
+                currentEnd = Math.Max(currentEnd, endNext);
+                continue;
             }
 
-            for (int innerIndex = outerIndex + 1; innerIndex < _freshIdRanges.Count; innerIndex++)
-            {
-                (long startNext, long endNext) = _freshIdRanges[innerIndex];
-
-                // Next range completely within our current range?
-                // Ignore
-                if (start >= startNext && end <= endNext)
-                {
-                    continue;
-                }
-
-                // The next range's start is greater than our end
-                // Therefore it is a greater range and we add the current range
-                // and stop comparing ranges
-                if (startNext >= end)
-                {
-                    mergedRanges.Add(new(start,end));
-                    break;
-                }
-                // Is the end of the next range greater than our current?
-                // Then we move our current range's end up to the new end
-                if (endNext > end)
-                {
-                    end = endNext;
-                }
-
-                if (innerIndex+1 == _freshIdRanges.Count) mergedRanges.Add(new(start, end));
-                // At this point we know that:
-                // Start of next range is within current start and end
-                // End of next range is greater than current end
-                // Therefore increment outer index because we are going to merge that one
-                // and it does not need to considered and compared
-                outerIndex++;
-            }
+            mergedRanges.Add(new(currentStart, currentEnd));
+            currentStart = startNext;
+            currentEnd = endNext;
         }
 
-        foreach((long start, long end) in mergedRanges)
+        mergedRanges.Add(new(currentStart, currentEnd));
+
+        foreach ((long start, long end) in mergedRanges)
         {
             result += (end + 1) - start;
         }
 
-        AssertPartAnswer(0, result);
+        AssertPartAnswer(369761800782619, result);
     }
 }
