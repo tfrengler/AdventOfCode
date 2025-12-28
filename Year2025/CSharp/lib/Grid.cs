@@ -5,7 +5,7 @@ using System.Linq;
 namespace AdventOfCode2025.lib
 {
     /// <summary>
-    /// Represents a 2d grid composed of chars in a flat string. 
+    /// Represents a 2d grid that is backed by a flat array of characters.
     /// </summary>
     public sealed class Grid
     {
@@ -244,20 +244,20 @@ namespace AdventOfCode2025.lib
             Y = y;
         }
 
-        public static GridPoint Invalid { get; } = new GridPoint(char.MinValue, -1, -1);
+        public static GridPoint Invalid => new(char.MinValue, -1, -1);
 
         public readonly bool IsValid => Value != char.MinValue;
 
-        public char Value { get; set; }
+        public char Value { get; }
         public int X { get; } = -1;
         public int Y { get; } = -1;
 
         public override readonly string ToString()
         {
             return string.Join(Environment.NewLine, [
-                $"X     : {X}",
-                $"Y     : {Y}",
-                $"VALUE : {Value}"
+                $"X is : {X}",
+                $"Y is : {Y}",
+                $"VALUE: {Value}"
             ]);
         }
     }
