@@ -99,7 +99,7 @@ namespace AdventOfCode2025.lib
 
         public GridPoint GetSouthWest(GridPoint input)
         {
-            return GetRelativePoint(input.X, input.Y, GridDirection.SE);
+            return GetRelativePoint(input.X, input.Y, GridDirection.SW);
         }
 
         public GridPoint GetWest(GridPoint input)
