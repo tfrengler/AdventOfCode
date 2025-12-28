@@ -58,6 +58,19 @@ namespace AdventOfCode2025.lib
             return new GridPoint(_gridData[index], x, y);
         }
 
+        public GridPoint FindFirst(char value)
+        {
+            foreach(var point in EnumerateGrid())
+            {
+                if (point.Value == value)
+                {
+                    return point;
+                }
+            }
+
+            return GridPoint.Invalid;
+        }
+
         public GridPoint GetRelativePoint(GridPoint point, GridDirection direction) => GetRelativePoint(point.X, point.Y, direction);
 
         public GridPoint GetRelativePoint(int x, int y, GridDirection direction)

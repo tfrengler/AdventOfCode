@@ -1,8 +1,6 @@
 ﻿using AdventOfCode2025.lib;
 using NUnit.Framework;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.IO;
 
 namespace AdventOfCode2025;
@@ -20,28 +18,9 @@ public sealed class Day07: Day
     public void Part01()
     {
         _inputAsLines[0] = _inputAsLines[0].Replace('S', '|');
-
-        //var manifold = new Grid([
-        //    ".......|.......",
-        //    "...............",
-        //    ".......^.......",
-        //    "...............",
-        //    "......^.^......",
-        //    "...............",
-        //    ".....^.^.^.....",
-        //    "...............",
-        //    "....^.^...^....",
-        //    "...............",
-        //    "...^.^...^.^...",
-        //    "...............",
-        //    "..^...^.....^..",
-        //    "...............",
-        //    ".^.^.^.^.^...^.",
-        //    "...............",
-        //]);
-
         var manifold = new Grid(_inputAsLines);
         manifold.BoundaryCrossingIsFatal = false;
+
         int result = 0;
 
         foreach(GridPoint point in manifold.EnumerateGrid())
@@ -91,47 +70,32 @@ public sealed class Day07: Day
     [TestCase]
     public void Part02()
     {
-        string[] testInput = [
-            ".......S.......",
-            "...............",
-            ".......^.......",
-            "...............",
-            "......^.^......",
-            "...............",
-            ".....^.^.^.....",
-            "...............",
-            "....^.^...^....",
-            "...............",
-            "...^.^...^.^...",
-            "...............",
-            "..^...^.....^..",
-            "...............",
-            ".^.^.^.^.^...^.",
-            "...............",
-        ];
-        testInput[0] = testInput[0].Replace('S', (char)0x01);
-        var manifold = new Grid(testInput);
-        var intManifold = new int[manifold.Height, manifold.Width];
-
-        //_inputAsLines[0] = _inputAsLines[0].Replace('S', (char)0x01);
-        //var manifold = new Grid(_inputAsLines);
+        var manifold = new Grid(_inputAsLines);
+        var start = manifold.FindFirst('S');
+        
+        var quantumPathBuffer = new long[manifold.Height, manifold.Width];
+        quantumPathBuffer[start.Y, start.X] = 1;
 
         manifold.BoundaryCrossingIsFatal = false;
-        int result = 0;
+        long result = 0;
 
         foreach (GridPoint point in manifold.EnumerateGrid())
         {
-            if (point.Value == '.' || point.Value == '^') continue;
+            if (quantumPathBuffer[point.Y, point.X] == 0 && (point.Value == '.' || point.Value == '^'))
+            {
+                continue;
+            }
 
             var south = manifold.GetSouth(point);
-            if (south.Value != '^')
+            if (south.Value == '.')
             {
-                if (!south.IsValid)
-                {
-                    result += (int)point.Value;
-                    continue;
-                }
-                CalculateAndSetPointValue(manifold, point, south);
+                CalculateAndSetPointValue(quantumPathBuffer, point, south);
+                continue;
+            }
+
+            if (!south.IsValid)
+            {
+                result += quantumPathBuffer[point.Y, point.X];
                 continue;
             }
 
@@ -140,25 +104,23 @@ public sealed class Day07: Day
                 var sw = manifold.GetSouthWest(point);
                 var se = manifold.GetSouthEast(point);
 
-                CalculateAndSetPointValue(manifold, point, sw);
-                CalculateAndSetPointValue(manifold, point, se);
+                CalculateAndSetPointValue(quantumPathBuffer, point, sw);
+                CalculateAndSetPointValue(quantumPathBuffer, point, se);
             }
         }
 
-        //PrintManifold2(manifold);
+        //PrintManifold2(manifold, quantumPathBuffer);
         AssertPartAnswer(1393669447690, result);
     }
 
-    private static GridPoint CalculateAndSetPointValue(Grid manifold, GridPoint origin, GridPoint destination)
+    private static void CalculateAndSetPointValue(long[,] quantumBuffer, GridPoint origin, GridPoint destination)
     {
-        int destinationVal = destination.Value == '.' ? (char)0 : destination.Value;
-        int amountToAdd = (int)origin.Value;
-
-        //Console.WriteLine($"Change destination value that is {destinationVal}, adding {amountToAdd}");
-        return manifold.SetPoint(destination, (char)(destinationVal + amountToAdd));
+        long destinationValue = quantumBuffer[destination.Y, destination.X];
+        long originValue = quantumBuffer[origin.Y, origin.X];
+        quantumBuffer[destination.Y, destination.X] = destinationValue + originValue;
     }
 
-    private static void PrintManifold2(Grid manifold)
+    private static void PrintManifold2(Grid manifold, int[,] quantumBuffer)
     {
         var outputFile = Path.Combine(AppContext.BaseDirectory, "input/debug.txt");
         Console.WriteLine(outputFile);
@@ -169,11 +131,17 @@ public sealed class Day07: Day
 
             foreach (var point in manifold.EnumerateGrid())
             {
-                string output = point.Value switch
+                int valueAtPoint = quantumBuffer[point.Y, point.X];
+                string output = string.Empty;
+
+                if (valueAtPoint > 0)
                 {
-                    '^' or '.' => Convert.ToString(point.Value).PadLeft(2, point.Value),
-                    _ => Convert.ToString((int)point.Value).PadLeft(2, '0')
-                };
+                    output = Convert.ToString(valueAtPoint).PadLeft(2, '0');
+                }
+                else
+                {
+                    output = Convert.ToString(point.Value).PadLeft(2, point.Value);
+                }
 
                 outputfile.Write(output);
                 charCounter++;
